@@ -28,12 +28,12 @@ Cada módulo é um pacote de topo com suas próprias camadas. Um módulo só usa
 |---|---|---|
 | `identidade` | Cadastro, autenticação, perfis, tokens, organizações e verificação | KAN-4 |
 | `investidores` | Tipo de investidor, tese e preferências de investimento | KAN-5 |
-| `empreendimentos` | Cadastro das startups e visibilidade (Nível 1 e Nível 2) | KAN-6, KAN-7 |
+| `empreendimentos` | Cadastro das startups, equipe, curadoria, visibilidade (Nível 1 e Nível 2) e bloqueios | KAN-6, KAN-7 |
 | `catalogo` | Edições, filtros, favoritos, histórico | KAN-8, KAN-9 |
-| `conexoes` | Manifestação de interesse, Match, painel e rodadas com investidor líder | KAN-10 |
+| `conexoes` | Manifestação de interesse, Match, ciclo de vida da conexão, rodadas com investidor líder e registro de investimentos | KAN-10 |
 | `recomendacao` | Critérios de compatibilidade e justificativas | KAN-39 |
 | `publicidade` | Campanhas e anúncios entre páginas | Fase 2 |
-| `administracao` | Painel administrativo | A definir |
+| `administracao` | Fila de revisão (curadoria) e verificação de cadastros; painel completo nas fases seguintes | KAN-62, KAN-66 |
 
 Estrutura prevista do pacote base:
 

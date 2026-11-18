@@ -43,7 +43,7 @@ Arquitetura **cliente-servidor**, com API REST. O back-end é um **monólito mod
 
 Detalhes em [`docs/arquitetura.md`](docs/arquitetura.md).
 
-Complementos aos requisitos do produto ficam em [`docs/requisitos/`](docs/requisitos/), como [tipos de investidor e rodadas de investimento](docs/requisitos/tipos-de-investidor-e-rodadas.md).
+Complementos aos requisitos do produto ficam em [`docs/requisitos/`](docs/requisitos/), como [tipos de investidor, rodadas e regras de negócio revisadas](docs/requisitos/tipos-de-investidor-e-rodadas.md).
 
 ## Stack tecnológica
 
