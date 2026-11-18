@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Sobe a aplicação inteira com PostgreSQL real e confere o que a S0 promete: saúde, métricas e Swagger. */
-@SpringBootTest
+@SpringBootTest(properties = "management.defaults.metrics.export.enabled=true")
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 class AplicacaoIT {
