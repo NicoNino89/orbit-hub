@@ -9,13 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Sobe a aplicação inteira com PostgreSQL real e confere o que a S0 promete: saúde, métricas e Swagger. */
-@SpringBootTest(properties = "management.defaults.metrics.export.enabled=true")
+@SpringBootTest
+@AutoConfigureMetrics
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 class AplicacaoIT {
