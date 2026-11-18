@@ -35,9 +35,12 @@ Cada módulo é um pacote de topo com suas próprias camadas. Um módulo só usa
 | `agenda` | Propostas, confirmação, lembretes e resultado de reuniões | Processo P6 |
 | `moderacao` | Denúncias, sanções, recursos, disputas e violações de confidencialidade | Processos P8 a P11 |
 | `publicidade` | Anunciantes, campanhas, aprovação, veiculação e biblioteca de anúncios | Fase 2 (P17) |
+| `marketplace` | Prestadores, serviços, propostas, contratações, avaliações e pagamentos | KAN-115 (Fase 2) |
+| `conhecimento` | Conteúdos, taxonomia, fluxo editorial, cursos, trilhas, acesso e Market Insights | KAN-116 (Fase 2) |
+| `comunidade` | Feed, seguidores, grupos, perguntas e respostas, discussões, reputação e mensagens | KAN-117 (Fase 3) |
 | `administracao` | Usuários e papéis internos, parâmetros e listas, filas de verificação e curadoria, edições do catálogo, termos versionados e trilha de auditoria | KAN-62, KAN-66, P2 a P5, P14, P15 |
 
-As rotinas automáticas (R1 a R14) ficam em cada módulo dono da regra, com agendamento e monitoramento comuns em `compartilhado`. Prazos e limites vêm sempre dos **parâmetros configuráveis**, nunca de valores fixos no código. Detalhes em [`requisitos/processos-e-operacao.md`](requisitos/processos-e-operacao.md).
+As rotinas automáticas (R1 a R14) ficam em cada módulo dono da regra, com agendamento e monitoramento comuns em `compartilhado`. Prazos e limites vêm sempre dos **parâmetros configuráveis**, nunca de valores fixos no código. Detalhes em [`requisitos/processos-e-operacao.md`](requisitos/processos-e-operacao.md) e, para marketplace, conhecimento e comunidade, em [`requisitos/servicos-e-conhecimento.md`](requisitos/servicos-e-conhecimento.md).
 
 Estrutura prevista do pacote base:
 
