@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: orbit-hub-api
+  datasource:
+    url: ${ORBIT_DB_URL:jdbc:postgresql://localhost:5432/orbithub}
+    username: ${ORBIT_DB_USUARIO:orbithub}
+    password: ${ORBIT_DB_SENHA:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  forward-headers-strategy: framework
+
+orbit:
+  # local | homologacao | producao
+  ambiente: ${ORBIT_AMBIENTE:local}
+  armazenamento:
+    tipo: ${ORBIT_ARMAZENAMENTO_TIPO:local}
+    local:
+      pasta: ${ORBIT_ARMAZENAMENTO_PASTA:./dados/arquivos}
+    azure:
+      endpoint: ${ORBIT_BLOB_ENDPOINT:}
+      container: ${ORBIT_BLOB_CONTAINER:arquivos}
+      connection-string: ${ORBIT_BLOB_CONNECTION_STRING:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      ambiente: ${orbit.ambiente}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

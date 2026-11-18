@@ -1,0 +1,83 @@
+# Ambiente local completo do Orbit Hub (KAN-52).
+#   cp .env.example .env   (e troque as senhas)
+#   docker compose up --build
+#
+#   Web ........ http://localhost:5173
+#   API ........ http://localhost:8080/swagger-ui.html
+#   Grafana .... http://localhost:3000
+#   Prometheus . http://localhost:9090
+
+name: orbit-hub
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: orbithub
+      POSTGRES_USER: ${ORBIT_DB_USUARIO:-orbithub}
+      POSTGRES_PASSWORD: ${ORBIT_DB_SENHA:?defina ORBIT_DB_SENHA no arquivo .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-dados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    image: ghcr.io/niconino89/orbit-hub-api:local
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ORBIT_AMBIENTE: local
+      ORBIT_DB_URL: jdbc:postgresql://db:5432/orbithub
+      ORBIT_DB_USUARIO: ${ORBIT_DB_USUARIO:-orbithub}
+      ORBIT_DB_SENHA: ${ORBIT_DB_SENHA}
+      ORBIT_ARMAZENAMENTO_TIPO: local
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - arquivos:/dados/arquivos
+
+  web:
+    build: ./frontend
+    image: ghcr.io/niconino89/orbit-hub-web:local
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:5173:8080"
+
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    volumes:
+      - ./observabilidade/prometheus:/etc/prometheus:ro
+      - prometheus-dados:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana-oss:12.3.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SENHA:?defina GRAFANA_SENHA no arquivo .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observabilidade/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observabilidade/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-dados:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  db-dados:
+  arquivos:
+  prometheus-dados:
+  grafana-dados:

@@ -31,7 +31,7 @@ Arquitetura **cliente-servidor**, com API REST. O back-end é um **monólito mod
 ```
 ┌──────────────────────────┐      REST/JSON      ┌──────────────────────────────┐
 │  Front-end (SPA)         │ ──────────────────▶ │  Back-end (API REST)         │
-│  React + TypeScript      │                     │  Java 21 + Spring Boot 3     │
+│  React + TypeScript      │                     │  Java 21 + Spring Boot 4     │
 │  Azure Static Web Apps   │ ◀────────────────── │  Azure Container Apps        │
 └──────────────────────────┘                     └──────────────┬───────────────┘
                                                                 │
@@ -53,12 +53,12 @@ A ordem de execução, as sprints e o fluxo de desenvolvimento e teste estão em
 |---|---|
 | Front-end | React, TypeScript, Vite, Tailwind CSS |
 | Catálogo digital | react-pageflip (em avaliação — KAN-58) |
-| Back-end | Java 21 LTS, Spring Boot 3.x |
+| Back-end | Java 21 LTS, Spring Boot 4.1 |
 | Persistência | Spring Data JPA / Hibernate, PostgreSQL, Flyway |
 | Segurança | Spring Security, JWT com refresh token revogável |
 | API e documentação | REST, Swagger / OpenAPI |
 | Build | Maven (back-end), Vite (front-end) |
-| Testes | JUnit 5, Mockito, Testcontainers |
+| Testes | JUnit 5, Mockito, Testcontainers, Vitest, React Testing Library |
 | Qualidade | JaCoCo, SonarCloud |
 | Containers | Docker, Docker Compose, GitHub Container Registry |
 | CI/CD | GitHub Actions |
@@ -79,19 +79,48 @@ orbit-hub/
 
 ## Como rodar localmente
 
-> O código da aplicação ainda será criado. Esta seção será completada junto com as histórias KAN-52 (containerização) e seguintes.
+### Pré-requisitos
 
-Pré-requisitos previstos:
+- Docker Desktop (com WSL2 no Windows)
+- Java 21 e Maven, para desenvolver o back-end fora do container (o projeto traz o `mvnw`)
+- Node.js LTS, para desenvolver o front-end fora do container
+- Terraform e Azure CLI, para trabalhar na infraestrutura
 
-- Docker e Docker Compose
-- Java 21 e Maven (para desenvolver o back-end fora do container)
-- Node.js LTS (para desenvolver o front-end fora do container)
-- Terraform (para trabalhar na infraestrutura)
-
-Execução prevista:
+### Tudo em containers
 
 ```bash
-docker compose up
+cp .env.example .env        # troque as senhas
+docker compose up --build
+```
+
+| Serviço | Endereço |
+|---|---|
+| Front-end | http://localhost:5173 |
+| API (Swagger) | http://localhost:8080/swagger-ui.html |
+| Saúde da API | http://localhost:8080/actuator/health |
+| Grafana | http://localhost:3000 (usuário `admin`, senha `GRAFANA_SENHA` do `.env`) |
+| Prometheus | http://localhost:9090 |
+
+As portas ficam presas a `127.0.0.1`, então nada fica exposto na rede.
+
+### Desenvolvimento sem containers da aplicação
+
+```bash
+# Back-end, com um PostgreSQL em container criado pelo Testcontainers
+cd backend
+./mvnw spring-boot:test-run
+
+# Front-end, com recarga automática; /api vai para http://localhost:8080
+cd frontend
+npm install
+npm run dev
+```
+
+### Testes
+
+```bash
+cd backend && ./mvnw verify       # unidade, integração (Testcontainers) e portão de cobertura JaCoCo
+cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
 ## Como contribuir

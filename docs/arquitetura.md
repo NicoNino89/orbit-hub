@@ -3,7 +3,7 @@
 ## Visão geral
 
 - **Estilo:** cliente-servidor, com API REST.
-- **Back-end:** monólito modular em Java 21 + Spring Boot 3, organizado em camadas.
+- **Back-end:** monólito modular em Java 21 + Spring Boot 4.1, organizado em camadas.
 - **Front-end:** SPA em React + TypeScript + Vite.
 - **Dados:** PostgreSQL (migrações com Flyway) e armazenamento de arquivos em Blob Storage.
 - **Nuvem:** Microsoft Azure, com infraestrutura declarada em Terraform.
