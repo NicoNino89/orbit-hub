@@ -45,6 +45,8 @@ Detalhes em [`docs/arquitetura.md`](docs/arquitetura.md).
 
 Complementos aos requisitos do produto ficam em [`docs/requisitos/`](docs/requisitos/), como [tipos de investidor, rodadas e regras de negócio revisadas](docs/requisitos/tipos-de-investidor-e-rodadas.md), [processos, rotinas e operação da plataforma](docs/requisitos/processos-e-operacao.md) e [serviços, base de conhecimento e comunidade](docs/requisitos/servicos-e-conhecimento.md).
 
+A ordem de execução, as sprints e o fluxo de desenvolvimento e teste estão em [`docs/planejamento/revisao-e-sprints.md`](docs/planejamento/revisao-e-sprints.md).
+
 ## Stack tecnológica
 
 | Camada | Tecnologia |
