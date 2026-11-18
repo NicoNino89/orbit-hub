@@ -32,8 +32,12 @@ Cada módulo é um pacote de topo com suas próprias camadas. Um módulo só usa
 | `catalogo` | Edições, filtros, favoritos, histórico | KAN-8, KAN-9 |
 | `conexoes` | Manifestação de interesse, Match, ciclo de vida da conexão, rodadas com investidor líder e registro de investimentos | KAN-10 |
 | `recomendacao` | Critérios de compatibilidade e justificativas | KAN-39 |
-| `publicidade` | Campanhas e anúncios entre páginas | Fase 2 |
-| `administracao` | Fila de revisão (curadoria) e verificação de cadastros; painel completo nas fases seguintes | KAN-62, KAN-66 |
+| `agenda` | Propostas, confirmação, lembretes e resultado de reuniões | Processo P6 |
+| `moderacao` | Denúncias, sanções, recursos, disputas e violações de confidencialidade | Processos P8 a P11 |
+| `publicidade` | Anunciantes, campanhas, aprovação, veiculação e biblioteca de anúncios | Fase 2 (P17) |
+| `administracao` | Usuários e papéis internos, parâmetros e listas, filas de verificação e curadoria, edições do catálogo, termos versionados e trilha de auditoria | KAN-62, KAN-66, P2 a P5, P14, P15 |
+
+As rotinas automáticas (R1 a R14) ficam em cada módulo dono da regra, com agendamento e monitoramento comuns em `compartilhado`. Prazos e limites vêm sempre dos **parâmetros configuráveis**, nunca de valores fixos no código. Detalhes em [`requisitos/processos-e-operacao.md`](requisitos/processos-e-operacao.md).
 
 Estrutura prevista do pacote base:
 
