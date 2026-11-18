@@ -1,0 +1,58 @@
+# ===== Sistema operacional =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== IDEs e editores =====
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+.project
+.classpath
+.settings/
+
+# ===== Variáveis de ambiente e segredos =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ===== Back-end (Java / Maven) =====
+backend/target/
+*.class
+*.log
+hs_err_pid*
+.mvn/wrapper/maven-wrapper.jar
+
+# ===== Front-end (Node / Vite) =====
+node_modules/
+frontend/dist/
+frontend/coverage/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.local
+
+# ===== Terraform =====
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# ===== Relatórios e caches =====
+coverage/
+.sonar/
+.scannerwork/
