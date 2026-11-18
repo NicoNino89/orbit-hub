@@ -64,6 +64,42 @@ Uma mesma pessoa pode acumular papéis em um time pequeno, desde que as regras d
 - Todo acesso de usuário interno a dados confidenciais (Nível 2) é **justificado e registrado**. O acesso só acontece dentro de um caso aberto (denúncia, disputa, solicitação do titular).
 - O sistema registra **todas** as ações de usuários internos em uma trilha de auditoria imutável.
 
+### 1.4. Quem cadastra o quê
+
+| Cadastro | Quem faz | Como |
+|---|---|---|
+| Investidor e empreendedor | O próprio usuário | Autoatendimento |
+| Organização investidora | Um investidor da organização | Autoatendimento, com verificação |
+| Startup | Um fundador | Autoatendimento, com curadoria |
+| Organização convidada (fundo, rede, instituição parceira) | Administrador ou atendimento N2 | **Convite institucional**: a equipe cria a organização em rascunho e convida o responsável, que conclui o cadastro e aceita os termos pessoalmente |
+| Usuário interno | **Somente o administrador** | Pelo painel. O primeiro administrador é criado na implantação, por procedimento técnico documentado |
+| Anunciante (F2) | O próprio anunciante ou o gestor de publicidade | Autoatendimento ou convite, com verificação |
+
+Regras:
+
+- A equipe **nunca** aceita termos, define senhas ou preenche dados sensíveis em nome de um usuário.
+- **Transferência de titularidade:** quando o único administrador de uma startup ou organização fica indisponível, outro membro solicita a titularidade pelo atendimento. Exige comprovação, análise do N2 e segunda aprovação.
+- **Desligamento de usuário interno:** revoga o acesso imediatamente e devolve os casos abertos para a fila.
+- **Revisão de acessos internos** a cada `acesso.revisao_meses` (padrão: 3).
+
+### 1.5. Times internos e gestão das equipes
+
+| Time | Filas | Líder do time |
+|---|---|---|
+| Verificação | Verificação de pessoas e empresas, revalidações | Acompanha a fila e julga recursos de verificação |
+| Curadoria | Revisão de startups, edições temáticas | Acompanha a fila e julga recursos de curadoria |
+| Moderação | Denúncias, violações de confidencialidade | Acompanha a fila e julga recursos de moderação |
+| Atendimento (N1 e N2) | Chamados, cadastros assistidos, titularidade, disputas | Mantém respostas padrão e a central de ajuda |
+| Privacidade | Solicitações de titulares, incidentes | Encarregado de dados |
+| Publicidade (F2) | Anunciantes e campanhas | Gestor de publicidade |
+
+Regras de gestão:
+
+- Cada time tem **horário de atendimento** e calendário de feriados (`equipe.horario_atendimento`). Prazos em dias e horas úteis seguem esse calendário.
+- **Distribuição de casos:** por rodízio entre os membros disponíveis ou manual pelo líder, configurável por fila. Conflitos de interesse bloqueiam a atribuição.
+- **Ausências e férias:** quem está indisponível não recebe casos novos, e os abertos podem ser transferidos.
+- **Escalonamento:** casos com 80% do prazo consumido alertam o líder; casos vencidos sobem para o administrador.
+
 ---
 
 ## 2. Processos
@@ -273,12 +309,45 @@ A política escolhida aparece para todos os participantes.
 - Prazo de resposta: `recurso.sla_dias_uteis` (padrão: 5 dias úteis).
 - A decisão do recurso é final na plataforma.
 
-### P12. Suporte e atendimento (MVP)
+### P12. Atendimento e serviços ao usuário (MVP)
 
-- **Canais no MVP:** formulário na plataforma e e-mail.
-- **Categorias:** acesso e conta, verificação, curadoria, conexões e rodadas, privacidade, outro.
-- **Prazo de primeira resposta:** `suporte.sla_primeira_resposta_horas` (padrão: 24 h úteis).
-- **Encaminhamentos:** privacidade → encarregado de dados; questão legal → jurídico; denúncia → moderação.
+**Catálogo de serviços**
+
+A plataforma publica, na central de ajuda, o catálogo dos serviços que oferece, com público, responsável, canal e prazo:
+
+| Serviço | Para quem | Quem presta | Canal | Prazo |
+|---|---|---|---|---|
+| Onboarding e orientação de uso | Todos | Atendimento N1 | Central de ajuda e chamado | `suporte.sla_primeira_resposta_horas` |
+| Verificação de identidade e de empresa | Investidores, organizações, fundadores, startups | Verificação | Fluxo de verificação | `verificacao.sla_dias_uteis` |
+| Curadoria da startup | Empreendedores | Curadoria | Fluxo de publicação | `curadoria.sla_dias_uteis` |
+| Inclusão em edições temáticas | Empreendedores | Curadoria | Automático, com opção de sair | Por edição |
+| Cadastro assistido de organização | Fundos, redes, instituições | Atendimento N2 | Convite institucional | `suporte.sla_n2_dias_uteis` |
+| Recuperação de acesso e titularidade | Todos | Atendimento N2 | Chamado | `suporte.sla_n2_dias_uteis` |
+| Mediação de disputas | Investidores e empreendedores | Atendimento N2 e jurídico | Chamado | `disputa.sla_dias_uteis` |
+| Análise de denúncias | Todos | Moderação | Botão "denunciar" | Por prioridade |
+| Recursos | Todos | Mesmo time, outra pessoa | Fluxo de recurso | `recurso.sla_dias_uteis` |
+| Direitos do titular (LGPD) | Todos | Encarregado de dados | Canal de privacidade | `lgpd.prazo_resposta_dias` |
+
+Na F2 entram o atendimento ao anunciante, os serviços do marketplace e a capacitação. Na F3, eventos e Pitch Nights.
+
+**Modelo de atendimento**
+
+| Nível | Quem | O que resolve |
+|---|---|---|
+| Autoatendimento | Central de ajuda | Dúvidas comuns |
+| N1 | Atendimento | Uso da plataforma, acessos simples, orientação sobre verificação e curadoria |
+| N2 | Atendimento sênior | Recuperação de conta, titularidade, cadastro assistido, disputas, casos que o N1 não resolveu |
+| Especialistas | Moderação, privacidade, jurídico, equipe técnica | Denúncias, LGPD, questões legais e falhas técnicas |
+
+**Regras**
+
+- **Canais no MVP:** formulário na plataforma (usuário identificado), e-mail e formulário público para quem perdeu o acesso, com confirmação de identidade.
+- **Ciclo do chamado:** aberto → em atendimento → aguardando usuário → resolvido → fechado. Sem resposta do usuário em `suporte.prazo_aguardando_dias` (padrão: 7), o chamado é fechado.
+- **Prazos:** primeira resposta em `suporte.sla_primeira_resposta_horas` (padrão: 24 h úteis); N2 em `suporte.sla_n2_dias_uteis` (padrão: 3 dias úteis).
+- **Encaminhamentos:** privacidade → encarregado de dados; questão legal → jurídico; denúncia → moderação; falha técnica → equipe técnica.
+- **Satisfação:** ao fechar, o usuário avalia o atendimento. A nota entra nos indicadores.
+- **Base de conhecimento:** o time de atendimento mantém a central de ajuda e as respostas padrão, criando artigos a partir dos chamados mais frequentes.
+- O atendimento não acessa dados confidenciais fora de um caso aberto e justificado.
 
 ### P13. Privacidade e LGPD (MVP)
 
@@ -448,6 +517,19 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | `recurso.prazo_dias` | 15 | Não |
 | `recurso.sla_dias_uteis` | 5 | Não |
 | `suporte.sla_primeira_resposta_horas` | 24 úteis | Não |
+| `suporte.sla_n2_dias_uteis` | 3 | Não |
+| `suporte.prazo_aguardando_dias` | 7 | Não |
+| `disputa.sla_dias_uteis` | 10 | Não |
+| `verificacao.prazo_complemento_dias` | 15 | Não |
+| `reuniao.antecedencia_minima_horas` | 24 | Não |
+| `reuniao.max_contrapropostas` | 3 | Não |
+| `reuniao.prazo_registro_dias` | 3 | Não |
+| `convite.validade_dias` | 14 | Não |
+| `acesso.revisao_meses` | 3 | Sim |
+| `aprovacao.prazo_horas` | 48 | Não |
+| `operacao.alerta_sla_percentual` | 80% | Não |
+| `equipe.horario_atendimento` | Por time | Não |
+| `publicidade.intervalo_paginas` (F2) | A definir | Não |
 | `lgpd.prazo_resposta_dias` | 15 | Sim |
 | `lgpd.retencao_legal_meses` | Definido pelo jurídico | Sim |
 | `retencao.historico_visualizacoes_meses` | 12 | Sim |
@@ -473,16 +555,15 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 
 ---
 
-## 7. Impacto no backlog
+## 7. Rastreabilidade com o Jira
 
-Este documento pede novos épicos e histórias no Jira:
-
-| Épico proposto | Conteúdo | Fase |
-|---|---|---|
-| **Backoffice e administração** | Usuários e papéis internos, parâmetros e listas, trilha de auditoria, segunda aprovação, filas com prazo | MVP |
-| **Verificação e curadoria (operação)** | Filas e checklists de P2 e P3, edições temáticas (P4), recursos (P11) | MVP |
-| **Agenda e reuniões** | P6 completo | MVP |
-| **Moderação, denúncias e disputas** | P8, P9 e P10 | MVP |
-| **Suporte, privacidade e termos** | P12, P13 e P14 | MVP |
-| **Rotinas automáticas** | R1 a R14, com monitoramento | MVP (R13 na F2) |
-| **Publicidade** | P17 completo | F2 |
+| Épico | Histórias | Conteúdo | Fase |
+|---|---|---|---|
+| KAN-68 Backoffice e administração | KAN-75 a KAN-82 | Usuários internos, gestão das equipes, cadastro assistido e titularidade, parâmetros, listas, auditoria, segunda aprovação, painel de operação | MVP |
+| KAN-69 Verificação e curadoria | KAN-83 a KAN-87 | Fila de verificação, checklist de curadoria, edições temáticas, recursos, conflito de interesse | MVP |
+| KAN-70 Agenda e reuniões | KAN-94 a KAN-98 | Proposta, resposta, lembretes, resultado e reuniões da rodada | MVP |
+| KAN-71 Moderação e disputas | KAN-99 a KAN-103 | Denúncias, fila, sanções, violação de confidencialidade, disputas | MVP |
+| KAN-72 Suporte, privacidade e termos | KAN-88 a KAN-93 | Catálogo de serviços, central de atendimento, LGPD, incidentes, termos, retenção | MVP |
+| KAN-73 Rotinas automáticas | KAN-104 a KAN-108 | Infraestrutura de rotinas, R1–R4, R6–R7, R8–R12, R14 | MVP |
+| KAN-10 Interesse e Match | KAN-109 | Condução da rodada: prorrogação, encerramento e alocação | MVP |
+| KAN-74 Publicidade | KAN-110 a KAN-114 | Anunciantes, campanhas, aprovação, veiculação, biblioteca e relatórios | F2 |
