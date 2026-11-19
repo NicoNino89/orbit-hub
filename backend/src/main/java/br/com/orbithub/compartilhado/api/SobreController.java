@@ -18,9 +18,13 @@ class SobreController {
     private final String versao;
     private final String ambiente;
 
-    SobreController(ObjectProvider<BuildProperties> build, @Value("${orbit.ambiente}") String ambiente) {
+    SobreController(ObjectProvider<BuildProperties> build,
+                    @Value("${orbit.ambiente}") String ambiente,
+                    @Value("${orbit.versao:}") String versaoPublicada) {
         BuildProperties props = build.getIfAvailable();
-        this.versao = props != null ? props.getVersion() : "desenvolvimento";
+        String versaoDoBuild = props != null ? props.getVersion() : "desenvolvimento";
+        // Na nuvem, o pipeline informa o commit publicado (ORBIT_VERSAO); assim o teste humano sabe o que está testando
+        this.versao = versaoPublicada.isBlank() ? versaoDoBuild : versaoPublicada;
         this.ambiente = ambiente;
     }
 
