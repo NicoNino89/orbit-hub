@@ -62,7 +62,7 @@ services:
       - api
 
   grafana:
-    image: grafana/grafana-oss:12.3.0
+    image: grafana/grafana-oss:12.3.3
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_SENHA:?defina GRAFANA_SENHA no arquivo .env}
