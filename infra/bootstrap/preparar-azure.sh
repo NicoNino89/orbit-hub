@@ -12,6 +12,8 @@
 # Uso:  az login  &&  gh auth login  &&  REGIAO=<regiao-permitida> bash infra/bootstrap/preparar-azure.sh
 
 set -euo pipefail
+# No Git Bash (Windows), impede que "/subscriptions/..." vire caminho do Windows.
+export MSYS_NO_PATHCONV=1
 
 REPO="${REPO:-NicoNino89/orbit-hub}"
 REGIAO="${REGIAO:-}"
