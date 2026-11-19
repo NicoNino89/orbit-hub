@@ -1,4 +1,12 @@
 /**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Geometria da dobra de canto
+ * Objetivo: Concentrar o cálculo da virada, separado do React, para ser testado isoladamente.
+ * Decisões: Funções puras, sem DOM; o componente só aplica o resultado.
+ *
  * Geometria da virada de página por dobra de canto (KAN-58).
  *
  * A folha tem a lombada na borda esquerda. O canto inferior direito C é levado até um ponto P;
@@ -29,7 +37,17 @@ export interface Dobra {
 /** Quanto o canto sobe no meio da virada, em fração da altura. Dá a dobra diagonal de revista. */
 const ELEVACAO = 0.35
 
-/** Posição do canto inferior direito no instante t. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Posição do canto no instante t
+ * Objetivo: Calcular para onde o canto inferior direito foi levado no progresso t da virada.
+ * Decisões: O canto anda da direita para a esquerda e sobe até 35% da altura no meio (sin(πt)), o que
+ *           dá a dobra diagonal de revista; é limitado a uma largura do pé da lombada, para a folha
+ *           nunca se soltar dela.
+ */
 export function cantoNoInstante(t: number, largura: number, altura: number): Ponto {
   const x = largura - 2 * largura * t
   const y = altura - altura * ELEVACAO * Math.sin(Math.PI * t)
@@ -40,7 +58,15 @@ export function cantoNoInstante(t: number, largura: number, altura: number): Pon
   return { x: (x * largura) / distancia, y: altura + (dy * largura) / distancia }
 }
 
-/** Recorte de polígono convexo por semiplano (Sutherland–Hodgman); mantém onde lado(p) ≥ 0. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Recorte de polígono por semiplano
+ * Objetivo: Manter a parte do polígono onde lado(p) ≥ 0.
+ * Decisões: Algoritmo de Sutherland–Hodgman, exato para polígonos convexos como a folha retangular.
+ */
 function recortar(poligono: Ponto[], lado: (p: Ponto) => number): Ponto[] {
   const saida: Ponto[] = []
   for (let i = 0; i < poligono.length; i++) {
@@ -57,7 +83,18 @@ function recortar(poligono: Ponto[], lado: (p: Ponto) => number): Ponto[] {
   return saida
 }
 
-/** Calcula a dobra no instante t. Devolve null quando não há dobra (t ≤ 0 ou folha sem tamanho). */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Calcular a dobra
+ * Objetivo: Devolver, para o progresso t, a parte da folha que fica, a aba que dobrou, o reflexo da
+ *           aba e a linha da dobra.
+ * Decisões: A linha da dobra é a mediatriz entre o canto e o ponto para onde ele foi; a aba é o reflexo
+ *           da folha sobre ela, em formato de matriz CSS. Devolve null quando não há dobra (t ≤ 0 ou
+ *           folha sem tamanho).
+ */
 export function calcularDobra(t: number, largura: number, altura: number): Dobra | null {
   if (t <= 0 || largura <= 0 || altura <= 0) return null
   const canto = { x: largura, y: altura }
@@ -88,7 +125,16 @@ export function calcularDobra(t: number, largura: number, altura: number): Dobra
   }
 }
 
-/** Aplica a matriz da dobra a um ponto (útil nos testes e para conferir o reflexo). */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Refletir ponto
+ * Objetivo: Aplicar a matriz da dobra a um ponto.
+ * Decisões: Mesma convenção do CSS matrix(a, b, c, d, e, f), para o teste conferir exatamente o que o
+ *           navegador desenha.
+ */
 export function refletir(matriz: Dobra['matriz'], q: Ponto): Ponto {
   const [a, b, c, d, e, f] = matriz
   return { x: a * q.x + c * q.y + e, y: b * q.x + d * q.y + f }

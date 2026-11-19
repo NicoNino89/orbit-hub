@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:12
+# Cartão Jira: KAN-55
+# Título: Firewall do PostgreSQL para o runner
+# Objetivo: Abrir ou fechar o PostgreSQL compartilhado para o IP do runner do GitHub Actions.
+# Decisões: Uma regra por execução (GITHUB_RUN_ID), apagada no fim; fechar nunca falha, para a limpeza
+#           rodar mesmo depois de um erro.
+#
 # Abre ou fecha o PostgreSQL compartilhado para o IP do runner do GitHub Actions.
 # O Terraform precisa conectar no servidor para criar o banco, o usuário e o schema de cada ambiente.
 # Uso: firewall-runner.sh abrir|fechar

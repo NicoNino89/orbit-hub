@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:12
+# Cartão Jira: KAN-55
+# Título: Preparação da assinatura Azure
+# Objetivo: Deixar a assinatura pronta para o Terraform e o GitHub Actions: provedores, estado remoto, identidade
+#           OIDC, permissões e variáveis do repositório.
+# Decisões: Idempotente; OIDC sem segredo; estado com versionamento e retenção de 14 dias, sem chave de
+#           acesso compartilhada. Correções de 18/11/2026, 22:01 e 22:04: nome da conta sem SIGPIPE e
+#           MSYS_NO_PATHCONV para rodar no Git Bash.
+#
 # Preparação única da assinatura Azure para o Orbit Hub (KAN-55 e KAN-53).
 #
 # O que faz (é seguro rodar de novo; tudo é idempotente):
@@ -66,6 +77,13 @@ fi
 az ad sp show --id "$APP_ID" --output none 2>/dev/null || az ad sp create --id "$APP_ID" --output none
 SP_ID=$(az ad sp show --id "$APP_ID" --query id -o tsv)
 
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:12
+# Cartão Jira: KAN-55
+# Título: Criar credencial federada
+# Objetivo: Criar a credencial OIDC de um sujeito do GitHub (branch, pull request ou ambiente), se ainda não existir.
+# Decisões: Confere pelo nome antes de criar, para o script poder rodar de novo sem erro de duplicidade.
 criar_federacao() {
   local nome="$1" sujeito="$2"
   if ! az ad app federated-credential list --id "$APP_ID" --query "[?name=='$nome']" -o tsv | grep -q .; then

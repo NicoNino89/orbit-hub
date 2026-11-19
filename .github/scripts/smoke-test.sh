@@ -1,9 +1,26 @@
 #!/usr/bin/env bash
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:16
+# Cartão Jira: KAN-53
+# Título: Smoke test da homologação
+# Objetivo: Confirmar, depois de cada publicação, que API, versão, ambiente, Swagger, web e CORS estão no ar.
+# Decisões: Até 30 tentativas a cada 10 s, porque a API escala a zero e pode levar ~2 min para acordar;
+#           confere a versão pelo commit, para não aprovar uma publicação antiga que ficou no ar.
+#
 # Smoke test depois da publicação (KAN-53).
 # A API escala a zero, então a primeira chamada pode levar até ~2 min para acordar o contêiner.
 # Variáveis: API_URL, WEB_URL e VERSAO (commit curto esperado em /api/v1/sobre).
 set -euo pipefail
 
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:16
+# Cartão Jira: KAN-53
+# Título: Tentar até responder
+# Objetivo: Chamar uma URL até o corpo conter o texto esperado, ou desistir com a última resposta.
+# Decisões: curl com timeout de 20 s por tentativa; em falha mostra a última resposta, para o log do
+#           pipeline já trazer a causa.
 tentar() {
   local descricao="$1" url="$2" esperado="$3"
   for i in $(seq 1 30); do

@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# Autor: Nicholas Bruno Pimentel
+# Data: 18/11/2026
+# Hora: 21:12
+# Cartão Jira: KAN-55
+# Título: Ligar e desligar o PostgreSQL
+# Objetivo: Ligar, desligar ou consultar o PostgreSQL compartilhado, para economizar o crédito do Azure for Students.
+# Decisões: Idempotente: só liga se estiver parado e só desliga se estiver pronto; sem servidor, sai sem erro.
+#
 # Liga ou desliga o PostgreSQL compartilhado. Servidor parado não consome computação (só o disco).
 # A Azure religa sozinha um servidor parado há 7 dias; o desligamento agendado volta a parar.
 # Uso: postgres.sh ligar|desligar|estado
