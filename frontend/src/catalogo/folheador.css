@@ -1,0 +1,134 @@
+/* Virada de páginas (KAN-58). Só transform é animado, para a GPU compor sem refazer o layout. */
+
+.folheador {
+  --duracao-virada: 750ms;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.folheador[data-movimento="reduzido"] {
+  --duracao-virada: 0ms;
+}
+
+.folheador-palco {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+}
+
+.folheador-livro {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 560px;
+  perspective: 1800px;
+  /* deslizar na vertical continua rolando a tela; o horizontal fica com o catálogo */
+  touch-action: pan-y;
+  user-select: none;
+  border-radius: 12px;
+}
+
+.folheador-livro:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.folha {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform var(--duracao-virada) cubic-bezier(.3, .1, .2, 1);
+  will-change: transform;
+}
+
+.folha.virada {
+  transform: rotateY(-178deg);
+}
+
+.folha-face {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--paper-ink);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 1px 2px rgba(19, 32, 41, .06), 0 10px 28px rgba(19, 32, 41, .10);
+}
+
+.folheador-seta {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.folheador-seta:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.folheador-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.folheador-contador {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.folheador-pontos {
+  display: flex;
+  gap: 6px;
+}
+
+.folheador-pontos button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+  cursor: pointer;
+  transition: width .2s;
+}
+
+.folheador-pontos button[aria-current="true"] {
+  width: 24px;
+  background: var(--primary);
+}
+
+/* No celular a página fica em pé e as setas saem: navega-se deslizando ou pelos pontos */
+@media (max-width: 640px) {
+  .folheador-palco {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .folheador-seta {
+    display: none;
+  }
+  .folheador-livro {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .folha,
+  .folheador-pontos button {
+    transition: none;
+  }
+}
