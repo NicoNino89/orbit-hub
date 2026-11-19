@@ -15,7 +15,7 @@ export function PocCatalogo() {
       </header>
 
       <p className="max-w-prose text-sm text-muted">
-        Use as setas, o teclado (← →, Home, End), clique nos pontos ou deslize para os lados no celular.
+        Use as setas, o teclado (← →, Home, End), clique nos pontos ou arraste a folha pelo canto, com o mouse ou o dedo.
         Com o movimento reduzido ligado no sistema, as páginas trocam sem animação. Conteúdo fictício.
       </p>
 

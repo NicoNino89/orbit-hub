@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { definirMovimentoReduzido } from '../test/setup'
 import { Folheador } from './Folheador'
 
@@ -81,6 +81,65 @@ describe('Folheador', () => {
     fireEvent.pointerDown(livro, { clientX: 200, clientY: 100 })
     fireEvent.pointerUp(livro, { clientX: 140, clientY: 300 })
     expect(anuncio()).toHaveTextContent('Página 1')
+  })
+
+  describe('arrastando a folha', () => {
+    function montarComTamanho() {
+      const livro = montar()
+      Object.defineProperty(livro, 'clientWidth', { configurable: true, value: 400 })
+      Object.defineProperty(livro, 'clientHeight', { configurable: true, value: 300 })
+      return livro
+    }
+
+    it('vira a página quando a folha passa do ponto sem volta', () => {
+      const livro = montarComTamanho()
+      fireEvent.pointerDown(livro, { clientX: 380, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 300, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 200, clientY: 245 })
+      // durante o arraste a página ainda não mudou
+      expect(anuncio()).toHaveTextContent('Página 1')
+      fireEvent.pointerUp(livro, { clientX: 200, clientY: 245 })
+      expect(anuncio()).toHaveTextContent('Página 2')
+    })
+
+    it('mostra o verso da folha enquanto ela dobra', () => {
+      const livro = montarComTamanho()
+      fireEvent.pointerDown(livro, { clientX: 380, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 250, clientY: 250 })
+      expect(livro.querySelector('.dobra-papel')).not.toBeNull()
+      expect(screen.getByTestId('folha-a').style.clipPath).toMatch(/^polygon\(/)
+    })
+
+    it('devolve a folha ao lugar quando o arraste é curto e lento', () => {
+      const livro = montarComTamanho()
+      const agora = vi.spyOn(performance, 'now').mockReturnValue(0)
+      fireEvent.pointerDown(livro, { clientX: 380, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 340, clientY: 250 })
+      agora.mockReturnValue(1000)
+      fireEvent.pointerUp(livro, { clientX: 340, clientY: 250 })
+      expect(anuncio()).toHaveTextContent('Página 1')
+      agora.mockRestore()
+    })
+
+    it('volta uma página arrastando para a direita', async () => {
+      const usuario = userEvent.setup()
+      const livro = montarComTamanho()
+      await usuario.click(screen.getByRole('button', { name: 'Próxima página' }))
+      fireEvent.pointerDown(livro, { clientX: 20, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 100, clientY: 250 })
+      fireEvent.pointerMove(livro, { clientX: 220, clientY: 250 })
+      fireEvent.pointerUp(livro, { clientX: 220, clientY: 250 })
+      expect(anuncio()).toHaveTextContent('Página 1')
+    })
+
+    it('não segura a folha num arraste vertical', () => {
+      const livro = montarComTamanho()
+      fireEvent.pointerDown(livro, { clientX: 200, clientY: 50 })
+      fireEvent.pointerMove(livro, { clientX: 190, clientY: 200 })
+      expect(livro.querySelector('.dobra-papel')).toBeNull()
+      fireEvent.pointerUp(livro, { clientX: 190, clientY: 200 })
+      expect(anuncio()).toHaveTextContent('Página 1')
+    })
   })
 
   it('pula direto para uma página pelos pontos', async () => {

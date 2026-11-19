@@ -19,16 +19,18 @@ Com quatro critérios reprovados, a biblioteca não foi instalada.
 
 ## 2. Alternativa escolhida: implementação própria
 
-Componente `Folheador` (`frontend/src/catalogo/Folheador.tsx`), sem dependência externa. É o mesmo efeito do kit de interface *Orbit Hub Interface*: cada folha gira em torno da lombada (`rotateY`) com `backface-visibility: hidden`.
+Componente `Folheador` (`frontend/src/catalogo/Folheador.tsx`), sem dependência externa. A virada é uma **dobra de canto**, como numa revista: o canto inferior direito levanta, a dobra atravessa a folha na diagonal, o verso do papel aparece com o brilho da curvatura e a folha projeta sombra na página de baixo. A geometria fica em `dobra.ts`: a linha da dobra é a mediatriz entre o canto e o ponto para onde ele foi levado, e a aba é o reflexo da folha sobre essa linha. A virada dura 1,2 s e, ao arrastar, a folha acompanha o ponteiro.
+
+> A primeira versão desta PoC girava a página inteira em torno da lombada (`rotateY`) em 750 ms. No teste humano de 18/11/2026 foi reprovada: rápida demais e com cara de "quadro descendo sobre outro", não de página virando. Um erro de camadas (`z-index`) ainda escondia a folha atrás da próxima página no começo do giro.
 
 | Critério do cartão | Como foi atendido | Teste automatizado |
-|---|---|---|
+| Mouse | Setas laterais, pontos de página e arrastar a folha, que acompanha o ponteiro. Soltar depois de 30% da virada, ou num movimento rápido, completa a virada; antes disso, a folha volta | `Folheador.test.tsx` |
 | 3 startups fictícias com 3 páginas cada | NovaSafra, Lumen Saúde e Trama Logística. Cada uma tem capa, problema e solução, e rodada e critérios | `PocCatalogo.test.tsx` |
 | Mouse | Setas laterais, pontos de página e arrastar com o mouse | `Folheador.test.tsx` |
 | Teclado | ← →, Page Up/Down, Home e End com o foco no catálogo; o foco fica visível | `Folheador.test.tsx` |
 | Deslizar no celular | Pointer Events com limiar de 48 px. O gesto só vale se for mais horizontal que vertical (`touch-action: pan-y`), então a rolagem da tela continua funcionando | `gesto.test.ts`, `Folheador.test.tsx` |
 | Movimento reduzido | Com `prefers-reduced-motion: reduce`, a duração da virada vai a 0 e a página troca na hora | `Folheador.test.tsx` |
-| Desempenho em celular de entrada | Só `transform` é animado, o que a GPU compõe sem refazer o layout. Só a folha atual e as duas vizinhas ficam visíveis; as outras recebem `hidden` e saem da renderização | `Folheador.test.tsx` (folhas distantes ocultas) |
+| Desempenho em celular de entrada | A animação escreve `transform` e `clip-path` direto no DOM a cada quadro, sem renderizar o React de novo. Só três camadas mudam (folha, verso e sombra) e só a folha atual e as vizinhas ficam visíveis; as outras recebem `hidden` | `Folheador.test.tsx` (folhas distantes ocultas), `dobra.test.ts` |
 | Acessibilidade (extra) | `role="region"` com `aria-roledescription="catálogo"`, anúncio *"Página 2 de 9: …"* em `aria-live` e folhas fora da tela com `inert`, sem foco nem leitura | `Folheador.test.tsx` |
 | Regras da plataforma (extra) | O conteúdo mostra só os critérios da tese que combinaram, nunca percentual, e traz o aviso de que a plataforma não recomenda investimento | `PocCatalogo.test.tsx` |
 
@@ -41,7 +43,7 @@ Componente `Folheador` (`frontend/src/catalogo/Folheador.tsx`), sem dependência
 
 ## 3. Riscos que continuam abertos
 
-- **Celular de entrada real:** a fluidez só se confirma no aparelho. Se travar, a próxima medida é trocar a virada 3D por um deslize 2D (`translateX`) só em telas pequenas, sem mudar o componente.
+- **Celular de entrada real:** a fluidez só se confirma no aparelho. O `clip-path` e a sombra do verso (`drop-shadow`) repintam a cada quadro. Se travar, a primeira medida é tirar a `drop-shadow` em telas pequenas; a segunda é um deslize 2D (`translateX`), sem mudar o componente.
 - **Edições com muitas páginas:** a PoC tem 9. Com dezenas de páginas, o KAN-35 deve carregar o conteúdo sob demanda. A estrutura de folhas vizinhas já está pronta para isso.
 
 ## 4. Roteiro de aprovação (teste humano)

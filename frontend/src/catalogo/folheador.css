@@ -1,14 +1,12 @@
-/* Virada de páginas (KAN-58). Só transform é animado, para a GPU compor sem refazer o layout. */
+/*
+ * Virada de páginas por dobra de canto (KAN-58). A geometria vem de dobra.ts e o Folheador escreve
+ * transform e clip-path a cada quadro. Nada aqui muda o layout durante a virada.
+ */
 
 .folheador {
-  --duracao-virada: 750ms;
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.folheador[data-movimento="reduzido"] {
-  --duracao-virada: 0ms;
 }
 
 .folheador-palco {
@@ -23,11 +21,18 @@
   width: 100%;
   aspect-ratio: 3 / 2;
   max-height: 560px;
-  perspective: 1800px;
+  /* a folha virada sai pela lombada, à esquerda, e some no limite do livro */
+  overflow: hidden;
   /* deslizar na vertical continua rolando a tela; o horizontal fica com o catálogo */
   touch-action: pan-y;
   user-select: none;
+  cursor: grab;
   border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(19, 32, 41, .06), 0 10px 28px rgba(19, 32, 41, .10);
+}
+
+.folheador-livro:active {
+  cursor: grabbing;
 }
 
 .folheador-livro:focus-visible {
@@ -38,14 +43,6 @@
 .folha {
   position: absolute;
   inset: 0;
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  transition: transform var(--duracao-virada) cubic-bezier(.3, .1, .2, 1);
-  will-change: transform;
-}
-
-.folha.virada {
-  transform: rotateY(-178deg);
 }
 
 .folha-face {
@@ -56,9 +53,53 @@
   border: 1px solid var(--line);
   background: var(--paper);
   color: var(--paper-ink);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  box-shadow: 0 1px 2px rgba(19, 32, 41, .06), 0 10px 28px rgba(19, 32, 41, .10);
+}
+
+/* Sombra que a folha levantada projeta na página de baixo, junto à dobra */
+.dobra-sombra {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  transform-origin: 0 0;
+  pointer-events: none;
+  background: linear-gradient(to right,
+    rgba(19, 32, 41, .42) 0,
+    rgba(19, 32, 41, .16) 30%,
+    rgba(19, 32, 41, 0) 100%);
+}
+
+/* Verso da folha que dobrou. O filtro fica no invólucro para a sombra não ser cortada pelo clip-path. */
+.dobra-aba {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dobra-papel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--paper) 94%, var(--paper-ink));
+}
+
+/* Curvatura do papel: escuro rente à dobra, um brilho logo depois e sombra suave na borda */
+.dobra-brilho {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  background: linear-gradient(to right,
+    rgba(19, 32, 41, .28) 0,
+    rgba(19, 32, 41, .08) 3%,
+    rgba(255, 255, 255, .28) 12%,
+    rgba(255, 255, 255, .06) 30%,
+    rgba(19, 32, 41, .06) 60%,
+    rgba(19, 32, 41, .14) 100%);
 }
 
 .folheador-seta {
@@ -127,7 +168,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .folha,
   .folheador-pontos button {
     transition: none;
   }
