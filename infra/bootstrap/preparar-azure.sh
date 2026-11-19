@@ -77,11 +77,23 @@ criar_federacao() {
     }"
   fi
 }
-criar_federacao "main"              "repo:$REPO:ref:refs/heads/main"
-criar_federacao "pull-request"      "repo:$REPO:pull_request"
-criar_federacao "env-compartilhado" "repo:$REPO:environment:compartilhado"
-criar_federacao "env-homologacao"   "repo:$REPO:environment:homologacao"
-criar_federacao "env-producao"      "repo:$REPO:environment:producao"
+# O GitHub pode mandar o sujeito no formato clássico (repo:dono/repo) ou no imutável, com os ids do
+# dono e do repositório (repo:dono@id/repo@id). O prefixo em uso vem da própria API do GitHub; quando
+# ele difere do clássico, as credenciais são criadas nos dois formatos.
+PREFIXO=$(gh api "repos/$REPO/actions/oidc/customization/sub" --jq '.sub_claim_prefix // empty' 2>/dev/null || true)
+PREFIXOS=("repo:$REPO")
+if [[ -n "$PREFIXO" && "$PREFIXO" != "repo:$REPO" ]]; then
+  PREFIXOS+=("$PREFIXO")
+fi
+for i in "${!PREFIXOS[@]}"; do
+  p="${PREFIXOS[$i]}"
+  sufixo=$([[ $i -eq 0 ]] && echo "" || echo "-imutavel")
+  criar_federacao "main$sufixo"              "$p:ref:refs/heads/main"
+  criar_federacao "pull-request$sufixo"      "$p:pull_request"
+  criar_federacao "env-compartilhado$sufixo" "$p:environment:compartilhado"
+  criar_federacao "env-homologacao$sufixo"   "$p:environment:homologacao"
+  criar_federacao "env-producao$sufixo"      "$p:environment:producao"
+done
 
 echo "==> Permissões da identidade"
 ESCOPO="/subscriptions/$ASSINATURA_ID"
