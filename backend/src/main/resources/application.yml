@@ -32,6 +32,15 @@ orbit:
       container: ${ORBIT_BLOB_CONTAINER:arquivos}
       connection-string: ${ORBIT_BLOB_CONNECTION_STRING:}
 
+logging:
+  structured:
+    # JSON no padrão ECS: o Application Insights e qualquer agregador leem os campos sem parser próprio.
+    # Use ORBIT_LOG_FORMATO=logstash ou gelf para outros destinos.
+    format:
+      console: ${ORBIT_LOG_FORMATO:ecs}
+  level:
+    root: INFO
+
 management:
   endpoints:
     web:
@@ -46,6 +55,12 @@ management:
     env:
       enabled: false
   metrics:
+    distribution:
+      # histograma para calcular p95 e p99 do tempo de resposta no Grafana
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 200ms,500ms,1s
     tags:
       application: ${spring.application.name}
       ambiente: ${orbit.ambiente}

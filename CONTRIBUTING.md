@@ -67,3 +67,4 @@ Uma história só está pronta quando:
 - o código foi revisado e aprovado em pull request;
 - a documentação foi atualizada, quando necessário;
 - nenhum segredo ou dado pessoal real foi adicionado ao repositório.
+- os logs novos seguem as regras de [`docs/observabilidade.md`](docs/observabilidade.md): nenhum dado pessoal ou sensível.

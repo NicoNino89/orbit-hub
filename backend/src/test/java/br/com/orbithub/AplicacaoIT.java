@@ -13,6 +13,7 @@ import org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfig
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Sobe a aplicação inteira com PostgreSQL real e confere o que a S0 promete: saúde, métricas e Swagger. */
@@ -52,6 +53,22 @@ class AplicacaoIT {
         mvc.perform(get("/actuator/prometheus"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("jvm_memory_used_bytes")));
+    }
+
+    @Test
+    void metricasDeRequisicaoTemHistogramaParaOPainelDeTempoDeResposta() throws Exception {
+        mvc.perform(get("/api/v1/sobre")).andExpect(status().isOk());
+
+        mvc.perform(get("/actuator/prometheus"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "http_server_requests_seconds_bucket{")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("uri=\"/api/v1/sobre\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("le=\"0.2\"")));
+    }
+
+    @Test
+    void logsSaemEstruturadosEmJson(@Autowired Environment ambiente) {
+        assertThat(ambiente.getProperty("logging.structured.format.console")).isEqualTo("ecs");
     }
 
     @Test
