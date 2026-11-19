@@ -17,7 +17,7 @@ services:
       POSTGRES_USER: ${ORBIT_DB_USUARIO:-orbithub}
       POSTGRES_PASSWORD: ${ORBIT_DB_SENHA:?defina ORBIT_DB_SENHA no arquivo .env}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${ORBIT_DB_PORTA_HOST:-5432}:5432"
     volumes:
       - db-dados:/var/lib/postgresql/data
     healthcheck:
