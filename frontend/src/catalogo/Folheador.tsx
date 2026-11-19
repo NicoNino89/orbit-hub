@@ -143,12 +143,12 @@ export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderiz
     quadro.current = null
   }
 
+  /**
+   * Encerra a virada. O recorte da folha não é tirado aqui: só no efeito de layout, no mesmo commit
+   * em que a folha desce de camada. Tirar antes deixava a tela pintar um quadro com a página antiga
+   * inteira por cima da nova (a piscada no fim da virada).
+   */
   const limpar = useCallback(() => {
-    const v = viradaRef.current
-    if (v) {
-      const folha = folhas.current[v.folha]
-      if (folha) folha.style.clipPath = ''
-    }
     viradaRef.current = null
     setVirada(null)
   }, [])
@@ -201,6 +201,10 @@ export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderiz
   }
 
   useLayoutEffect(() => {
+    // Roda depois que o React já trocou as camadas e antes de a tela ser pintada.
+    folhas.current.forEach((folha, i) => {
+      if (folha && i !== virada?.folha && folha.style.clipPath) folha.style.clipPath = ''
+    })
     if (!virada) return
     pintar(progresso.current)
     const depois = pendente.current
