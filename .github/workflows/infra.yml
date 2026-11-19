@@ -87,16 +87,29 @@ jobs:
         run: |
           if [ "${{ matrix.camada }}" = compartilhado ]; then echo "d=infra/compartilhado" >> "$GITHUB_OUTPUT"; else echo "d=infra/envs/${{ matrix.camada }}" >> "$GITHUB_OUTPUT"; fi
       - name: init
-        run: terraform -chdir=${{ steps.dir.outputs.d }} init -backend-config="resource_group_name=rg-orbithub-tfstate" -backend-config="storage_account_name=${{ vars.TF_ESTADO_CONTA }}" -backend-config="container_name=tfstate"
+        run: terraform -chdir=${{ steps.dir.outputs.d }} init -lock-timeout=5m -backend-config="resource_group_name=rg-orbithub-tfstate" -backend-config="storage_account_name=${{ vars.TF_ESTADO_CONTA }}" -backend-config="container_name=tfstate"
+      # Homologação e produção usam o PostgreSQL da camada compartilhado. Antes da primeira aplicação
+      # dela, o plano desses ambientes não tem como rodar: o job avisa no resumo e segue, sem falhar o PR.
+      - name: Camada compartilhado aplicada?
+        id: base
+        run: |
+          if [ "${{ matrix.camada }}" = compartilhado ] || [ -n "$(az postgres flexible-server list -g rg-orbithub-compartilhado --query '[0].name' -o tsv 2>/dev/null)" ]; then
+            echo "pronta=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pronta=false" >> "$GITHUB_OUTPUT"
+            echo "### Plano: ${{ matrix.camada }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "Pulado: a camada compartilhado ainda não foi aplicada. Rode o workflow Infraestrutura (apply, compartilhado) primeiro." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Abrir o PostgreSQL para este runner
-        if: matrix.camada != 'compartilhado'
+        if: matrix.camada != 'compartilhado' && steps.base.outputs.pronta == 'true'
         run: bash infra/bootstrap/firewall-runner.sh abrir
       - name: plan
+        if: steps.base.outputs.pronta == 'true'
         run: |
           terraform -chdir=${{ steps.dir.outputs.d }} plan -lock-timeout=5m -no-color -out=plano.tfplan | tee plano.txt
           { echo "### Plano: ${{ matrix.camada }}"; echo '```'; grep -E "^(Plan:|No changes|  # )" plano.txt || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Fechar o PostgreSQL para este runner
-        if: always() && matrix.camada != 'compartilhado'
+        if: always() && matrix.camada != 'compartilhado' && steps.base.outputs.pronta == 'true'
         run: bash infra/bootstrap/firewall-runner.sh fechar
 
   manual:
@@ -119,7 +132,7 @@ jobs:
         run: |
           if [ "${{ inputs.camada }}" = compartilhado ]; then echo "d=infra/compartilhado" >> "$GITHUB_OUTPUT"; else echo "d=infra/envs/${{ inputs.camada }}" >> "$GITHUB_OUTPUT"; fi
       - name: init
-        run: terraform -chdir=${{ steps.dir.outputs.d }} init -backend-config="resource_group_name=rg-orbithub-tfstate" -backend-config="storage_account_name=${{ vars.TF_ESTADO_CONTA }}" -backend-config="container_name=tfstate"
+        run: terraform -chdir=${{ steps.dir.outputs.d }} init -lock-timeout=5m -backend-config="resource_group_name=rg-orbithub-tfstate" -backend-config="storage_account_name=${{ vars.TF_ESTADO_CONTA }}" -backend-config="container_name=tfstate"
       - name: Ligar o PostgreSQL, se estiver parado
         if: inputs.camada != 'compartilhado'
         run: bash infra/bootstrap/postgres.sh ligar
