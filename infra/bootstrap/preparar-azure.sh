@@ -41,7 +41,8 @@ echo "==> Estado remoto do Terraform"
 az group create --name "$GRUPO_ESTADO" --location "$REGIAO" --tags projeto=orbit-hub gerencia=bootstrap --output none
 CONTA_ESTADO=$(az storage account list -g "$GRUPO_ESTADO" --query "[0].name" -o tsv)
 if [[ -z "$CONTA_ESTADO" ]]; then
-  CONTA_ESTADO="sttforbithub$(tr -dc 'a-z0-9' </dev/urandom | head -c 6)"
+  # od lê só 3 bytes; "tr </dev/urandom | head" morre com SIGPIPE e, com pipefail, encerra o script.
+  CONTA_ESTADO="sttforbithub$(od -An -N3 -tx1 /dev/urandom | tr -d ' \n')"
   az storage account create --name "$CONTA_ESTADO" --resource-group "$GRUPO_ESTADO" --location "$REGIAO" \
     --sku Standard_LRS --kind StorageV2 --min-tls-version TLS1_2 --allow-blob-public-access false \
     --allow-shared-key-access false --output none
