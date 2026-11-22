@@ -39,7 +39,7 @@ TENANT_ID=$(az account show --query tenantId -o tsv)
 echo "==> Regiões permitidas pela política da assinatura"
 az policy assignment list --query "[?parameters.listOfAllowedLocations].parameters.listOfAllowedLocations.value" -o tsv | tr '\t' '\n' | sort -u || true
 if [[ -z "$REGIAO" ]]; then
-  echo "Defina REGIAO com uma das regiões acima e rode de novo. Exemplo: REGIAO=eastus bash $0"
+  echo "Defina REGIAO com uma das regiões acima e rode de novo. Exemplo: REGIAO=canadacentral bash $0"
   exit 1
 fi
 

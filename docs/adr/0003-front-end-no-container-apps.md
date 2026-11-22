@@ -6,13 +6,13 @@
 
 ## Contexto
 
-A arquitetura previa o front-end no **Azure Static Web Apps** (plano Free). A política da assinatura Azure for Students só permite criar recursos em `canadacentral`, `chilecentral`, `eastus`, `mexicocentral` e `southcentralus`, e o Static Web Apps não é oferecido em nenhuma delas. O resto da infraestrutura está em `eastus`.
+A arquitetura previa o front-end no **Azure Static Web Apps** (plano Free). A política da assinatura Azure for Students só permite criar recursos em `canadacentral`, `chilecentral`, `eastus`, `mexicocentral` e `southcentralus`, e o Static Web Apps não é oferecido em nenhuma delas. A aplicação fica em `canadacentral` (ADR 0004).
 
 As alternativas eram pedir ao professor uma exceção na política ou publicar o front-end de outro jeito dentro das regiões permitidas.
 
 ## Decisão
 
-Publicar o front-end como um segundo app no **mesmo ambiente do Azure Container Apps** da API, em `eastus`, usando a imagem `orbit-hub-web` que o CI já gera para o Docker Compose (nginx sem root).
+Publicar o front-end como um segundo app no **mesmo ambiente do Azure Container Apps** da API, na mesma região, usando a imagem `orbit-hub-web` que o CI já gera para o Docker Compose (nginx sem root).
 
 - O nginx repassa `/api` para a API do ambiente (variável `ORBIT_API_UPSTREAM`), então o navegador fala com uma origem só. O CORS da API continua liberando o endereço da web.
 - A imagem é a mesma em todos os ambientes; o pipeline de entrega só troca a tag pelo commit, sem refazer o build do front-end.
