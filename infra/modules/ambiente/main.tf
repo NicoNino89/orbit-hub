@@ -31,6 +31,14 @@ resource "azurerm_user_assigned_identity" "api" {
   tags                = local.tags
 }
 
+# Identidade da web: só lê o token do GHCR para baixar a imagem.
+resource "azurerm_user_assigned_identity" "web" {
+  name                = "id-${local.nome}-web"
+  location            = azurerm_resource_group.ambiente.location
+  resource_group_name = azurerm_resource_group.ambiente.name
+  tags                = local.tags
+}
+
 # ---------- Key Vault ----------
 
 resource "azurerm_key_vault" "ambiente" {
@@ -55,6 +63,13 @@ resource "azurerm_role_assignment" "kv_leitura_api" {
   scope                = azurerm_key_vault.ambiente.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_user_assigned_identity.api.principal_id
+}
+
+# A web enxerga só o segredo do GHCR, não o cofre inteiro
+resource "azurerm_role_assignment" "kv_leitura_web" {
+  scope                = azurerm_key_vault_secret.ghcr_token.resource_versionless_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.web.principal_id
 }
 
 resource "azurerm_key_vault_secret" "db_senha" {

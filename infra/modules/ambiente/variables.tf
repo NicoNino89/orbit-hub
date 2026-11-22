@@ -18,11 +18,6 @@ variable "regiao" {
   type        = string
 }
 
-variable "regiao_web" {
-  description = "Região do Static Web Apps, que só existe em algumas regiões (por exemplo eastus2, centralus, westus2, westeurope, eastasia)."
-  type        = string
-}
-
 variable "log_analytics_id" {
   description = "Workspace de logs compartilhado."
   type        = string
@@ -42,6 +37,12 @@ variable "imagem_api" {
   description = "Imagem da API no GHCR, com tag. O pipeline de entrega troca a tag a cada versão."
   type        = string
   default     = "ghcr.io/niconino89/orbit-hub-api:main"
+}
+
+variable "imagem_web" {
+  description = "Imagem do front-end no GHCR, com tag. O pipeline de entrega troca a tag a cada versão."
+  type        = string
+  default     = "ghcr.io/niconino89/orbit-hub-web:main"
 }
 
 variable "ghcr_usuario" {
@@ -77,6 +78,16 @@ variable "memoria" {
   default = "1Gi"
 }
 
+variable "cpu_web" {
+  type    = number
+  default = 0.25
+}
+
+variable "memoria_web" {
+  type    = string
+  default = "0.5Gi"
+}
+
 variable "email_alertas" {
   description = "E-mail que recebe os alertas do Azure Monitor. Vem do segredo ALERTAS_EMAIL do GitHub."
   type        = string
@@ -96,7 +107,7 @@ variable "cota_diaria_app_insights_gb" {
 }
 
 variable "dominios_extras_cors" {
-  description = "Outras origens que podem chamar a API, além do Static Web Apps do ambiente."
+  description = "Outras origens que podem chamar a API, além da web do ambiente."
   type        = list(string)
   default     = []
 }

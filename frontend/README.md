@@ -19,8 +19,12 @@ As cores, fontes e raios do kit de interface ficam em [`src/styles/tokens.css`](
 
 ## Publicação
 
-- **Docker Compose:** `nginx.conf` serve o build e repassa `/api` para o container da API.
-- **Azure Static Web Apps:** `public/staticwebapp.config.json` define o fallback da SPA e os cabeçalhos de segurança. O endereço da API entra no build pela variável `VITE_API_URL`.
+A mesma imagem roda no Docker Compose e na Azure (Container Apps). O `nginx.conf.template` serve o build, faz o fallback da SPA, aplica os cabeçalhos de segurança e repassa `/api` para o endereço em `ORBIT_API_UPSTREAM`:
+
+- **Docker Compose:** `http://api:8080` (o padrão da imagem).
+- **Azure:** o endereço HTTPS da API do ambiente, definido pelo Terraform.
+
+Assim o navegador fala com uma origem só e a imagem não precisa ser refeita para cada ambiente.
 
 ## Áreas previstas
 

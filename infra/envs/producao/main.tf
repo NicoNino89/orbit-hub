@@ -55,7 +55,6 @@ module "ambiente" {
   ambiente               = "producao"
   sigla                  = "prd"
   regiao                 = local.compartilhado.regiao
-  regiao_web             = var.regiao_web
   log_analytics_id       = local.compartilhado.log_analytics_id
   postgres_servidor_id   = local.compartilhado.postgres_servidor_id
   postgres_host          = local.compartilhado.postgres_host

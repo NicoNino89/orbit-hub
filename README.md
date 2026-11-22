@@ -32,7 +32,7 @@ Arquitetura **cliente-servidor**, com API REST. O back-end é um **monólito mod
 ┌──────────────────────────┐      REST/JSON      ┌──────────────────────────────┐
 │  Front-end (SPA)         │ ──────────────────▶ │  Back-end (API REST)         │
 │  React + TypeScript      │                     │  Java 21 + Spring Boot 4     │
-│  Azure Static Web Apps   │ ◀────────────────── │  Azure Container Apps        │
+│  Azure Container Apps    │ ◀────────────────── │  Azure Container Apps        │
 └──────────────────────────┘                     └──────────────┬───────────────┘
                                                                 │
                                          ┌──────────────────────┴──────────────┐

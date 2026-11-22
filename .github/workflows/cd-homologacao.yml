@@ -25,7 +25,7 @@ concurrency:
 env:
   GRUPO: rg-orbithub-hml
   API: ca-orbithub-hml-api
-  WEB: swa-orbithub-hml
+  WEB: ca-orbithub-hml-web
 
 jobs:
   publicar:
@@ -60,7 +60,7 @@ jobs:
         id: enderecos
         run: |
           echo "api=https://$(az containerapp show -g "$GRUPO" -n "$API" --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_OUTPUT"
-          echo "web=https://$(az staticwebapp show -g "$GRUPO" -n "$WEB" --query defaultHostname -o tsv)" >> "$GITHUB_OUTPUT"
+          echo "web=https://$(az containerapp show -g "$GRUPO" -n "$WEB" --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_OUTPUT"
 
       - name: Ligar o PostgreSQL, se estiver parado
         run: bash infra/bootstrap/postgres.sh ligar
@@ -75,35 +75,13 @@ jobs:
             --output none
 
       # ---------- Web ----------
-      - uses: actions/setup-node@v7
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build da web apontando para a API de homologação
-        working-directory: frontend
-        env:
-          VITE_API_URL: ${{ steps.enderecos.outputs.api }}
+      # A mesma imagem publicada pelo CI; o nginx dela repassa /api para a API do ambiente.
+      - name: Publicar a web (Container Apps)
         run: |
-          npm ci --no-audit --no-fund
-          npm run build
-
-      - name: Token de publicação do Static Web Apps
-        id: swa
-        run: |
-          token=$(az staticwebapp secrets list -g "$GRUPO" -n "$WEB" --query properties.apiKey -o tsv)
-          echo "::add-mask::$token"
-          echo "token=$token" >> "$GITHUB_OUTPUT"
-
-      - name: Publicar a web (Static Web Apps)
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ steps.swa.outputs.token }}
-          action: upload
-          app_location: frontend/dist
-          skip_app_build: true
-          skip_api_build: true
+          az containerapp update -g "$GRUPO" -n "$WEB" \
+            --image "ghcr.io/niconino89/orbit-hub-web:${{ steps.versao.outputs.curto }}" \
+            --revision-suffix "v${{ steps.versao.outputs.curto }}" \
+            --output none
 
       # ---------- Smoke test ----------
       - name: Smoke test

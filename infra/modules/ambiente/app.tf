@@ -1,4 +1,5 @@
-# API no Azure Container Apps (plano de consumo, escala a zero) e front-end no Static Web Apps (Free).
+# API e front-end no Azure Container Apps (plano de consumo, escala a zero), no mesmo ambiente e na mesma região.
+# O Static Web Apps não existe nas regiões que a política da assinatura permite (ADR 0003).
 
 resource "azurerm_container_app_environment" "ambiente" {
   name                       = "cae-${local.nome}"
@@ -100,7 +101,7 @@ resource "azurerm_container_app" "api" {
       }
       env {
         name  = "ORBIT_CORS_ORIGENS"
-        value = join(",", concat(["https://${azurerm_static_web_app.web.default_host_name}"], var.dominios_extras_cors))
+        value = join(",", concat([local.web_url], var.dominios_extras_cors))
       }
       env {
         name        = "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -154,11 +155,92 @@ resource "azurerm_container_app" "api" {
   ]
 }
 
-resource "azurerm_static_web_app" "web" {
-  name                = "swa-${local.nome}"
-  location            = var.regiao_web
-  resource_group_name = azurerm_resource_group.ambiente.name
-  sku_tier            = "Free"
-  sku_size            = "Free"
-  tags                = local.tags
+locals {
+  # Endereço da web montado a partir do domínio do ambiente, para a API conhecer a origem do CORS
+  # sem depender do recurso da web (que, por sua vez, depende do endereço da API).
+  web_nome = "ca-${local.nome}-web"
+  web_url  = "https://${local.web_nome}.${azurerm_container_app_environment.ambiente.default_domain}"
+}
+
+# Front-end: nginx sem root servindo o build do Vite. Repassa /api para a API, então o navegador
+# fala com uma origem só. A imagem é a mesma do Docker Compose e a mesma em homologação e produção.
+resource "azurerm_container_app" "web" {
+  name                         = local.web_nome
+  container_app_environment_id = azurerm_container_app_environment.ambiente.id
+  resource_group_name          = azurerm_resource_group.ambiente.name
+  revision_mode                = "Single"
+  tags                         = local.tags
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.web.id]
+  }
+
+  secret {
+    name                = "ghcr-token"
+    key_vault_secret_id = azurerm_key_vault_secret.ghcr_token.versionless_id
+    identity            = azurerm_user_assigned_identity.web.id
+  }
+
+  registry {
+    server               = "ghcr.io"
+    username             = var.ghcr_usuario
+    password_secret_name = "ghcr-token"
+  }
+
+  ingress {
+    external_enabled = true
+    target_port      = 8080
+    transport        = "auto"
+
+    traffic_weight {
+      latest_revision = true
+      percentage      = 100
+    }
+  }
+
+  template {
+    min_replicas = var.replicas_minimas
+    max_replicas = var.replicas_maximas
+
+    container {
+      name   = "web"
+      image  = var.imagem_web
+      cpu    = var.cpu_web
+      memory = var.memoria_web
+
+      env {
+        name  = "ORBIT_API_UPSTREAM"
+        value = "https://${azurerm_container_app.api.ingress[0].fqdn}"
+      }
+
+      liveness_probe {
+        transport               = "HTTP"
+        port                    = 8080
+        path                    = "/"
+        interval_seconds        = 30
+        failure_count_threshold = 3
+      }
+
+      readiness_probe {
+        transport               = "HTTP"
+        port                    = 8080
+        path                    = "/"
+        interval_seconds        = 10
+        failure_count_threshold = 3
+      }
+    }
+
+    http_scale_rule {
+      name                = "requisicoes"
+      concurrent_requests = "100"
+    }
+  }
+
+  lifecycle {
+    # A imagem é trocada pelo pipeline de entrega (KAN-53) a cada versão
+    ignore_changes = [template[0].container[0].image]
+  }
+
+  depends_on = [azurerm_role_assignment.kv_leitura_web]
 }

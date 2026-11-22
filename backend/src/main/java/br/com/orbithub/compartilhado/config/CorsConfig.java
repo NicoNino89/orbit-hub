@@ -12,8 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Hora: 21:16
  * Cartão Jira: KAN-53
  * Título: Política de CORS da API
- * Objetivo: Permitir que o front-end, em outro domínio na Azure (Static Web Apps), chame a API
- *           (Container Apps) pelo navegador.
+ * Objetivo: Permitir que a web do ambiente e as origens extras configuradas chamem a API
+ *           diretamente pelo navegador (a web normalmente usa o repasse /api do próprio nginx).
  * Decisões: Só as origens de {@code orbit.cors.origens} são aceitas; nada de curinga "*", porque a
  *           API usa credenciais (cookie de refresh).
  */

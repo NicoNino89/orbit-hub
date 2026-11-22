@@ -23,7 +23,7 @@ function assinarHash(aoMudar: () => void) {
  * Cartão Jira: KAN-58
  * Título: Rotas da S0
  * Objetivo: Exibir a página inicial ou a prova de conceito do catálogo, conforme o endereço.
- * Decisões: Rotas por hash, para funcionar igual no Static Web Apps e no nginx sem regra de reescrita.
+ * Decisões: Rotas por hash, para funcionar em qualquer servidor estático sem regra de reescrita.
  *           O roteador definitivo entra junto com as primeiras telas do produto (S1).
  */
 export default function App() {

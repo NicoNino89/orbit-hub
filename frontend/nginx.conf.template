@@ -1,0 +1,33 @@
+# Configuração do nginx do front-end, usada no Docker Compose e na Azure (Container Apps).
+# A imagem oficial passa este modelo pelo envsubst ao iniciar: só ${ORBIT_API_UPSTREAM} é trocado,
+# as variáveis do próprio nginx ($uri, $host...) ficam intactas.
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # /api vai para a API: no Compose é o container "api"; na Azure é o endereço HTTPS da API no Container Apps.
+    # O Host enviado é o da API, porque a entrada do Container Apps escolhe o app pelo Host e pelo SNI.
+    location /api/ {
+        proxy_pass ${ORBIT_API_UPSTREAM};
+        proxy_set_header Host $proxy_host;
+        proxy_ssl_server_name on;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # SPA: rotas desconhecidas voltam para o index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

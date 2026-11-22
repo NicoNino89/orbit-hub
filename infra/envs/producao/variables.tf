@@ -9,12 +9,6 @@ variable "estado_conta" {
   type        = string
 }
 
-variable "regiao_web" {
-  description = "Região do Static Web Apps."
-  type        = string
-  default     = "eastus2"
-}
-
 variable "ghcr_token" {
   type      = string
   sensitive = true

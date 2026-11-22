@@ -20,8 +20,8 @@ infra/
 | Log Analytics | compartilhado | Retenção de 30 dias, teto diário de 0,2 GB |
 | PostgreSQL Flexible Server | compartilhado | **Um** servidor B1ms (PostgreSQL 17), 32 GB, desligado toda noite pelo workflow *PostgreSQL ligar e desligar* |
 | Banco, usuário e schema | ambiente | `orbithub_hml` e `orbithub_prd`, cada um com usuário próprio que não acessa o outro banco |
-| Container Apps | ambiente | Plano de consumo, de 0 a 1 réplica, 0,5 vCPU e 1 GiB |
-| Static Web Apps | ambiente | Plano Free |
+| Container Apps (API) | ambiente | Plano de consumo, de 0 a 1 réplica, 0,5 vCPU e 1 GiB |
+| Container Apps (web) | ambiente | Mesmo ambiente da API, de 0 a 1 réplica, 0,25 vCPU e 0,5 GiB ([ADR 0003](../docs/adr/0003-front-end-no-container-apps.md)) |
 | Blob Storage | ambiente | LRS, sem chave de acesso (só identidade gerenciada) e lixeira de 7 dias |
 | Key Vault | ambiente | Standard, autorização por RBAC. Guarda a senha do banco, a connection string do Application Insights e o token de leitura do GHCR |
 | Application Insights | ambiente | Baseado no workspace, teto diário de 0,1 GB, amostragem de 50% no agente |

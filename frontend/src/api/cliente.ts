@@ -1,6 +1,7 @@
 /**
- * Endereço da API. Em desenvolvimento fica vazio e o Vite repassa /api para o back-end local.
- * Em homologação e produção vem de VITE_API_URL, definido no build.
+ * Endereço da API. Fica vazio em todos os ambientes: no desenvolvimento o Vite repassa /api para o
+ * back-end local, e no Docker Compose e na Azure quem repassa é o nginx da imagem da web.
+ * VITE_API_URL só é usado para apontar o build para outra API.
  */
 export const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
