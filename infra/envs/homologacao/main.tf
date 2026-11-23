@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 5.14"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.14"
+    }
     postgresql = {
       source  = "cyrilgdn/postgresql"
       version = "~> 1.27"
@@ -47,6 +51,13 @@ provider "postgresql" {
   password  = local.compartilhado.postgres_admin_senha
   sslmode   = "require"
   superuser = false
+}
+
+# O ambiente do Container Apps de homologação foi criado pelo azurerm e convertido para o modo
+# WorkloadProfiles à mão em 22/11/2026 (ADR 0005); aqui ele passa a ser do azapi sem ser recriado.
+import {
+  to = module.ambiente.azapi_resource.ambiente
+  id = "/subscriptions/${var.assinatura_id}/resourceGroups/rg-orbithub-hml/providers/Microsoft.App/managedEnvironments/cae-orbithub-hml"
 }
 
 module "ambiente" {

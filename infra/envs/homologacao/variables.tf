@@ -9,6 +9,11 @@ variable "estado_conta" {
   type        = string
 }
 
+variable "assinatura_id" {
+  description = "Assinatura da Azure. Vem de ARM_SUBSCRIPTION_ID no pipeline (TF_VAR_assinatura_id)."
+  type        = string
+}
+
 variable "ghcr_token" {
   type      = string
   sensitive = true
