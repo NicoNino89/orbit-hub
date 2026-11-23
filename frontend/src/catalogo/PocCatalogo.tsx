@@ -2,7 +2,16 @@ import { PAGINAS } from './dados-ficticios'
 import { Folheador } from './Folheador'
 import { PaginaStartup } from './PaginaStartup'
 
-/** Tela da prova de conceito KAN-58: três startups fictícias, três páginas cada. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 22:21
+ * Cartão Jira: KAN-58
+ * Título: Tela da prova de conceito do catálogo
+ * Objetivo: Exibir o folheador com três startups fictícias, três páginas cada, e as instruções de uso.
+ * Decisões: Conteúdo fictício, declarado na tela; o texto de ajuda cita o arraste pelo canto, introduzido na
+ *           segunda versão da virada.
+ */
 export function PocCatalogo() {
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8">

@@ -32,7 +32,7 @@ Arquitetura **cliente-servidor**, com API REST. O back-end é um **monólito mod
 ┌──────────────────────────┐      REST/JSON      ┌──────────────────────────────┐
 │  Front-end (SPA)         │ ──────────────────▶ │  Back-end (API REST)         │
 │  React + TypeScript      │                     │  Java 21 + Spring Boot 4     │
-│  Azure Static Web Apps   │ ◀────────────────── │  Azure Container Apps        │
+│  Azure Container Apps    │ ◀────────────────── │  Azure Container Apps        │
 └──────────────────────────┘                     └──────────────┬───────────────┘
                                                                 │
                                          ┌──────────────────────┴──────────────┐
@@ -122,6 +122,15 @@ npm run dev
 cd backend && ./mvnw verify       # unidade, integração (Testcontainers) e portão de cobertura JaCoCo
 cd frontend && npm run lint && npm run typecheck && npm test
 ```
+
+## Ambientes na Azure
+
+| Ambiente | Como é publicado | Dados |
+|---|---|---|
+| **Homologação** | Automaticamente, a cada merge na `main`, depois do CI verde (workflow *Entrega em homologação*). Termina com um smoke test | Só fictícios |
+| **Produção** | A partir do marco M1 (S2) | Reais |
+
+Os endereços aparecem no resumo de cada execução do workflow e na aba *Environments* do GitHub. A API de homologação escala a zero: a primeira chamada depois de um tempo parada leva cerca de 1 minuto. A infraestrutura está em [`infra/README.md`](infra/README.md).
 
 ## Como contribuir
 

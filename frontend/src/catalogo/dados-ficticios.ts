@@ -1,4 +1,13 @@
 /**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Dados fictícios da prova de conceito
+ * Objetivo: Fornecer as startups e páginas usadas no teste do catálogo.
+ * Decisões: Instrumentos de rodada reais do mercado brasileiro (mútuo conversível, LC 155/2016,
+ *           LC 182/2021), para o conteúdo ser verossímil.
+ *
  * Startups fictícias da prova de conceito (KAN-58). Nenhum dado é real.
  *
  * Regras de domínio respeitadas no conteúdo:
@@ -82,7 +91,15 @@ const TITULOS: Record<TipoPagina, string> = {
   rodada: 'Rodada e critérios',
 }
 
-/** Três páginas por startup, na ordem de leitura do catálogo. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Páginas do catálogo
+ * Objetivo: Gerar as três páginas de cada startup, na ordem de leitura.
+ * Decisões: Derivadas das startups, para uma startup nova trazer as suas páginas sem cadastro manual.
+ */
 export const PAGINAS: Pagina[] = STARTUPS.flatMap((s) =>
   (['capa', 'negocio', 'rodada'] as const).map((tipo) => ({
     id: `${s.slug}-${tipo}`,
@@ -92,6 +109,15 @@ export const PAGINAS: Pagina[] = STARTUPS.flatMap((s) =>
   })),
 )
 
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Buscar startup pelo slug
+ * Objetivo: Encontrar a startup fictícia de uma página.
+ * Decisões: Falha com mensagem clara se o slug não existir, em vez de renderizar uma página vazia.
+ */
 export function startupPorSlug(slug: string): StartupFicticia {
   const s = STARTUPS.find((x) => x.slug === slug)
   if (!s) throw new Error(`Startup fictícia não encontrada: ${slug}`)

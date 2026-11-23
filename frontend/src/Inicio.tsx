@@ -7,12 +7,27 @@ type EstadoApi =
   | { tipo: 'erro'; mensagem: string }
 
 /**
- * Página inicial da S0: mostra que o front-end está no ar e se ele enxerga a API.
- * As telas do produto chegam a partir da S1.
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Página inicial da S0
+ * Objetivo: Mostrar que o front-end está no ar e se ele enxerga a API, com versão e ambiente.
+ * Decisões: Consulta a API ao montar e cancela a chamada ao desmontar (AbortController); as telas do produto
+ *           chegam a partir da S1.
  */
 export function Inicio() {
   const [api, setApi] = useState<EstadoApi>({ tipo: 'carregando' })
 
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 18/11/2026
+   * Hora: 21:02
+   * Cartão Jira: KAN-58
+   * Título: Consultar a API ao abrir a página
+   * Objetivo: Buscar versão e ambiente da API e guardar o resultado ou o erro.
+   * Decisões: Erro de uma chamada já cancelada é ignorado, para não piscar "indisponível" ao sair da tela.
+   */
   useEffect(() => {
     const controle = new AbortController()
     buscarSobre(controle.signal)
@@ -53,6 +68,15 @@ export function Inicio() {
   )
 }
 
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Status da API
+ * Objetivo: Exibir o estado da consulta à API: carregando, no ar (versão e ambiente) ou indisponível.
+ * Decisões: role="status" no carregamento e role="alert" no erro, para o leitor de tela anunciar a mudança.
+ */
 function StatusApi({ estado }: { estado: EstadoApi }) {
   if (estado.tipo === 'carregando') {
     return <p role="status" className="text-muted">Consultando a API…</p>

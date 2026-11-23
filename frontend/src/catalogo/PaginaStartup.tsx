@@ -1,6 +1,16 @@
 import { startupPorSlug, type Pagina } from './dados-ficticios'
 
-/** Conteúdo de uma página do catálogo. Layout editorial do kit: Newsreader nos títulos, mono nos números. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Página de startup do catálogo
+ * Objetivo: Montar o conteúdo de uma página: capa, problema e solução, ou rodada e critérios.
+ * Decisões: Layout editorial do kit de interface (Newsreader nos títulos, mono nos números); mostra só os
+ *           critérios da tese que combinaram, nunca percentual, e o aviso de que a plataforma não recomenda
+ *           investimento.
+ */
 export function PaginaStartup({ pagina }: { pagina: Pagina }) {
   const s = startupPorSlug(pagina.startup)
 
@@ -62,6 +72,15 @@ export function PaginaStartup({ pagina }: { pagina: Pagina }) {
   )
 }
 
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 21:02
+ * Cartão Jira: KAN-58
+ * Título: Bloco rotulado
+ * Objetivo: Exibir um rótulo pequeno em caixa alta acima de um conteúdo.
+ * Decisões: Componente local, sem exportar: só a página de startup usa esse padrão por enquanto.
+ */
 function Bloco({ rotulo, children }: { rotulo: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1 text-sm">

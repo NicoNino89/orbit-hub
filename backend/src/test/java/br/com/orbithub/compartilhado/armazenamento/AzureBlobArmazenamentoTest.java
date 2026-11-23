@@ -14,19 +14,46 @@ import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/** Falhas do Azure viram as exceções do próprio módulo, sem vazar tipos do SDK para quem chama. */
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 18/11/2026
+ * Hora: 20:58
+ * Cartão Jira: KAN-52
+ * Título: Teste dos caminhos de erro do adapter de Blob
+ * Objetivo: Verificar que falhas do Azure viram as exceções do próprio módulo, sem vazar tipos do SDK
+ *           para quem chama.
+ * Decisões: Dublês do Mockito, porque o Azurite não simula falhas de autorização nem erros internos.
+ */
 class AzureBlobArmazenamentoTest {
 
     private final BlobContainerClient container = mock(BlobContainerClient.class);
     private final BlobClient blob = mock(BlobClient.class);
     private AzureBlobArmazenamento armazenamento;
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 18/11/2026
+     * Hora: 20:58
+     * Cartão Jira: KAN-52
+     * Título: Adapter com container simulado
+     * Objetivo: Criar o adapter sobre um container que devolve sempre o mesmo blob simulado.
+     * Decisões: Qualquer chave devolve o mesmo dublê, para cada teste programar só a falha que interessa.
+     */
     @BeforeEach
     void criar() {
         when(container.getBlobClient(anyString())).thenReturn(blob);
         armazenamento = new AzureBlobArmazenamento(container);
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 18/11/2026
+     * Hora: 20:58
+     * Cartão Jira: KAN-52
+     * Título: Falha ao gravar
+     * Objetivo: Garantir que erro no upload vire {@link ArmazenamentoException} com a chave na mensagem.
+     * Decisões: Erro interno genérico (INTERNAL_ERROR), o caso mais comum de instabilidade.
+     */
     @Test
     void falhaAoGravar() {
         BlobStorageException falha = erro(BlobErrorCode.INTERNAL_ERROR);
@@ -37,6 +64,15 @@ class AzureBlobArmazenamentoTest {
                 .hasMessageContaining("gravar a.txt");
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 18/11/2026
+     * Hora: 20:58
+     * Cartão Jira: KAN-52
+     * Título: Falha de leitura que não é arquivo ausente
+     * Objetivo: Garantir que só BLOB_NOT_FOUND vire "arquivo não encontrado".
+     * Decisões: Falha de autorização não pode responder 404, senão esconderia um problema de permissão.
+     */
     @Test
     void falhaAoLerQueNaoEhArquivoInexistente() {
         BlobStorageException falha = erro(BlobErrorCode.AUTHORIZATION_FAILURE);
@@ -47,6 +83,15 @@ class AzureBlobArmazenamentoTest {
                 .isNotInstanceOf(ArquivoNaoEncontradoException.class);
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 18/11/2026
+     * Hora: 20:58
+     * Cartão Jira: KAN-52
+     * Título: Falha ao remover
+     * Objetivo: Garantir que erro na remoção vire {@link ArmazenamentoException} com a chave na mensagem.
+     * Decisões: Mesmo padrão de mensagem da gravação, para facilitar a busca no log.
+     */
     @Test
     void falhaAoRemover() {
         BlobStorageException falha = erro(BlobErrorCode.INTERNAL_ERROR);
@@ -57,6 +102,15 @@ class AzureBlobArmazenamentoTest {
                 .hasMessageContaining("remover a.txt");
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 18/11/2026
+     * Hora: 20:58
+     * Cartão Jira: KAN-52
+     * Título: Erro simulado do Blob Storage
+     * Objetivo: Criar uma {@link BlobStorageException} com o código de erro desejado.
+     * Decisões: A exceção do SDK não tem construtor público simples; o dublê evita montar uma resposta HTTP.
+     */
     private static BlobStorageException erro(BlobErrorCode codigo) {
         BlobStorageException e = mock(BlobStorageException.class);
         when(e.getErrorCode()).thenReturn(codigo);

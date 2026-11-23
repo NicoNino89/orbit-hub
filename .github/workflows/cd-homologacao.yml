@@ -1,0 +1,102 @@
+# Entrega contínua em homologação (KAN-53).
+# Depois que o CI da main termina verde (e publica as imagens no GHCR), publica a API e a web em homologação
+# e roda o smoke test. O Flyway aplica as migrações quando a API sobe.
+name: Entrega em homologação
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit a publicar (vazio = último da main)
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: entrega-homologacao
+  cancel-in-progress: false
+
+env:
+  GRUPO: rg-orbithub-hml
+  API: ca-orbithub-hml-api
+  WEB: ca-orbithub-hml-web
+
+jobs:
+  publicar:
+    name: Publicar em homologação
+    if: >-
+      vars.AZURE_CLIENT_ID != '' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'))
+    runs-on: ubuntu-latest
+    environment:
+      name: homologacao
+      url: ${{ steps.enderecos.outputs.web }}
+    steps:
+      - name: Commit publicado
+        id: versao
+        run: |
+          sha="${{ inputs.commit || github.event.workflow_run.head_sha || github.sha }}"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "curto=${sha:0:7}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.versao.outputs.sha }}
+
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Endereços do ambiente
+        id: enderecos
+        run: |
+          echo "api=https://$(az containerapp show -g "$GRUPO" -n "$API" --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_OUTPUT"
+          echo "web=https://$(az containerapp show -g "$GRUPO" -n "$WEB" --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_OUTPUT"
+
+      - name: Ligar o PostgreSQL, se estiver parado
+        run: bash infra/bootstrap/postgres.sh ligar
+
+      # ---------- API ----------
+      - name: Publicar a API (Container Apps)
+        run: |
+          az containerapp update -g "$GRUPO" -n "$API" \
+            --image "ghcr.io/niconino89/orbit-hub-api:${{ steps.versao.outputs.curto }}" \
+            --set-env-vars "ORBIT_VERSAO=${{ steps.versao.outputs.curto }}" \
+            --revision-suffix "v${{ steps.versao.outputs.curto }}" \
+            --output none
+
+      # ---------- Web ----------
+      # A mesma imagem publicada pelo CI; o nginx dela repassa /api para a API do ambiente.
+      - name: Publicar a web (Container Apps)
+        run: |
+          az containerapp update -g "$GRUPO" -n "$WEB" \
+            --image "ghcr.io/niconino89/orbit-hub-web:${{ steps.versao.outputs.curto }}" \
+            --revision-suffix "v${{ steps.versao.outputs.curto }}" \
+            --output none
+
+      # ---------- Smoke test ----------
+      - name: Smoke test
+        env:
+          API_URL: ${{ steps.enderecos.outputs.api }}
+          WEB_URL: ${{ steps.enderecos.outputs.web }}
+          VERSAO: ${{ steps.versao.outputs.curto }}
+        run: bash .github/scripts/smoke-test.sh
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "### Homologação · ${{ steps.versao.outputs.curto }}"
+            echo "- Web: ${{ steps.enderecos.outputs.web }}"
+            echo "- API: ${{ steps.enderecos.outputs.api }}/swagger-ui.html"
+            echo "- Saúde: ${{ steps.enderecos.outputs.api }}/actuator/health"
+          } >> "$GITHUB_STEP_SUMMARY"

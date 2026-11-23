@@ -11,17 +11,11 @@ output "api_url" {
 }
 
 output "web_nome" {
-  value = azurerm_static_web_app.web.name
+  value = azurerm_container_app.web.name
 }
 
 output "web_url" {
-  value = "https://${azurerm_static_web_app.web.default_host_name}"
-}
-
-output "web_token_publicacao" {
-  description = "Token de publicação do Static Web Apps, usado pelo pipeline de entrega."
-  value       = azurerm_static_web_app.web.api_key
-  sensitive   = true
+  value = "https://${azurerm_container_app.web.ingress[0].fqdn}"
 }
 
 output "banco" {

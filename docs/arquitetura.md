@@ -80,7 +80,7 @@ br.com.orbithub
 | Recurso | Uso |
 |---|---|
 | Azure Container Apps | Back-end, com escala a zero |
-| Azure Static Web Apps | Front-end (plano Free) |
+| Azure Container Apps (web) | Front-end: nginx servindo o build e repassando `/api` para a API ([ADR 0003](adr/0003-front-end-no-container-apps.md)) |
 | Azure Database for PostgreSQL | Um servidor Flexible B1ms, com bancos de homologação e produção |
 | Azure Blob Storage | Logotipos e documentos |
 | Azure Key Vault | Segredos |
