@@ -1,0 +1,31 @@
+# Economia de crédito (KAN-55): desliga o PostgreSQL toda noite e permite ligar ou desligar à mão.
+name: PostgreSQL ligar e desligar
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # 23h em Brasília
+  workflow_dispatch:
+    inputs:
+      acao:
+        description: Ação
+        type: choice
+        options: [ligar, desligar, estado]
+        default: estado
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  postgres:
+    if: vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    environment: compartilhado
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: bash infra/bootstrap/postgres.sh "${{ inputs.acao || 'desligar' }}"
