@@ -1,18 +1,65 @@
 # API e front-end no Azure Container Apps (plano de consumo, escala a zero), no mesmo ambiente e na mesma região.
 # O Static Web Apps não existe nas regiões que a política da assinatura permite (ADR 0003).
 
-resource "azurerm_container_app_environment" "ambiente" {
-  name                       = "cae-${local.nome}"
-  location                   = azurerm_resource_group.ambiente.location
-  resource_group_name        = azurerm_resource_group.ambiente.name
-  logs_destination           = "log-analytics"
-  log_analytics_workspace_id = var.log_analytics_id
-  tags                       = local.tags
+# O ambiente é criado pelo azapi porque a Azure passou a criar ambientes no modo "Express" quando o modo
+# não é informado, e o azurerm ainda não tem como informá-lo. O modo Express não aceita segredos lidos do
+# Key Vault (ADR 0005). "WorkloadProfiles" só com o perfil Consumption mantém o plano de consumo: escala a
+# zero e nenhum custo fixo.
+data "azurerm_log_analytics_workspace" "logs" {
+  name                = element(split("/", var.log_analytics_id), 8)
+  resource_group_name = element(split("/", var.log_analytics_id), 4)
+}
+
+resource "azapi_resource" "ambiente" {
+  type      = "Microsoft.App/managedEnvironments@2026-07-01"
+  name      = "cae-${local.nome}"
+  location  = azurerm_resource_group.ambiente.location
+  parent_id = azurerm_resource_group.ambiente.id
+  tags      = local.tags
+
+  body = {
+    properties = {
+      environmentMode = "WorkloadProfiles"
+      workloadProfiles = [{
+        name                = "Consumption"
+        workloadProfileType = "Consumption"
+      }]
+      appLogsConfiguration = {
+        destination = "log-analytics"
+        logAnalyticsConfiguration = {
+          customerId = data.azurerm_log_analytics_workspace.logs.workspace_id
+        }
+      }
+    }
+  }
+
+  # A chave do workspace vai só na requisição; não fica no estado nem entra na comparação
+  sensitive_body = {
+    properties = {
+      appLogsConfiguration = {
+        logAnalyticsConfiguration = {
+          sharedKey = data.azurerm_log_analytics_workspace.logs.primary_shared_key
+        }
+      }
+    }
+  }
+
+  response_export_values = ["properties.defaultDomain"]
+}
+
+# Até 22/11/2026 o ambiente era um azurerm_container_app_environment. Em homologação ele já existe e é
+# importado para o azapi (bloco import em envs/homologacao); aqui o recurso antigo sai do estado sem ser apagado.
+removed {
+  from = azurerm_container_app_environment.ambiente
+
+  lifecycle {
+    destroy = false
+  }
 }
 
 resource "azurerm_container_app" "api" {
   name                         = "ca-${local.nome}-api"
-  container_app_environment_id = azurerm_container_app_environment.ambiente.id
+  container_app_environment_id = azapi_resource.ambiente.id
   resource_group_name          = azurerm_resource_group.ambiente.name
   revision_mode                = "Single"
   tags                         = local.tags
@@ -160,14 +207,14 @@ locals {
   # Endereço da web montado a partir do domínio do ambiente, para a API conhecer a origem do CORS
   # sem depender do recurso da web (que, por sua vez, depende do endereço da API).
   web_nome = "ca-${local.nome}-web"
-  web_url  = "https://${local.web_nome}.${azurerm_container_app_environment.ambiente.default_domain}"
+  web_url  = "https://${local.web_nome}.${azapi_resource.ambiente.output.properties.defaultDomain}"
 }
 
 # Front-end: nginx sem root servindo o build do Vite. Repassa /api para a API, então o navegador
 # fala com uma origem só. A imagem é a mesma do Docker Compose e a mesma em homologação e produção.
 resource "azurerm_container_app" "web" {
   name                         = local.web_nome
-  container_app_environment_id = azurerm_container_app_environment.ambiente.id
+  container_app_environment_id = azapi_resource.ambiente.id
   resource_group_name          = azurerm_resource_group.ambiente.name
   revision_mode                = "Single"
   tags                         = local.tags

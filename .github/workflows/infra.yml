@@ -40,6 +40,7 @@ env:
   TF_VAR_estado_conta: ${{ vars.TF_ESTADO_CONTA }}
   TF_VAR_email_alertas: ${{ secrets.ALERTAS_EMAIL }}
   TF_VAR_ghcr_token: ${{ secrets.GHCR_LEITURA_TOKEN }}
+  TF_VAR_assinatura_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
 jobs:
   validar:

@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 5.14"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.14"
+    }
     postgresql = {
       source  = "cyrilgdn/postgresql"
       version = "~> 1.27"
