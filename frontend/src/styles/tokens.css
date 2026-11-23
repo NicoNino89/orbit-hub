@@ -1,0 +1,93 @@
+/*
+ * Tokens do kit de interface "Orbit Hub Interface" (v0.1).
+ * Nenhuma cor ou tamanho é escrito direto no componente: tudo vem daqui, nos dois temas.
+ * O Tailwind lê os tokens pelo bloco @theme, então classes como bg-primary e text-muted funcionam.
+ */
+:root {
+  --bg: #F4F6F7; --surface: #FFFFFF; --surface-2: #ECF0F2; --line: #D6DDE2; --fg: #132029; --muted: #5B6873;
+  --primary: #0E5A6B; --on-primary: #FFFFFF; --primary-soft: #DBECEF;
+  --accent: #DB8B22; --on-accent: #2A1700; --accent-soft: #FAEAD3;
+  --ok: #1C8657; --ok-soft: #DCF1E6; --warn: #A86C12; --warn-soft: #FBEFD8;
+  --crit: #BE3B34; --crit-soft: #F8DFDD; --info: #2D68AD; --info-soft: #DEE9F6;
+  --paper: #FBFAF7; --paper-ink: #1E2328;
+  --overlay: rgba(9, 17, 24, .48);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D141A; --surface: #141E26; --surface-2: #1B2731; --line: #293844; --fg: #E6ECF1; --muted: #93A2AF;
+    --primary: #53B5C6; --on-primary: #062329; --primary-soft: #123842;
+    --accent: #F0AC4C; --on-accent: #2A1700; --accent-soft: #3A2911;
+    --ok: #4CC08B; --ok-soft: #12301F; --warn: #E3AA52; --warn-soft: #382A12;
+    --crit: #F0807A; --crit-soft: #3B1B19; --info: #74AAE6; --info-soft: #14283E;
+    --paper: #1A232B; --paper-ink: #E9EEF2;
+    --overlay: rgba(0, 0, 0, .62);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0D141A; --surface: #141E26; --surface-2: #1B2731; --line: #293844; --fg: #E6ECF1; --muted: #93A2AF;
+  --primary: #53B5C6; --on-primary: #062329; --primary-soft: #123842;
+  --accent: #F0AC4C; --on-accent: #2A1700; --accent-soft: #3A2911;
+  --ok: #4CC08B; --ok-soft: #12301F; --warn: #E3AA52; --warn-soft: #382A12;
+  --crit: #F0807A; --crit-soft: #3B1B19; --info: #74AAE6; --info-soft: #14283E;
+  --paper: #1A232B; --paper-ink: #E9EEF2;
+  --overlay: rgba(0, 0, 0, .62);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
+
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+}
+
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.55 var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
