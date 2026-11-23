@@ -1,0 +1,16 @@
+{
+  "role": {
+    "name": "orbit-hub-api"
+  },
+  "sampling": {
+    "percentage": 50
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "INFO"
+    },
+    "micrometer": {
+      "enabled": true
+    }
+  }
+}

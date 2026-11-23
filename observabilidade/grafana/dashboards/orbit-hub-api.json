@@ -1,0 +1,136 @@
+{
+  "uid": "orbit-hub-api",
+  "title": "Orbit Hub — API",
+  "description": "Disponibilidade, tempo de resposta e taxa de erros da API (KAN-56).",
+  "tags": ["orbit-hub", "kan-56"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Disponibilidade",
+      "description": "1 = a API responde à coleta do Prometheus.",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "max(up{job=\"orbit-hub-api\"})" }],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "Fora do ar", "color": "red" }, "1": { "text": "No ar", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Disponibilidade nas últimas 24 h",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "avg_over_time(up{job=\"orbit-hub-api\"}[24h])" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "orange", "value": 0.99 }, { "color": "green", "value": 0.999 }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Taxa de erros (5xx)",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{
+        "refId": "A",
+        "expr": "sum(rate(http_server_requests_seconds_count{job=\"orbit-hub-api\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count{job=\"orbit-hub-api\"}[5m])), 1e-9)"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "noValue": "0%",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 0.01 }, { "color": "red", "value": 0.05 }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Tempo de resposta p95",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{
+        "refId": "A",
+        "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m])))"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 0.5 }, { "color": "red", "value": 1 }] }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Tempo de resposta (p50, p95, p99)",
+      "gridPos": { "x": 0, "y": 5, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "legendFormat": "p50", "expr": "histogram_quantile(0.50, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m])))" },
+        { "refId": "B", "legendFormat": "p95", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m])))" },
+        { "refId": "C", "legendFormat": "p99", "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m])))" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Requisições por segundo, por status",
+      "gridPos": { "x": 12, "y": 5, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "legendFormat": "{{status}}", "expr": "sum by (status) (rate(http_server_requests_seconds_count{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m]))" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Rotas mais lentas (p95)",
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "legendFormat": "{{method}} {{uri}}", "expr": "topk(5, histogram_quantile(0.95, sum by (le, method, uri) (rate(http_server_requests_seconds_bucket{job=\"orbit-hub-api\",uri!~\"/actuator.*\"}[5m]))))" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "JVM: memória heap e conexões do banco",
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "legendFormat": "heap usada", "expr": "sum(jvm_memory_used_bytes{job=\"orbit-hub-api\",area=\"heap\"})" },
+        { "refId": "B", "legendFormat": "conexões ativas (Hikari)", "expr": "sum(hikaricp_connections_active{job=\"orbit-hub-api\"})" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "bytes" },
+        "overrides": [{ "matcher": { "id": "byName", "options": "conexões ativas (Hikari)" }, "properties": [{ "id": "unit", "value": "short" }, { "id": "custom.axisPlacement", "value": "right" }] }]
+      }
+    }
+  ]
+}

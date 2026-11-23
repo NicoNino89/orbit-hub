@@ -106,6 +106,18 @@ jobs:
           path: frontend/coverage/
           retention-days: 7
 
+  observabilidade:
+    name: Observabilidade (Prometheus e Grafana)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validar configuração e regras de alerta do Prometheus
+        run: |
+          docker run --rm -v "$PWD/observabilidade/prometheus:/etc/prometheus:ro" --entrypoint promtool \
+            prom/prometheus:v3.7.3 check config /etc/prometheus/prometheus.yml
+      - name: Validar o JSON dos painéis do Grafana
+        run: for f in observabilidade/grafana/dashboards/*.json; do jq -e ".uid and .panels" "$f" > /dev/null; done
+
   sonarcloud:
     name: SonarCloud (quality gate)
     runs-on: ubuntu-latest
