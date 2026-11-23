@@ -5,6 +5,7 @@ resource "azurerm_container_app_environment" "ambiente" {
   name                       = "cae-${local.nome}"
   location                   = azurerm_resource_group.ambiente.location
   resource_group_name        = azurerm_resource_group.ambiente.name
+  logs_destination           = "log-analytics"
   log_analytics_workspace_id = var.log_analytics_id
   tags                       = local.tags
 }
