@@ -1,0 +1,189 @@
+# Integração contínua do Orbit Hub (KAN-51).
+# Roda em todo push e pull request. Na main, também publica as imagens no GHCR (KAN-52).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  backend:
+    name: Back-end (build, testes e cobertura)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build, testes de unidade e de integração (Testcontainers) e portão do JaCoCo
+        run: ./mvnw -B -ntp verify
+
+      - name: Resultado dos testes no pull request
+        if: always()
+        uses: mikepenz/action-junit-report@v6
+        with:
+          check_name: Testes do back-end
+          report_paths: |
+            backend/target/surefire-reports/TEST-*.xml
+            backend/target/failsafe-reports/TEST-*.xml
+          include_passed: false
+          detailed_summary: true
+
+      - name: Cobertura no pull request
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.8.0
+        with:
+          paths: ${{ github.workspace }}/backend/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Cobertura do back-end (JaCoCo)
+          update-comment: true
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
+
+      - name: Guardar relatórios
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-relatorios
+          path: |
+            backend/target/site/jacoco/
+            backend/target/classes/
+            backend/target/surefire-reports/
+            backend/target/failsafe-reports/
+          retention-days: 7
+
+  frontend:
+    name: Front-end (lint, tipos, testes e build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+      - name: Lint (oxlint)
+        run: npm run lint
+      - name: Verificação de tipos
+        run: npm run typecheck
+      - name: Testes (Vitest) com cobertura
+        run: npm run coverage
+      - name: Build (Vite)
+        run: npm run build
+      - name: Dependências sem vulnerabilidade crítica
+        run: npm audit --omit=dev --audit-level=critical
+
+      - name: Guardar cobertura
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-cobertura
+          path: frontend/coverage/
+          retention-days: 7
+
+  sonarcloud:
+    name: SonarCloud (quality gate)
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verificar se o SonarCloud está configurado
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then echo "ativo=true" >> "$GITHUB_OUTPUT"
+          else echo "::warning::SONAR_TOKEN não configurado: análise do SonarCloud pulada."; echo "ativo=false" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/download-artifact@v8
+        if: steps.sonar.outputs.ativo == 'true'
+        with:
+          name: backend-relatorios
+          path: backend/target
+
+      - uses: actions/download-artifact@v8
+        if: steps.sonar.outputs.ativo == 'true'
+        with:
+          name: frontend-cobertura
+          path: frontend/coverage
+
+      - name: Análise e quality gate
+        if: steps.sonar.outputs.ativo == 'true'
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: -Dsonar.qualitygate.wait=true
+
+  imagens:
+    name: Imagens Docker (GHCR)
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - nome: orbit-hub-api
+            contexto: backend
+          - nome: orbit-hub-web
+            contexto: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Login no GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/niconino89/${{ matrix.nome }}
+          tags: |
+            type=sha,format=short,prefix=
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build (e publicação na main)
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.contexto }}
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.nome }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.nome }}

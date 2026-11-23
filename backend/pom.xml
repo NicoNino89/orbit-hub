@@ -24,10 +24,6 @@
         <jacoco.version>0.8.14</jacoco.version>
         <!-- Cobertura mínima nas camadas de serviço e domínio (docs/planejamento/revisao-e-sprints.md, 2.3) -->
         <jacoco.cobertura.minima>0.80</jacoco.cobertura.minima>
-        <sonar.organization>niconino89</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>NicoNino89_orbit-hub</sonar.projectKey>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>
