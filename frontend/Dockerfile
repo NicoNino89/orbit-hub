@@ -5,7 +5,7 @@
 FROM node:24-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund --ignore-scripts
 COPY . .
 ARG VITE_API_URL=""
 ENV VITE_API_URL=$VITE_API_URL
