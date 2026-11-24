@@ -1,6 +1,5 @@
 package br.com.orbithub.compartilhado.tempo;
 
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -58,13 +57,16 @@ public final class DiasUteis {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
+     * Hora: 17:44
      * Cartão Jira: KAN-83
      * Título: Fim de semana
      * Objetivo: Dizer se a data cai no sábado ou no domingo.
-     * Decisões: No fuso de Brasília.
+     * Decisões: No fuso de Brasília. Switch sobre o dia da semana (Sonar S8696).
      */
     private static boolean fimDeSemana(ZonedDateTime data) {
-        return data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY;
+        return switch (data.getDayOfWeek()) {
+            case SATURDAY, SUNDAY -> true;
+            default -> false;
+        };
     }
 }
