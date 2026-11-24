@@ -62,12 +62,12 @@ function useArea<T>(caminho: string, versao = 0) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:05
- * Cartão Jira: KAN-60
+ * Hora: 14:16
+ * Cartão Jira: KAN-61
  * Título: Área do investidor
  * Objetivo: Mostrar a situação da conta como investidor.
  * Decisões: A tese de investimento chega na S3 (KAN-18). Mostra em nome de quem a pessoa atua e leva às
- *           organizações (KAN-60).
+ *           organizações (KAN-60) e ao perfil de investimento (KAN-61).
  */
 export function AreaInvestidor() {
   const { estado } = useSessao()
@@ -85,7 +85,8 @@ export function AreaInvestidor() {
               : 'Atuando como pessoa física.'}
           </p>
           <p className="text-muted">
-            {dados.teseCadastrada ? 'Sua tese está cadastrada.' : 'Você ainda não cadastrou sua tese de investimento. Disponível em breve.'}
+            {dados.teseCadastrada ? 'O perfil de investimento está cadastrado.' : 'Você ainda não cadastrou o perfil de investimento.'}{' '}
+            <Link to="/investidor/perfil" className={CLASSE_LINK}>{dados.teseCadastrada ? 'Ver ou editar o perfil' : 'Cadastrar agora'}</Link>
           </p>
         </>
       )}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import * as autenticacao from '../api/autenticacao'
 import { definirFornecedorDeOrganizacao, definirFornecedorDeToken, definirRenovador } from '../api/cliente'
 import { esquecerAtuacao, lerAtuacao } from './atuacao'
@@ -165,14 +165,16 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 14:05
-   * Cartão Jira: KAN-60
+   * Hora: 14:16
+   * Cartão Jira: KAN-61
    * Título: Organização da atuação no cliente HTTP
    * Objetivo: Mandar a organização escolhida só quando a pessoa está atuando como investidora.
-   * Decisões: Lido a cada requisição, para a troca no seletor valer na hora.
+   * Decisões: Lido a cada requisição, para a troca no seletor valer na hora. useLayoutEffect, para estar registrado
+   *           antes dos efeitos das telas filhas (que rodam antes dos efeitos do pai) e a primeira busca já ir com a
+   *           organização.
    */
   const usuarioId = estado.status === 'autenticado' ? estado.usuario.id : null
-  useEffect(() => {
+  useLayoutEffect(() => {
     definirFornecedorDeOrganizacao(() =>
       usuarioId && papelAtivo === 'INVESTIDOR' ? (lerAtuacao(usuarioId)?.organizacao ?? null) : null)
     return () => definirFornecedorDeOrganizacao(() => null)

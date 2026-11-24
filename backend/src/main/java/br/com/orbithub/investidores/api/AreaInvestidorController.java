@@ -5,6 +5,7 @@ import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteInvestidor;
 import br.com.orbithub.investidores.domain.PapelNaOrganizacao;
 import br.com.orbithub.investidores.service.AtuacaoService;
 import br.com.orbithub.investidores.service.OrganizacoesService;
+import br.com.orbithub.investidores.service.PerfilDeInvestimentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
@@ -34,30 +35,33 @@ class AreaInvestidorController {
 
     private final AtuacaoService atuacao;
     private final OrganizacoesService organizacoes;
+    private final PerfilDeInvestimentoService perfis;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
+     * Hora: 14:16
+     * Cartão Jira: KAN-61
      * Título: Criação do controller
-     * Objetivo: Receber os serviços de atuação e de organizações.
+     * Objetivo: Receber os serviços de atuação, de organizações e de perfil de investimento.
      * Decisões: Injeção por construtor.
      */
-    AreaInvestidorController(AtuacaoService atuacao, OrganizacoesService organizacoes) {
+    AreaInvestidorController(AtuacaoService atuacao, OrganizacoesService organizacoes,
+                             PerfilDeInvestimentoService perfis) {
         this.atuacao = atuacao;
         this.organizacoes = organizacoes;
+        this.perfis = perfis;
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
+     * Hora: 14:16
+     * Cartão Jira: KAN-61
      * Título: Situação do investidor
      * Objetivo: Dizer se a tese está cadastrada, qual o próximo passo e em nome de quem a pessoa está atuando.
      * Decisões: A organização vem do cabeçalho X-Orbit-Organizacao; quem saiu dela recebe 403 e a tela volta para a
-     *           atuação pessoal.
+     *           atuação pessoal. "teseCadastrada" diz se o perfil de investimento de quem atua existe (KAN-61).
      */
     @GetMapping("/eu")
     @Operation(summary = "Situação da conta como investidor (somente investidor)")
@@ -66,7 +70,8 @@ class AreaInvestidorController {
         AtuacaoService.Atuacao a = atuacao.paraVer(Autenticado.id(token), organizacao);
         Atuando atuando = !a.emNomeDaOrganizacao() ? null : new Atuando(a.organizacao(),
                 organizacoes.detalhe(a.pessoa(), a.organizacao()).organizacao().getNome(), a.papelNaOrganizacao());
-        return new SituacaoInvestidor(false, "/investidor/onboarding", atuando);
+        boolean cadastrado = perfis.cadastrado(a);
+        return new SituacaoInvestidor(cadastrado, cadastrado ? "/investidor" : "/investidor/perfil", atuando);
     }
 
     /**

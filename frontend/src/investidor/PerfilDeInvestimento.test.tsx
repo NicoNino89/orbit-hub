@@ -1,0 +1,121 @@
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { Rotas } from '../App'
+import type { SessaoApi } from '../api/autenticacao'
+import { CHAVE_ATUACAO } from '../sessao/atuacao'
+import { CHAVE_PAPEL_ATIVO, CHAVE_SESSAO_ATIVA } from '../sessao/contexto'
+import { simularApi } from '../test/apiSimulada'
+
+const SESSAO: SessaoApi = {
+  tokenAcesso: 't', expiraEm: '2999-01-01T00:00:00Z', sessaoExpiraEm: '2999-01-01T00:00:00Z', termosPendentes: false,
+  usuario: { id: 'a1', nome: 'Ana Investidora', email: 'ana@exemplo.com', papeis: ['INVESTIDOR'] },
+}
+
+const LISTAS = {
+  'GET /api/v1/listas/TIPO_INVESTIDOR': () => ({ corpo: [
+    { codigo: 'ANJO', rotulo: 'Investidor-anjo', grupo: null }, { codigo: 'FUNDO_VC', rotulo: 'Fundo de Venture Capital', grupo: null },
+    { codigo: 'OUTROS', rotulo: 'Outros', grupo: null },
+  ] }),
+  'GET /api/v1/listas/INSTRUMENTO': () => ({ corpo: [
+    { codigo: 'MUTUO_CONVERSIVEL', rotulo: 'Mútuo conversível', grupo: null },
+    { codigo: 'PARTICIPACAO_SOCIETARIA', rotulo: 'Participação societária', grupo: null },
+  ] }),
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 14:16
+ * Cartão Jira: KAN-61
+ * Título: Abrir o perfil
+ * Objetivo: Renderizar a tela do perfil com as listas e as rotas informadas.
+ * Decisões: Papel ativo de investidor.
+ */
+function abrir(rotas: Parameters<typeof simularApi>[0]) {
+  localStorage.setItem(CHAVE_SESSAO_ATIVA, '1')
+  localStorage.setItem(CHAVE_PAPEL_ATIVO, 'INVESTIDOR')
+  const api = simularApi({
+    'POST /api/v1/auth/renovar': () => ({ corpo: SESSAO }),
+    'GET /api/v1/organizacoes/minhas': () => ({ corpo: [] }),
+    ...LISTAS,
+    ...rotas,
+  })
+  render(<MemoryRouter initialEntries={['/investidor/perfil']}><Rotas /></MemoryRouter>)
+  return api
+}
+
+describe('Perfil de investimento (KAN-61)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    localStorage.clear()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 14:16
+   * Cartão Jira: KAN-61
+   * Título: Perfil pessoal
+   * Objetivo: Conferir os tipos de pessoa física, a descrição de "outros" e o envio dos campos.
+   * Decisões: O servidor devolve o perfil salvo.
+   */
+  it('salva o perfil pessoal', async () => {
+    const { chamadas } = abrir({
+      'GET /api/v1/investidores/perfil': () => ({
+        corpo: { daOrganizacao: false, podeEditar: true, tipoFixo: null, perfil: null, atualizadoPor: null, atualizadoEm: null },
+      }),
+      'PUT /api/v1/investidores/perfil': ({ corpo }) => ({
+        corpo: { daOrganizacao: false, podeEditar: true, tipoFixo: null, perfil: corpo, atualizadoPor: 'Ana Investidora',
+          atualizadoEm: '2026-11-24T17:00:00Z' },
+      }),
+    })
+    const form = await screen.findByRole('form', { name: 'Perfil de investimento' })
+    const tipo = within(form).getByLabelText('Tipo de investidor')
+    await within(form).findByRole('option', { name: 'Outros' })
+    expect(within(tipo).queryByRole('option', { name: 'Fundo de Venture Capital' })).not.toBeInTheDocument()
+    await userEvent.selectOptions(tipo, 'OUTROS')
+    await userEvent.type(within(form).getByLabelText('Descreva o seu tipo'), 'Clube de investimento')
+    await userEvent.type(within(form).getByLabelText('Ticket mínimo (R$)'), '50000')
+    await userEvent.type(within(form).getByLabelText('Ticket máximo (R$)'), '250000')
+    await userEvent.click(within(form).getByLabelText('Apenas co-invisto'))
+    await userEvent.click(within(form).getByLabelText('Aceito ser observador do conselho'))
+    await userEvent.click(within(form).getByLabelText(/follow-on/))
+    await userEvent.click(within(form).getByLabelText('Mútuo conversível'))
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar perfil' }))
+    expect(await screen.findByText('Perfil salvo.')).toBeInTheDocument()
+    expect(chamadas.find((c) => c.chave === 'PUT /api/v1/investidores/perfil')?.corpo).toEqual({
+      tipo: 'OUTROS', tipoOutro: 'Clube de investimento', ticketMinimo: 50000, ticketMaximo: 250000, lideranca: 'SO_COINVESTE',
+      followOn: true, participacaoNaGestao: 'ACEITA_OBSERVADOR', instrumentos: ['MUTUO_CONVERSIVEL'],
+    })
+    expect(screen.getByText(/Última alteração por Ana Investidora/)).toBeInTheDocument()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 14:16
+   * Cartão Jira: KAN-61
+   * Título: Perfil da organização sem ser administrador
+   * Objetivo: Conferir o tipo fixo da organização, o aviso e o formulário bloqueado, sem botão de salvar.
+   * Decisões: Atuação em nome do Fundo Aurora.
+   */
+  it('bloqueia o perfil da organização para quem não é administrador', async () => {
+    localStorage.setItem(CHAVE_ATUACAO, JSON.stringify({ usuario: 'a1', organizacao: 'o1', nome: 'Fundo Aurora' }))
+    const { chamadas } = abrir({
+      'GET /api/v1/organizacoes/minhas': () => ({ corpo: [{ id: 'o1', nome: 'Fundo Aurora', tipo: 'FUNDO_VC', cnpj: '', site: null,
+        descricao: null, meuPapel: 'MEMBRO' }] }),
+      'GET /api/v1/investidores/perfil': () => ({
+        corpo: { daOrganizacao: true, podeEditar: false, tipoFixo: 'FUNDO_VC', atualizadoPor: 'Bia', atualizadoEm: '2026-11-24T17:00:00Z',
+          perfil: { tipo: 'FUNDO_VC', tipoOutro: null, ticketMinimo: 1000000, ticketMaximo: 5000000, lideranca: 'LIDERA', followOn: true,
+            participacaoNaGestao: 'EXIGE_CONSELHO', instrumentos: ['PARTICIPACAO_SOCIETARIA'] } },
+      }),
+    })
+    expect(await screen.findByText('Só o administrador da organização altera este perfil.')).toBeInTheDocument()
+    expect(await screen.findByText('Fundo de Venture Capital')).toBeInTheDocument()
+    expect(screen.getByLabelText('Ticket mínimo (R$)')).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'Salvar perfil' })).not.toBeInTheDocument()
+    expect(chamadas.find((c) => c.chave === 'GET /api/v1/investidores/perfil')?.cabecalhos['X-Orbit-Organizacao']).toBe('o1')
+  })
+})
