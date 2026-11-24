@@ -3,6 +3,7 @@ import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
 import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
 import { PaginaEntrar } from './conta/PaginaEntrar'
+import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
 import { Inicio } from './Inicio'
 import { AreaLogada, Painel } from './painel/AreaLogada'
 import { RotaProtegida } from './sessao/RotaProtegida'
@@ -29,6 +30,8 @@ export function Rotas() {
         <Route path="/cadastro" element={<PaginaCadastro />} />
         <Route path="/confirmar-email" element={<PaginaConfirmacao />} />
         <Route path="/entrar" element={<PaginaEntrar />} />
+        <Route path="/esqueci-senha" element={<PaginaEsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<PaginaRedefinirSenha />} />
         <Route path="/termos" element={<PaginaTermos />} />
         <Route path="/termos/:endereco" element={<PaginaTermos />} />
         <Route element={<RotaProtegida />}>

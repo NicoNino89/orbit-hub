@@ -152,6 +152,19 @@ public class TokenDeConta {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Acesso à criação
+     * Objetivo: Expor quando o token foi emitido.
+     * Decisões: Usado para limitar a frequência de pedidos por e-mail.
+     */
+    public Instant getCriadoEm() {
+        return criadoEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 01:00
      * Cartão Jira: KAN-12
      * Título: Acesso à expiração

@@ -249,4 +249,18 @@ public class Usuario {
     public Instant getAtualizadoEm() {
         return atualizadoEm;
     }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Trocar a senha
+     * Objetivo: Substituir o hash da senha da conta.
+     * Decisões: Recebe o hash pronto; a política e a revogação das sessões ficam no serviço.
+     */
+    public void trocarSenha(String novoHash, Instant agora) {
+        this.senhaHash = Objects.requireNonNull(novoHash, "novoHash");
+        this.atualizadoEm = agora;
+    }
 }
