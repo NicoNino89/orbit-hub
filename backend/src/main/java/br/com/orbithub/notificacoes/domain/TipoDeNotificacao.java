@@ -3,7 +3,7 @@ package br.com.orbithub.notificacoes.domain;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Tipos de notificação
  * Objetivo: Enumerar os eventos que geram aviso, com o grupo para a tela, se são obrigatórios e o canal padrão.
@@ -41,7 +41,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do tipo
      * Objetivo: Guardar grupo, descrição, obrigatoriedade e canal padrão.
@@ -57,7 +57,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Grupo
      * Objetivo: Devolver o grupo do tipo, para a tela agrupar.
@@ -70,7 +70,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Descrição
      * Objetivo: Devolver o nome do evento para a tela.
@@ -83,7 +83,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Obrigatória
      * Objetivo: Dizer se o aviso não pode ser desligado.
@@ -96,7 +96,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Canal padrão
      * Objetivo: Devolver o canal usado quando a pessoa não escolheu outro.
@@ -109,7 +109,7 @@ public enum TipoDeNotificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Canal de entrega
      * Objetivo: Enumerar por onde o aviso chega.
@@ -123,7 +123,7 @@ public enum TipoDeNotificacao {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Inclui a plataforma
          * Objetivo: Dizer se o canal mostra o aviso no sino.
@@ -136,7 +136,7 @@ public enum TipoDeNotificacao {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Inclui e-mail
          * Objetivo: Dizer se o canal manda e-mail.

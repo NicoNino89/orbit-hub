@@ -53,7 +53,7 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Testes de integração da central de notificações
  * Objetivo: Conferir, com PostgreSQL real, a entrega por canal, o contador, a leitura, as preferências (com aviso
@@ -98,7 +98,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Sino, leitura e preferências
      * Objetivo: Conferir o aviso no sino com contador, a leitura, a escolha de só e-mail e a recusa de desligar aviso
@@ -145,7 +145,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Envio com nova tentativa e resumo diário
      * Objetivo: Conferir que a R17 envia, reagenda a falha e desiste no limite, e que a R18 junta os avisos do resumo
@@ -191,7 +191,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Eventos reais e limpeza
      * Objetivo: Conferir os avisos de senha trocada e de termos atualizados e a limpeza das notificações antigas.
@@ -226,7 +226,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: E-mails pendentes
      * Objetivo: Contar os e-mails ainda pendentes de uma pessoa.
@@ -240,7 +240,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Títulos dos avisos
      * Objetivo: Listar os títulos das notificações de uma pessoa.
@@ -253,7 +253,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Conta de teste
      * Objetivo: Criar uma investidora ativa com os termos aceitos e senha conhecida.
@@ -272,7 +272,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Token da conta
      * Objetivo: Abrir uma sessão e devolver o cabeçalho Authorization.
@@ -285,7 +285,7 @@ class NotificacoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Relógio ajustável
      * Objetivo: Deixar o teste avançar o tempo entre as tentativas de envio.
@@ -297,7 +297,7 @@ class NotificacoesIT {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Bean do relógio
          * Objetivo: Substituir o relógio do sistema neste contexto.

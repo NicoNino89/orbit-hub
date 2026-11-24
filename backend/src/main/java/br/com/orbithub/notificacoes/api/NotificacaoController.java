@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Notificações da pessoa logada
  * Objetivo: Listar os avisos, mostrar o contador do sino, marcar como lidos e escolher as preferências.
@@ -48,7 +48,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do controller
      * Objetivo: Receber o serviço de notificações.
@@ -61,7 +61,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Avisos
      * Objetivo: Listar os avisos da pessoa, com o total de não lidos.
@@ -79,7 +79,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Contador do sino
      * Objetivo: Devolver quantos avisos não lidos a pessoa tem.
@@ -94,7 +94,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar como lida
      * Objetivo: Marcar um aviso como lido.
@@ -110,7 +110,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar todas como lidas
      * Objetivo: Zerar o contador do sino.
@@ -126,7 +126,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Preferências
      * Objetivo: Devolver o canal de cada tipo de aviso e o resumo diário.
@@ -141,7 +141,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Salvar preferências
      * Objetivo: Gravar o canal de cada tipo e o resumo diário.
@@ -157,7 +157,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Pedido de preferências
      * Objetivo: Receber o canal por tipo e o resumo diário.
@@ -170,7 +170,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Aviso na resposta
      * Objetivo: Expor um aviso para a tela.
@@ -182,7 +182,7 @@ class NotificacaoController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Conversão do aviso
          * Objetivo: Montar a resposta a partir da entidade.
@@ -197,7 +197,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Página de avisos
      * Objetivo: Levar os avisos, a página, o total e os não lidos.
@@ -209,7 +209,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Preferências na resposta
      * Objetivo: Levar a lista de tipos com o canal e o resumo diário.
@@ -220,7 +220,7 @@ class NotificacaoController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Conversão das preferências
          * Objetivo: Montar a resposta a partir das preferências.
@@ -235,7 +235,7 @@ class NotificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Tipo na resposta
      * Objetivo: Expor um tipo de aviso com o canal escolhido.

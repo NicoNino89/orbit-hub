@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: R16 – Lembrete da revisão de acessos
  * Objetivo: Lembrar o administrador quando a revisão periódica dos acessos da equipe vence (KAN-75).
@@ -34,7 +34,7 @@ class LembreteDeRevisaoDeAcessos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação da rotina
      * Objetivo: Descrever a rotina e receber o serviço da equipe.
@@ -51,7 +51,7 @@ class LembreteDeRevisaoDeAcessos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Conferir a revisão
      * Objetivo: Lembrar se a revisão está vencida.

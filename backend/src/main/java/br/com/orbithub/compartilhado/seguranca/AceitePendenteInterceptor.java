@@ -14,7 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Bloqueio por aceite pendente
  * Objetivo: Impedir o uso da plataforma enquanto houver Termos de Uso ou Política de Privacidade

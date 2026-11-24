@@ -72,7 +72,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Equipe ativa com algum dos papéis
      * Objetivo: Listar os ids dos membros ativos da equipe que têm pelo menos um dos papéis (destinatários de avisos).
@@ -87,7 +87,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Contas públicas ativas
      * Objetivo: Listar os ids das contas de investidor e empreendedor ativas (aviso de termos atualizados).

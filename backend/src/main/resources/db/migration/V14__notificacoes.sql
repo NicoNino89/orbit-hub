@@ -1,6 +1,6 @@
 -- Autor: Nicholas Bruno Pimentel
 -- Data: 24/11/2026
--- Hora: 12:36
+-- Hora: 12:34
 -- Cartão Jira: KAN-146
 -- Título: Central de notificações
 -- Objetivo: Guardar as notificações de cada pessoa (lidas e não lidas), as preferências de canal por tipo de evento,

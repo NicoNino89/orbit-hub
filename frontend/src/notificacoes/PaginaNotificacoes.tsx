@@ -17,7 +17,7 @@ const NOMES_DOS_CANAIS: Record<Canal, string> = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Central de notificações
  * Objetivo: Listar os avisos da pessoa, marcar como lidos e escolher como receber cada tipo.
@@ -47,7 +47,7 @@ export function PaginaNotificacoes() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Lista de avisos
  * Objetivo: Mostrar os avisos paginados, com destaque para os não lidos.
@@ -70,7 +70,7 @@ function ListaDeAvisos() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:36
+   * Hora: 12:34
    * Cartão Jira: KAN-146
    * Título: Marcar e atualizar
    * Objetivo: Marcar um aviso (ou todos) como lido e atualizar a lista e o sino.
@@ -118,7 +118,7 @@ function ListaDeAvisos() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Um aviso
  * Objetivo: Mostrar título, mensagem, data e ações de um aviso.
@@ -146,7 +146,7 @@ function ItemDeAviso({ aviso, aoMarcar }: { aviso: Aviso; aoMarcar: () => void }
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Preferências de aviso
  * Objetivo: Escolher o canal de cada tipo, agrupado, e o resumo diário dos e-mails.
@@ -169,7 +169,7 @@ function FormularioDePreferencias() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:36
+   * Hora: 12:34
    * Cartão Jira: KAN-146
    * Título: Salvar
    * Objetivo: Gravar as escolhas e mostrar a confirmação.

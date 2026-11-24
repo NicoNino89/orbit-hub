@@ -15,7 +15,7 @@ const SESSAO: SessaoApi = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Abrir a central
  * Objetivo: Renderizar a central com um aviso não lido, um lido e as preferências.
@@ -72,7 +72,7 @@ describe('Central de notificações (KAN-146)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:36
+   * Hora: 12:34
    * Cartão Jira: KAN-146
    * Título: Sino e leitura
    * Objetivo: Conferir o contador no sino, a lista e que marcar como lido zera o sino.
@@ -92,7 +92,7 @@ describe('Central de notificações (KAN-146)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:36
+   * Hora: 12:34
    * Cartão Jira: KAN-146
    * Título: Preferências
    * Objetivo: Conferir que o obrigatório fica travado e que a escolha e o resumo vão para a API.

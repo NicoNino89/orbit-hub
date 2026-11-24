@@ -60,7 +60,7 @@ class EmailConfig {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Enviar pelo SMTP
          * Objetivo: Enviar a mensagem de texto simples sem derrubar quem chamou.
@@ -74,7 +74,7 @@ class EmailConfig {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 12:36
+         * Hora: 12:34
          * Cartão Jira: KAN-146
          * Título: Tentar enviar pelo SMTP
          * Objetivo: Montar e enviar a mensagem e dizer se o servidor aceitou.

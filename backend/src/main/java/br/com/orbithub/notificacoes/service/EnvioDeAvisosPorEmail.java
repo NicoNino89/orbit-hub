@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: R17 – Envio dos avisos por e-mail
  * Objetivo: Enviar os e-mails da fila de avisos imediatos e tentar de novo os que falharam.
@@ -44,7 +44,7 @@ class EnvioDeAvisosPorEmail extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação da rotina
      * Objetivo: Descrever a rotina e receber o banco, o e-mail, as contas, o endereço da web e os parâmetros.
@@ -64,7 +64,7 @@ class EnvioDeAvisosPorEmail extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Enviar a fila
      * Objetivo: Enviar os e-mails vencidos da fila e reagendar os que falharam.
@@ -106,7 +106,7 @@ class EnvioDeAvisosPorEmail extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Reagendar após falha
      * Objetivo: Marcar a falha e agendar a próxima tentativa, ou desistir no limite.

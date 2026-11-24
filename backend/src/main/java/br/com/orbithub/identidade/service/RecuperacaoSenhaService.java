@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Recuperação de senha
  * Objetivo: Enviar o link de redefinição por e-mail e trocar a senha a partir dele.
@@ -53,7 +53,7 @@ public class RecuperacaoSenhaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, links, sessões, codificador, e-mail, parâmetros e relógio.
@@ -96,7 +96,7 @@ public class RecuperacaoSenhaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Redefinir senha
      * Objetivo: Trocar a senha pela do formulário, gastar o link e encerrar todas as sessões.

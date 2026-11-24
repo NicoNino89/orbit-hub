@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Repositório das notificações
  * Objetivo: Ler, contar e marcar as notificações de cada pessoa.
@@ -25,7 +25,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Avisos da pessoa
      * Objetivo: Listar os avisos da plataforma de uma pessoa, paginados.
@@ -36,7 +36,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Não lidos
      * Objetivo: Contar os avisos não lidos da plataforma, para o contador do sino.
@@ -47,7 +47,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Aviso da pessoa
      * Objetivo: Buscar um aviso conferindo o dono.
@@ -58,7 +58,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar todas como lidas
      * Objetivo: Marcar de uma vez os avisos não lidos da pessoa.
@@ -71,7 +71,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, UUID> 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Apagar antigas
      * Objetivo: Remover os avisos criados antes do limite de retenção.

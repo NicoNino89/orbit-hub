@@ -10,7 +10,7 @@ type Rota = (pedido: { corpo: unknown; cabecalhos: Record<string, string> }) => 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: API simulada para testes de tela
  * Objetivo: Responder ao fetch conforme "MÉTODO caminho" e guardar as chamadas feitas.

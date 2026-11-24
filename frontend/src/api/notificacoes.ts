@@ -3,7 +3,7 @@ import { requisitar } from './cliente'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Canal de aviso
  * Objetivo: Tipar por onde o aviso chega.
@@ -14,7 +14,7 @@ export type Canal = 'PLATAFORMA' | 'EMAIL' | 'AMBOS'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Aviso
  * Objetivo: Tipar um aviso do sino.
@@ -33,7 +33,7 @@ export interface Aviso {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Página de avisos
  * Objetivo: Tipar a lista paginada com o total de não lidos.
@@ -49,7 +49,7 @@ export interface PaginaDeAvisos {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Preferência de um tipo
  * Objetivo: Tipar um tipo de aviso com o canal escolhido.
@@ -66,7 +66,7 @@ export interface PreferenciaDeTipo {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Preferências
  * Objetivo: Tipar os canais por tipo e o resumo diário.
@@ -80,7 +80,7 @@ export interface Preferencias {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Evento de atualização do sino
  * Objetivo: Nome do evento que a página dispara para o sino recontar.
@@ -91,7 +91,7 @@ export const EVENTO_AVISOS = 'orbit:avisos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Contador do sino
  * Objetivo: Buscar quantos avisos não lidos a pessoa tem.
@@ -104,7 +104,7 @@ export function contarNaoLidas() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Avisos
  * Objetivo: Buscar uma página de avisos.
@@ -117,7 +117,7 @@ export function listarAvisos(pagina = 0) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Marcar como lido
  * Objetivo: Marcar um aviso, ou todos, como lidos.
@@ -130,7 +130,7 @@ export function marcarLido(id?: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Ler preferências
  * Objetivo: Buscar os canais por tipo e o resumo diário.
@@ -143,7 +143,7 @@ export function lerPreferencias() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Salvar preferências
  * Objetivo: Gravar os canais dos tipos não obrigatórios e o resumo diário.

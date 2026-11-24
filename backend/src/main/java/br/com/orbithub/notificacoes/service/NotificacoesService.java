@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Central de notificações
  * Objetivo: Receber os avisos dos módulos e entregá-los pelo canal escolhido pela pessoa (plataforma, e-mail ou os
@@ -46,7 +46,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber o repositório, o acesso ao banco (fila e preferências) e o relógio.
@@ -61,7 +61,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Notificar uma pessoa
      * Objetivo: Registrar um aviso para a pessoa, pelo canal que ela escolheu.
@@ -86,7 +86,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Notificar várias pessoas
      * Objetivo: Registrar o mesmo aviso para várias pessoas (por exemplo, termos atualizados ou a equipe de aprovação).
@@ -102,7 +102,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Avisos da pessoa
      * Objetivo: Listar os avisos do sino, paginados.
@@ -117,7 +117,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Não lidos
      * Objetivo: Contar os avisos não lidos, para o contador do sino.
@@ -131,7 +131,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar como lida
      * Objetivo: Marcar um aviso da pessoa como lido.
@@ -147,7 +147,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar todas como lidas
      * Objetivo: Zerar o contador do sino.
@@ -161,7 +161,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Preferências da pessoa
      * Objetivo: Devolver o canal de cada tipo e se a pessoa quer o resumo diário.
@@ -178,7 +178,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Salvar preferências
      * Objetivo: Gravar o canal escolhido para cada tipo e o resumo diário.
@@ -209,7 +209,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Canal escolhido
      * Objetivo: Ler o canal que a pessoa escolheu para o tipo, ou o padrão.
@@ -225,7 +225,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Quer resumo diário
      * Objetivo: Dizer se a pessoa prefere receber os e-mails não obrigatórios num resumo por dia.
@@ -240,7 +240,7 @@ public class NotificacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Preferências
      * Objetivo: Levar o canal de cada tipo e o resumo diário.

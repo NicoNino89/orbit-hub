@@ -58,7 +58,7 @@ class RecuperacaoSenhaServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Preparação
      * Objetivo: Montar o serviço com uma conta ativa e repositórios simulados.

@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Ações com segunda aprovação
  * Objetivo: Receber propostas de ações graves, deixar uma segunda pessoa aprovar ou rejeitar, e só então executar
@@ -57,7 +57,7 @@ public class SegundaAprovacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Indexar os executores por ação e receber o prazo e o relógio.
@@ -83,7 +83,7 @@ public class SegundaAprovacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Propor ação grave
      * Objetivo: Registrar a proposta, que fica pendente até a segunda pessoa decidir.
@@ -320,7 +320,7 @@ public class SegundaAprovacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Avisar quem aprova
      * Objetivo: Notificar os membros ativos com papel para decidir a proposta, menos quem propôs.

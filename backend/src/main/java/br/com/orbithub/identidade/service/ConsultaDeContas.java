@@ -75,7 +75,7 @@ public class ConsultaDeContas {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: E-mail de uma conta ativa
      * Objetivo: Devolver o e-mail para entregar um aviso.
@@ -89,7 +89,7 @@ public class ConsultaDeContas {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Equipe ativa com papéis
      * Objetivo: Listar os membros ativos que têm algum dos papéis (por exemplo, quem aprova uma ação grave).
@@ -103,7 +103,7 @@ public class ConsultaDeContas {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Contas públicas ativas
      * Objetivo: Listar as contas de investidor e empreendedor ativas.

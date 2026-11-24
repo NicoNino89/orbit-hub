@@ -7,7 +7,7 @@ import { useSessao } from '../sessao/contexto'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Moldura da área logada
  * Objetivo: Cabeçalho comum com a marca, o papel em que a pessoa está atuando, o nome e o botão de sair.

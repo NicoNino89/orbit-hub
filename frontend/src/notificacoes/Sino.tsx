@@ -7,7 +7,7 @@ const INTERVALO_MS = 60_000
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Sino de avisos
  * Objetivo: Mostrar no cabeçalho quantos avisos não lidos a pessoa tem e levar à central.

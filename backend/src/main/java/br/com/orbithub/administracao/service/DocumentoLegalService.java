@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Publicação e consulta de documentos legais
  * Objetivo: Publicar versões novas de termos, políticas e avisos e responder qual versão vale agora.
@@ -43,7 +43,7 @@ public class DocumentoLegalService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber o repositório e o relógio.
@@ -137,7 +137,7 @@ public class DocumentoLegalService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Publicar nova versão
      * Objetivo: Gravar a próxima versão de um tipo com a data de vigência informada.

@@ -30,7 +30,7 @@ function sessao(minutosAteOFim: number): SessaoApi {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Abrir já logado
  * Objetivo: Abrir o endereço com a sessão restaurada pelo cookie.

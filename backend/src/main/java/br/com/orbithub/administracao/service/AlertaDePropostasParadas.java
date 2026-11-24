@@ -44,7 +44,7 @@ class AlertaDePropostasParadas extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Alertar as vencidas
      * Objetivo: Marcar e alertar as propostas paradas além do prazo.

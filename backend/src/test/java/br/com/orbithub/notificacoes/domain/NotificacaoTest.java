@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Testes da notificação
  * Objetivo: Conferir que o link do aviso só aceita caminho interno, que os textos são cortados no tamanho das colunas
@@ -24,7 +24,7 @@ class NotificacaoTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Link só interno
      * Objetivo: Garantir que um link para outro site nunca vai para o aviso (o e-mail e o sino o abririam).
@@ -41,7 +41,7 @@ class NotificacaoTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Textos cortados e leitura
      * Objetivo: Conferir o corte do título e da mensagem e que marcar duas vezes mantém a primeira leitura.
@@ -61,7 +61,7 @@ class NotificacaoTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Obrigatórios
      * Objetivo: Conferir que os avisos de segurança, termos, prazo de conexão e da equipe são obrigatórios e chegam
@@ -80,7 +80,7 @@ class NotificacaoTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Aviso de teste
      * Objetivo: Criar um aviso com o link informado.

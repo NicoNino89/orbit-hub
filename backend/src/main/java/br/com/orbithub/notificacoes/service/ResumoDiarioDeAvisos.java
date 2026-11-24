@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: R18 – Resumo diário dos avisos
  * Objetivo: Mandar um único e-mail por dia, às 7h, com os avisos das pessoas que escolheram o resumo.
@@ -37,7 +37,7 @@ class ResumoDiarioDeAvisos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação da rotina
      * Objetivo: Descrever a rotina e receber o banco, o e-mail, as contas e o endereço da web.
@@ -54,7 +54,7 @@ class ResumoDiarioDeAvisos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Montar e enviar os resumos
      * Objetivo: Enviar um e-mail por pessoa com os títulos dos avisos pendentes.

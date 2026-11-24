@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: R19 – Limpeza das notificações antigas
  * Objetivo: Apagar as notificações mais antigas que notificacoes.retencao_dias.
@@ -28,7 +28,7 @@ class LimpezaDeAvisosAntigos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação da rotina
      * Objetivo: Descrever a rotina e receber o repositório e os parâmetros.
@@ -43,7 +43,7 @@ class LimpezaDeAvisosAntigos extends RotinaBase {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Apagar antigas
      * Objetivo: Remover as notificações além da retenção.

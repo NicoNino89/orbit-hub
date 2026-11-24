@@ -27,7 +27,7 @@ public interface EnvioDeEmail {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Tentar enviar
      * Objetivo: Entregar a mensagem e dizer se deu certo, para a fila de notificações tentar de novo depois.

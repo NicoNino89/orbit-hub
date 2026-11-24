@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Notificação
  * Objetivo: Representar um aviso para uma pessoa, com título, mensagem, link e se já foi lido.
@@ -54,7 +54,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Construtor exigido pelo JPA
      * Objetivo: Permitir que o Hibernate instancie a notificação ao ler do banco.
@@ -66,7 +66,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Nova notificação
      * Objetivo: Criar o aviso não lido.
@@ -89,7 +89,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Marcar como lida
      * Objetivo: Registrar que a pessoa viu o aviso.
@@ -104,7 +104,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso ao identificador
      * Objetivo: Expor o identificador.
@@ -117,7 +117,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso ao destinatário
      * Objetivo: Expor de quem é o aviso.
@@ -130,7 +130,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso ao tipo
      * Objetivo: Expor o tipo do evento.
@@ -143,7 +143,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso ao título
      * Objetivo: Expor o título do aviso.
@@ -156,7 +156,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso à mensagem
      * Objetivo: Expor o texto do aviso.
@@ -169,7 +169,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso ao link
      * Objetivo: Expor o caminho da tela relacionada.
@@ -182,7 +182,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso à data
      * Objetivo: Expor quando o aviso foi criado.
@@ -195,7 +195,7 @@ public class Notificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Acesso à leitura
      * Objetivo: Expor quando o aviso foi lido.

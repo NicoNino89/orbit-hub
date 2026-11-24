@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:36
+ * Hora: 12:34
  * Cartão Jira: KAN-146
  * Título: Perfil e papéis da conta
  * Objetivo: Editar nome, foto e contato; trocar e-mail (com confirmação pelo novo endereço) e senha (com a
@@ -65,7 +65,7 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, serviços, armazenamento, e-mail, verificadores de pendência e relógio.
@@ -201,7 +201,7 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Confirmar troca de e-mail
      * Objetivo: Aplicar o novo e-mail a partir do link enviado a ele.
@@ -225,7 +225,7 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:36
+     * Hora: 12:34
      * Cartão Jira: KAN-146
      * Título: Trocar senha
      * Objetivo: Trocar a senha com a senha atual e desconectar os outros aparelhos.
