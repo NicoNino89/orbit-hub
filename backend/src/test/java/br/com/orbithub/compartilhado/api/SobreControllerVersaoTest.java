@@ -5,7 +5,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import br.com.orbithub.compartilhado.seguranca.SegurancaConfig;
+import br.com.orbithub.compartilhado.seguranca.VerificadorDeSessao;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,8 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
  * Decisões: Classe separada porque a propriedade {@code orbit.versao} muda o contexto do Spring.
  */
 @WebMvcTest(SobreController.class)
+@Import(SegurancaConfig.class)
 @TestPropertySource(properties = {"orbit.ambiente=homologacao", "orbit.versao=3f9c2ab"})
 class SobreControllerVersaoTest {
+
+    @MockitoBean
+    VerificadorDeSessao verificador;
 
     @Autowired
     MockMvc mvc;

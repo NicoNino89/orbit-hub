@@ -7,7 +7,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import br.com.orbithub.compartilhado.seguranca.SegurancaConfig;
+import br.com.orbithub.compartilhado.seguranca.VerificadorDeSessao;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,13 +26,17 @@ import org.springframework.test.web.servlet.MockMvc;
  * Objetivo: Verificar que só as origens configuradas chamam a API pelo navegador.
  * Decisões: Duas origens na configuração, com espaço depois da vírgula, para cobrir a leitura da lista.
  */
-@WebMvcTest
-@Import(CorsConfig.class)
+@WebMvcTest(useDefaultFilters = false, includeFilters = @ComponentScan.Filter(
+        type = FilterType.REGEX, pattern = "br[.]com[.]orbithub[.]compartilhado[.]api[.].*Controller"))
+@Import({CorsConfig.class, SegurancaConfig.class})
 @TestPropertySource(properties = {
         "orbit.ambiente=homologacao",
         "orbit.cors.origens=https://web.orbit.exemplo, https://outro.orbit.exemplo"
 })
 class CorsConfigTest {
+
+    @MockitoBean
+    VerificadorDeSessao verificador;
 
     @Autowired
     MockMvc mvc;

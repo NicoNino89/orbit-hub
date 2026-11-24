@@ -36,6 +36,19 @@ orbit:
       endpoint: ${ORBIT_BLOB_ENDPOINT:}
       container: ${ORBIT_BLOB_CONTAINER:arquivos}
       connection-string: ${ORBIT_BLOB_CONNECTION_STRING:}
+  seguranca:
+    jwt:
+      # Base64, pelo menos 256 bits. Na nuvem vem do Key Vault; no ambiente local, vazio gera uma chave por início.
+      chave: ${ORBIT_JWT_CHAVE:}
+      emissor: orbit-hub
+      duracao: ${ORBIT_JWT_DURACAO:PT15M}
+    sessao:
+      # validade do refresh token: sem uso por esse tempo, a sessão expira (KAN-15)
+      inatividade: ${ORBIT_SESSAO_INATIVIDADE:PT30M}
+      # limite absoluto de uma sessão, mesmo em uso contínuo
+      duracao-maxima: ${ORBIT_SESSAO_DURACAO_MAXIMA:PT12H}
+      # duas abas renovando ao mesmo tempo não contam como reuso de token
+      tolerancia-reuso: PT10S
 
 logging:
   structured:

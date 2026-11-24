@@ -138,17 +138,19 @@ class AplicacaoIT {
 
     /**
      * Autor: Nicholas Bruno Pimentel
-     * Data: 18/11/2026
-     * Hora: 20:47
-     * Cartão Jira: KAN-52
+     * Data: 24/11/2026
+     * Hora: 00:20
+     * Cartão Jira: KAN-57
      * Título: Actuator sem endpoints sensíveis
      * Objetivo: Garantir que /actuator/env e /actuator/beans não fiquem expostos.
      * Decisões: Esses endpoints revelam variáveis e configuração; só health e prometheus são publicados.
+     *           Desde o KAN-57 a segurança barra antes (401) quem não tem token; com token válido a
+     *           rota continua inexistente (404). Os dois casos são "não exposto".
      */
     @Test
     void endpointsSensiveisDoActuatorNaoFicamExpostos() throws Exception {
-        mvc.perform(get("/actuator/env")).andExpect(status().isNotFound());
-        mvc.perform(get("/actuator/beans")).andExpect(status().isNotFound());
+        mvc.perform(get("/actuator/env")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/actuator/beans")).andExpect(status().isUnauthorized());
     }
 
     /**

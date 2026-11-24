@@ -39,6 +39,12 @@ resource "azurerm_container_app" "api" {
   }
 
   secret {
+    name                = "jwt-chave"
+    key_vault_secret_id = azurerm_key_vault_secret.jwt_chave.versionless_id
+    identity            = azurerm_user_assigned_identity.api.id
+  }
+
+  secret {
     name                = "ghcr-token"
     key_vault_secret_id = azurerm_key_vault_secret.ghcr_token.versionless_id
     identity            = azurerm_user_assigned_identity.api.id
@@ -86,6 +92,10 @@ resource "azurerm_container_app" "api" {
       env {
         name        = "ORBIT_DB_SENHA"
         secret_name = "db-senha"
+      }
+      env {
+        name        = "ORBIT_JWT_CHAVE"
+        secret_name = "jwt-chave"
       }
       env {
         name  = "ORBIT_ARMAZENAMENTO_TIPO"
