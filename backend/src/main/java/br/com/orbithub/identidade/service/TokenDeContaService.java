@@ -77,12 +77,43 @@ public class TokenDeContaService {
      */
     @Transactional
     public TokenDeConta consumir(String bruto, Finalidade finalidade) {
+        TokenDeConta token = buscarValido(bruto, finalidade);
+        token.marcarUsado(relogio.instant());
+        return token;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Buscar token válido sem consumir
+     * Objetivo: Validar o token do link sem marcá-lo como usado.
+     * Decisões: Na redefinição de senha, o link só é gasto se a senha nova for aceita; quem chama marca o uso
+     *           (a entidade está sendo gerenciada na mesma transação).
+     */
+    @Transactional(readOnly = true)
+    public TokenDeConta buscarValido(String bruto, Finalidade finalidade) {
         Instant agora = relogio.instant();
-        TokenDeConta token = tokens.findByHash(SessaoService.hash(bruto))
+        return tokens.findByHash(SessaoService.hash(bruto))
                 .filter(t -> t.utilizavel(finalidade, agora))
                 .orElseThrow(() -> new RegraDeNegocioException("link_invalido",
                         "Este link é inválido ou expirou. Peça um novo."));
-        token.marcarUsado(agora);
-        return token;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Pedido recente
+     * Objetivo: Dizer se já foi emitido um token da finalidade há menos que o intervalo informado.
+     * Decisões: Evita que alguém encha a caixa de entrada de outra pessoa pedindo links seguidos.
+     */
+    @Transactional(readOnly = true)
+    public boolean emitidoHaMenosDe(UUID usuarioId, Finalidade finalidade, Duration intervalo) {
+        Instant limite = relogio.instant().minus(intervalo);
+        return tokens.findByUsuarioIdAndFinalidade(usuarioId, finalidade).stream()
+                .anyMatch(t -> t.getCriadoEm().isAfter(limite));
     }
 }

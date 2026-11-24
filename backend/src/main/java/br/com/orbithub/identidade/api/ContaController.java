@@ -3,6 +3,7 @@ package br.com.orbithub.identidade.api;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.PoliticaDeSenha;
 import br.com.orbithub.identidade.service.CadastroService;
+import br.com.orbithub.identidade.service.RecuperacaoSenhaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,18 +37,81 @@ import org.springframework.web.bind.annotation.RestController;
 class ContaController {
 
     private final CadastroService cadastro;
+    private final RecuperacaoSenhaService recuperacao;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
      * Título: Criação do controller
-     * Objetivo: Receber o serviço de cadastro.
+     * Objetivo: Receber os serviços de cadastro e de recuperação de senha.
      * Decisões: Injeção pelo construtor.
      */
-    ContaController(CadastroService cadastro) {
+    ContaController(CadastroService cadastro, RecuperacaoSenhaService recuperacao) {
         this.cadastro = cadastro;
+        this.recuperacao = recuperacao;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Esqueci a senha
+     * Objetivo: Pedir o link de redefinição de senha por e-mail.
+     * Decisões: 202 sempre, exista ou não a conta.
+     */
+    @PostMapping("/senha/esqueci")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(summary = "Envia o link de redefinição de senha, se houver conta ativa com o e-mail")
+    void esqueciASenha(@Valid @RequestBody ReenvioRequest pedido) {
+        recuperacao.solicitar(pedido.email());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Redefinir a senha
+     * Objetivo: Trocar a senha com o token do link.
+     * Decisões: 204 quando trocada; 422 para link inválido ou senha fraca.
+     */
+    @PostMapping("/senha/redefinir")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Redefine a senha com o token do link e encerra todas as sessões")
+    void redefinirSenha(@Valid @RequestBody RedefinicaoRequest pedido) {
+        recuperacao.redefinir(pedido.token(), pedido.senha());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:30
+     * Cartão Jira: KAN-14
+     * Título: Pedido de redefinição
+     * Objetivo: Token do link e a senha nova.
+     * Decisões: Política completa da senha no serviço.
+     */
+    record RedefinicaoRequest(@NotBlank(message = "Link inválido.") String token,
+                              @NotBlank(message = "Crie uma senha.")
+                              @Size(min = PoliticaDeSenha.MINIMO, max = PoliticaDeSenha.MAXIMO,
+                                      message = "A senha precisa ter de 10 a 128 caracteres.") String senha) {
+
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 24/11/2026
+         * Hora: 01:30
+         * Cartão Jira: KAN-14
+         * Título: Representação textual segura
+         * Objetivo: Evitar que token e senha apareçam em logs.
+         * Decisões: Não mostra nenhum campo.
+         */
+        @Override
+        public String toString() {
+            return "RedefinicaoRequest[]";
+        }
     }
 
     /**
