@@ -127,7 +127,7 @@ cd frontend && npm run lint && npm run typecheck && npm test
 
 | Ambiente | Como é publicado | Dados |
 |---|---|---|
-| **Homologação** | Automaticamente, a cada merge na `main`, depois do CI verde (workflow *Entrega em homologação*). Termina com um smoke test | Só fictícios |
+| **Homologação** | Manualmente, quando decidimos publicar: aba *Actions* → *Entrega em homologação* → *Run workflow*. Termina com um smoke test. Volta a ser automática (a cada merge na `main`, depois do CI verde) no fim do projeto, ver [ADR 0008](docs/adr/0008-homologacao-manual.md) | Só fictícios |
 | **Produção** | A partir do marco M1 (S2) | Reais |
 
 Os endereços aparecem no resumo de cada execução do workflow e na aba *Environments* do GitHub. A API de homologação escala a zero: a primeira chamada depois de um tempo parada leva cerca de 1 minuto. A infraestrutura está em [`infra/README.md`](infra/README.md).
