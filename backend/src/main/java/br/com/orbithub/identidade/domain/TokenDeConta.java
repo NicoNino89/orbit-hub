@@ -178,15 +178,18 @@ public class TokenDeConta {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Finalidades do token
      * Objetivo: Enumerar para que um token de conta pode servir.
-     * Decisões: Um token de uma finalidade nunca vale para outra.
+     * Decisões: Um token de uma finalidade nunca vale para outra. Convite da equipe e desafio do segundo fator
+     *           entram com a KAN-75.
      */
     public enum Finalidade {
         CONFIRMACAO_EMAIL,
         REDEFINICAO_SENHA,
-        TROCA_EMAIL
+        TROCA_EMAIL,
+        CONVITE_EQUIPE,
+        SEGUNDO_FATOR
     }
 }

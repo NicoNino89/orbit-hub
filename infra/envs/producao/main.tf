@@ -69,4 +69,6 @@ module "ambiente" {
   teste_disponibilidade      = false # desligado por custo (ADR 0006); religar quando formos testar a disponibilidade
   ghcr_token                 = var.ghcr_token
   email_alertas              = var.email_alertas
+  primeiro_admin_email       = var.primeiro_admin_email
+  primeiro_admin_nome        = var.primeiro_admin_nome
 }

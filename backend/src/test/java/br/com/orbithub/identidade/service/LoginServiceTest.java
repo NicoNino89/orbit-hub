@@ -28,10 +28,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Testes do login
- * Objetivo: Verificar login correto, recusas genéricas, conta pendente, bloqueio temporário e logout.
+ * Objetivo: Verificar login correto, recusas genéricas, conta pendente, bloqueio temporário, logout e o desafio do
+ *           segundo fator nas contas da equipe.
  * Decisões: Bloqueios guardados num mapa em memória; codificador de senha que compara texto simples.
  */
 class LoginServiceTest {
@@ -41,6 +42,7 @@ class LoginServiceTest {
     private final Map<String, BloqueioDeLogin> bloqueiosGravados = new HashMap<>();
     private UsuarioRepository usuarios;
     private SessaoService sessoes;
+    private SegundoFatorService segundoFator;
     private PasswordEncoder senhas;
     private RelogioAjustavel relogio;
     private LoginService servico;
@@ -75,7 +77,8 @@ class LoginServiceTest {
             return null;
         }).when(bloqueios).delete(any());
         relogio = new RelogioAjustavel(AGORA);
-        servico = new LoginService(usuarios, bloqueios, senhas, sessoes,
+        segundoFator = mock(SegundoFatorService.class);
+        servico = new LoginService(usuarios, bloqueios, senhas, sessoes, segundoFator,
                 new LoginService.Parametros(3, Duration.ofMinutes(15)), relogio);
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "hash:senha-correta-1", Set.of(Papel.INVESTIDOR), AGORA);
@@ -205,5 +208,34 @@ class LoginServiceTest {
         bloqueio.registrarFalha(depois, 2, Duration.ofMinutes(15));
         assertThat(bloqueio.getFalhas()).isEqualTo(1);
         assertThat(bloqueio.getBloqueadoAte()).isNull();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Conta da equipe recebe desafio
+     * Objetivo: Garantir que a senha certa de uma conta interna não abre sessão: devolve o desafio do segundo
+     *           fator, e as falhas anteriores não são zeradas antes do código.
+     * Decisões: O serviço de segundo fator é simulado.
+     */
+    @Test
+    void contaDaEquipeRecebeDesafioEmVezDeSessao() {
+        Usuario bia = Usuario.novo("Bia", "bia@orbithub.com", "hash:senha-da-equipe-1", Set.of(Papel.ADMIN), AGORA);
+        bia.confirmarEmail(AGORA);
+        when(usuarios.findByEmail("bia@orbithub.com")).thenReturn(Optional.of(bia));
+        SegundoFatorService.Desafio desafio = new SegundoFatorService.Desafio("d1", SegundoFatorService.Etapa.CONFIGURAR,
+                AGORA.plusSeconds(600));
+        when(segundoFator.emitir(bia)).thenReturn(desafio);
+        bloqueiosGravados.put(SessaoService.hash("bia@orbithub.com"), BloqueioDeLogin.novo("x", AGORA));
+
+        LoginService.ResultadoLogin resultado = servico.entrar("bia@orbithub.com", "senha-da-equipe-1");
+
+        assertThat(resultado.sessao()).isNull();
+        assertThat(resultado.desafio()).isEqualTo(desafio);
+        assertThat(desafio.toString()).doesNotContain("d1");
+        verify(sessoes, never()).abrir(any());
+        assertThat(bloqueiosGravados).isNotEmpty();
     }
 }

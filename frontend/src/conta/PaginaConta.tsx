@@ -5,13 +5,13 @@ import {
   ativarPapel, buscarConta, buscarFoto, buscarHistorico, desativarPapel, enviarFoto, pedirTrocaDeEmail, salvarPerfil,
   trocarSenha, type Conta, type EventoConta,
 } from '../api/conta'
-import type { Papel } from '../api/contas'
+import { ehPapelPublico, NOMES_DOS_PAPEIS, type Papel } from '../api/contas'
 import { ENDERECOS, listarVigentes } from '../api/documentos'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 
-const NOMES_PAPEL: Record<Papel, string> = { INVESTIDOR: 'Investidor', EMPREENDEDOR: 'Empreendedor', ADMIN: 'Administrador' }
+const NOMES_PAPEL = NOMES_DOS_PAPEIS
 const EVENTOS: Record<EventoConta['evento'], string> = {
   PAPEL_ATIVADO: 'Papel ativado', PAPEL_DESATIVADO: 'Papel desativado',
   EMAIL_ALTERADO: 'E-mail alterado', SENHA_ALTERADA: 'Senha alterada',
@@ -225,12 +225,13 @@ function SecaoPerfil({ conta, aoMudar }: { conta: Conta; aoMudar: (c: Conta) => 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:40
- * Cartão Jira: KAN-16
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Seção de papéis
  * Objetivo: Mostrar os papéis da conta e ativar ou desativar.
  * Decisões: Ativar investidor pede o aceite do Termo de Confidencialidade vigente. Depois da mudança, a sessão
  *           é renovada para o token levar os papéis novos; ao ativar, a pessoa é levada ao painel do papel.
+ *           Conta da equipe só vê os papéis, definidos pelo administrador (KAN-75).
  */
 function SecaoPapeis({ conta, aoMudar }: { conta: Conta; aoMudar: () => Promise<void> }) {
   const { renovar, escolherPapel } = useSessao()
@@ -286,7 +287,18 @@ function SecaoPapeis({ conta, aoMudar }: { conta: Conta; aoMudar: () => Promise<
   }
 
   const publicos: Papel[] = ['INVESTIDOR', 'EMPREENDEDOR']
-  const ativos = conta.papeis.filter((p) => p !== 'ADMIN')
+  const ativos = conta.papeis.filter(ehPapelPublico)
+
+  if (conta.papeis.some((p) => !ehPapelPublico(p))) {
+    return (
+      <Secao titulo="Papéis">
+        <p className="text-sm">
+          Conta da equipe: {conta.papeis.map((p) => NOMES_PAPEL[p]).join(', ')}. Os papéis são definidos pelo
+          administrador. Para investir ou empreender, use uma conta pessoal separada.
+        </p>
+      </Secao>
+    )
+  }
 
   return (
     <Secao titulo="Papéis">

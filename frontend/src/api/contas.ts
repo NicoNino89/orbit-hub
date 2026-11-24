@@ -1,6 +1,54 @@
 import { requisitar } from './cliente'
 
-export type Papel = 'INVESTIDOR' | 'EMPREENDEDOR' | 'ADMIN'
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
+ * Título: Papéis da plataforma
+ * Objetivo: Tipar os papéis públicos (investidor, empreendedor) e os da equipe interna.
+ * Decisões: Os mesmos nomes do enum Papel do back-end.
+ */
+export type PapelPublico = 'INVESTIDOR' | 'EMPREENDEDOR'
+export type PapelInterno =
+  | 'ADMIN' | 'ANALISTA_VERIFICACAO' | 'CURADOR' | 'MODERADOR' | 'SUPORTE_N1' | 'SUPORTE_N2'
+  | 'ENCARREGADO_DADOS' | 'JURIDICO'
+export type Papel = PapelPublico | PapelInterno
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
+ * Título: Nome de cada papel
+ * Objetivo: Exibir os papéis em português, num lugar só.
+ * Decisões: Nomes da seção 1.2 de processos-e-operacao.md.
+ */
+export const NOMES_DOS_PAPEIS: Record<Papel, string> = {
+  INVESTIDOR: 'Investidor',
+  EMPREENDEDOR: 'Empreendedor',
+  ADMIN: 'Administrador',
+  ANALISTA_VERIFICACAO: 'Analista de verificação',
+  CURADOR: 'Curador',
+  MODERADOR: 'Moderador',
+  SUPORTE_N1: 'Suporte nível 1',
+  SUPORTE_N2: 'Suporte nível 2',
+  ENCARREGADO_DADOS: 'Encarregado de dados',
+  JURIDICO: 'Jurídico',
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
+ * Título: Papel público
+ * Objetivo: Dizer se o papel é de investidor ou empreendedor.
+ * Decisões: Os demais são da equipe interna.
+ */
+export function ehPapelPublico(papel: Papel): papel is PapelPublico {
+  return papel === 'INVESTIDOR' || papel === 'EMPREENDEDOR'
+}
 
 export interface NovoCadastro {
   nome: string

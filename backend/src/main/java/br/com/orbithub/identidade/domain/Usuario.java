@@ -68,6 +68,21 @@ public class Usuario {
     @Column(name = "foto_chave", length = 300)
     private String fotoChave;
 
+    @Column(nullable = false)
+    private boolean interna;
+
+    @Column(name = "totp_segredo", length = 200)
+    private String totpSegredo;
+
+    @Column(name = "totp_pendente", length = 200)
+    private String totpPendente;
+
+    @Column(name = "totp_ultimo_passo")
+    private Long totpUltimoPasso;
+
+    @Column(name = "desligado_em")
+    private Instant desligadoEm;
+
     @Version
     private long versao;
 
@@ -86,17 +101,22 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Criação de uma conta
      * Objetivo: Criar uma conta nova, ainda aguardando a confirmação do e-mail.
      * Decisões: Exige pelo menos um papel; o hash da senha chega pronto (a política e o algoritmo ficam no
-     *           serviço de cadastro).
+     *           serviço de cadastro). Papéis internos e públicos nunca se misturam: com papel interno, a conta já
+     *           nasce interna (KAN-75).
      */
     public static Usuario novo(String nome, String email, String senhaHash, Set<Papel> papeis, Instant agora) {
         Objects.requireNonNull(senhaHash, "senhaHash");
         if (papeis == null || papeis.isEmpty()) {
             throw new IllegalArgumentException("A conta precisa de pelo menos um papel");
+        }
+        boolean comInterno = papeis.stream().anyMatch(Papel::interno);
+        if (comInterno && papeis.stream().anyMatch(Papel::publico)) {
+            throw new IllegalArgumentException("Conta interna não tem papel de investidor ou empreendedor");
         }
         Usuario usuario = new Usuario();
         usuario.id = UUID.randomUUID();
@@ -105,6 +125,7 @@ public class Usuario {
         usuario.senhaHash = senhaHash;
         usuario.status = StatusUsuario.PENDENTE_CONFIRMACAO;
         usuario.papeis = EnumSet.copyOf(papeis);
+        usuario.interna = comInterno;
         usuario.criadoEm = agora;
         usuario.atualizadoEm = agora;
         return usuario;
@@ -318,15 +339,19 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:40
-     * Cartão Jira: KAN-16
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Ativar papel
      * Objetivo: Acrescentar um papel público à conta.
-     * Decisões: Devolve falso se a conta já tinha o papel (nada muda).
+     * Decisões: Devolve falso se a conta já tinha o papel (nada muda). Conta interna nunca recebe papel
+     *           público: quem é da equipe e também investe usa outra conta (KAN-75).
      */
     public boolean ativarPapel(Papel papel, Instant agora) {
         if (!papel.publico()) {
             throw new IllegalArgumentException("Papel interno não é ativado pelo usuário");
+        }
+        if (interna) {
+            throw new IllegalStateException("Conta interna não recebe papel de investidor ou empreendedor");
         }
         boolean mudou = papeis.add(papel);
         if (mudou) {
@@ -381,5 +406,230 @@ public class Usuario {
      */
     public String getFotoChave() {
         return fotoChave;
+    }
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Conta da equipe interna
+     * Objetivo: Criar a conta de um membro da equipe, convidado pelo administrador.
+     * Decisões: Nasce pendente, com uma senha impossível de acertar (o hash chega pronto do serviço), até o
+     *           membro aceitar o convite e definir a própria senha: a equipe nunca define senha por ninguém.
+     */
+    public static Usuario novoInterno(String nome, String email, String senhaInutilizavel, Set<Papel> papeis,
+                                      Instant agora) {
+        exigirPapeisInternos(papeis);
+        return novo(nome, email, senhaInutilizavel, papeis, agora);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Exigir papéis internos
+     * Objetivo: Recusar conjunto vazio ou com papel público numa conta interna.
+     * Decisões: Mensagem de negócio, porque chega à tela do administrador.
+     */
+    private static void exigirPapeisInternos(Set<Papel> papeis) {
+        if (papeis == null || papeis.isEmpty() || !papeis.stream().allMatch(Papel::interno)) {
+            throw new IllegalArgumentException("Escolha pelo menos um papel interno");
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Aceitar o convite
+     * Objetivo: Ativar a conta interna com a senha escolhida pelo próprio membro.
+     * Decisões: Só vale para conta interna pendente; o segundo fator é configurado no primeiro login.
+     */
+    public void aceitarConvite(String senhaHash, Instant agora) {
+        if (!interna || status != StatusUsuario.PENDENTE_CONFIRMACAO) {
+            throw new IllegalStateException("Convite já usado ou conta não é da equipe");
+        }
+        this.senhaHash = Objects.requireNonNull(senhaHash, "senhaHash");
+        this.status = StatusUsuario.ATIVO;
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Trocar papéis internos
+     * Objetivo: Definir o novo conjunto de papéis de um membro da equipe.
+     * Decisões: Só em conta interna e só com papéis internos; devolve os papéis anteriores, para a trilha
+     *           registrar o antes e o depois.
+     */
+    public Set<Papel> definirPapeisInternos(Set<Papel> novos, Instant agora) {
+        if (!interna) {
+            throw new IllegalStateException("Só contas da equipe têm papéis internos");
+        }
+        exigirPapeisInternos(novos);
+        Set<Papel> anteriores = EnumSet.copyOf(papeis);
+        papeis.clear();
+        papeis.addAll(novos);
+        atualizadoEm = agora;
+        return anteriores;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Desligar da equipe
+     * Objetivo: Encerrar a conta de um membro que saiu da equipe.
+     * Decisões: A conta fica desativada (não entra nem renova sessão) e guarda a data; os papéis ficam
+     *           registrados para o histórico. O segundo fator é apagado. Desligar de novo não muda nada.
+     */
+    public void desligar(Instant agora) {
+        if (!interna) {
+            throw new IllegalStateException("Só contas da equipe são desligadas");
+        }
+        if (desligadoEm != null) {
+            return;
+        }
+        status = StatusUsuario.DESATIVADO;
+        desligadoEm = agora;
+        totpSegredo = null;
+        totpPendente = null;
+        atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Iniciar a configuração do segundo fator
+     * Objetivo: Guardar o segredo novo (cifrado) até o membro confirmar com o primeiro código.
+     * Decisões: O segredo em uso continua valendo até a confirmação.
+     */
+    public void iniciarSegundoFator(String segredoCifrado, Instant agora) {
+        this.totpPendente = Objects.requireNonNull(segredoCifrado, "segredoCifrado");
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Concluir a configuração do segundo fator
+     * Objetivo: Passar o segredo pendente a valer, depois do primeiro código correto.
+     * Decisões: Guarda o passo do código usado, para ele não servir de novo.
+     */
+    public void concluirSegundoFator(long passo, Instant agora) {
+        if (totpPendente == null) {
+            throw new IllegalStateException("Não há configuração de segundo fator em andamento");
+        }
+        this.totpSegredo = totpPendente;
+        this.totpPendente = null;
+        this.totpUltimoPasso = passo;
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Registrar código usado
+     * Objetivo: Aceitar um código só se o passo de tempo dele for posterior ao último usado.
+     * Decisões: Impede reusar o mesmo código (replay) dentro dos 30 segundos de validade.
+     */
+    public boolean usarPassoDoCodigo(long passo) {
+        if (totpUltimoPasso != null && passo <= totpUltimoPasso) {
+            return false;
+        }
+        totpUltimoPasso = passo;
+        return true;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Redefinir o segundo fator
+     * Objetivo: Apagar o segundo fator de um membro que perdeu o aplicativo autenticador.
+     * Decisões: No próximo login o membro configura de novo; quem pede é o administrador, com registro.
+     */
+    public void redefinirSegundoFator(Instant agora) {
+        this.totpSegredo = null;
+        this.totpPendente = null;
+        this.totpUltimoPasso = null;
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Conta interna
+     * Objetivo: Dizer se a conta é da equipe interna.
+     * Decisões: Definido na criação e nunca muda.
+     */
+    public boolean isInterna() {
+        return interna;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Segundo fator configurado
+     * Objetivo: Dizer se o membro já tem o segundo fator valendo.
+     * Decisões: Segredo pendente não conta.
+     */
+    public boolean temSegundoFator() {
+        return totpSegredo != null;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Acesso ao segredo do segundo fator
+     * Objetivo: Expor o segredo cifrado em uso.
+     * Decisões: Cifrado; só o serviço de segundo fator decifra.
+     */
+    public String getTotpSegredo() {
+        return totpSegredo;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Acesso ao segredo pendente
+     * Objetivo: Expor o segredo cifrado ainda em configuração.
+     * Decisões: Nulo fora da configuração.
+     */
+    public String getTotpPendente() {
+        return totpPendente;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Acesso à data de desligamento
+     * Objetivo: Expor quando o membro foi desligado.
+     * Decisões: Nulo enquanto ativo.
+     */
+    public Instant getDesligadoEm() {
+        return desligadoEm;
     }
 }

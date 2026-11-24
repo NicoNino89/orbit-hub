@@ -40,6 +40,8 @@ env:
   TF_VAR_email_alertas: ${{ secrets.ALERTAS_EMAIL }}
   TF_VAR_ghcr_token: ${{ secrets.GHCR_LEITURA_TOKEN }}
   TF_VAR_assinatura_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  # Primeiro administrador (KAN-75): segredo opcional; vazio não cria ninguém.
+  TF_VAR_primeiro_admin_email: ${{ secrets.PRIMEIRO_ADMIN_EMAIL }}
 
 jobs:
   validar:

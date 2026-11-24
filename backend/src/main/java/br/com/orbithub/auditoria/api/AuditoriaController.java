@@ -6,7 +6,8 @@ import br.com.orbithub.auditoria.service.AcessoJustificadoService;
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
 import br.com.orbithub.auditoria.service.TrilhaDeAuditoria;
 import br.com.orbithub.compartilhado.seguranca.Autenticado;
-import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteAdmin;
+import br.com.orbithub.compartilhado.seguranca.Permissoes.AdminOuEncarregado;
+import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteEquipe;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,18 +32,18 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:09
- * Cartão Jira: KAN-80
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Consulta da trilha de auditoria e acesso justificado
  * Objetivo: Permitir ao administrador consultar a trilha com filtros e à equipe registrar o acesso
  *           justificado a dados confidenciais dentro de um caso.
  * Decisões: Só leitura da trilha: não existe rota de edição nem de exclusão. A consulta da própria trilha
- *           também fica registrada (com os filtros usados). O encarregado de dados ganha acesso junto com os
- *           papéis internos (KAN-75).
+ *           também fica registrada (com os filtros usados). Consulta: administrador e encarregado de dados;
+ *           registro de acesso justificado: qualquer papel interno que atenda casos (KAN-75).
  */
 @RestController
 @RequestMapping("/api/v1/admin/auditoria")
-@SomenteAdmin
+@AdminOuEncarregado
 @Tag(name = "Auditoria", description = "Trilha imutável das ações da equipe interna")
 class AuditoriaController {
 
@@ -73,7 +74,7 @@ class AuditoriaController {
      * Decisões: Datas em ISO-8601 (instantes); a página tem no máximo 100 itens.
      */
     @GetMapping
-    @Operation(summary = "Consulta a trilha de auditoria com filtros (somente administrador)")
+    @Operation(summary = "Consulta a trilha de auditoria com filtros (administrador ou encarregado de dados)")
     PaginaResponse consultar(@RequestParam(required = false) UUID ator,
                              @RequestParam(required = false) String acao,
                              @RequestParam(required = false) String objetoTipo,
@@ -99,7 +100,7 @@ class AuditoriaController {
      * Decisões: Só os que já aparecem na trilha.
      */
     @GetMapping("/acoes")
-    @Operation(summary = "Códigos de ação presentes na trilha (somente administrador)")
+    @Operation(summary = "Códigos de ação presentes na trilha (administrador ou encarregado de dados)")
     List<String> acoes() {
         ContextoDeAuditoria.descrever("AUDITORIA_ACOES_LISTADAS", null, null, null);
         return trilha.acoes();
@@ -115,7 +116,7 @@ class AuditoriaController {
      * Decisões: Inclui pessoas já desligadas, porque a trilha continua valendo para elas.
      */
     @GetMapping("/atores")
-    @Operation(summary = "Pessoas que aparecem na trilha (somente administrador)")
+    @Operation(summary = "Pessoas que aparecem na trilha (administrador ou encarregado de dados)")
     List<RegistroAuditoriaRepository.Ator> atores() {
         ContextoDeAuditoria.descrever("AUDITORIA_ATORES_LISTADOS", null, null, null);
         return trilha.atores();
@@ -132,6 +133,7 @@ class AuditoriaController {
      *           telas que mostram os dados (Data Room, KAN-30) chamam o mesmo serviço antes de devolvê-los.
      */
     @PostMapping("/acessos-nivel2")
+    @SomenteEquipe
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registra o acesso justificado a dados confidenciais dentro de um caso")
     RegistroResponse registrarAcesso(@Valid @RequestBody AcessoRequest pedido, @AuthenticationPrincipal Jwt token) {

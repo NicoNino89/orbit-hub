@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import * as autenticacao from '../api/autenticacao'
 import { definirFornecedorDeToken, definirRenovador } from '../api/cliente'
-import type { Papel } from '../api/contas'
+import { ehPapelPublico, type Papel } from '../api/contas'
 import { CHAVE_PAPEL_ATIVO, CHAVE_SESSAO_ATIVA, ContextoSessao, type EstadoSessao, type Sessao } from './contexto'
 
 /** Faltando menos que isto para o fim da sessão, o uso da tela renova a sessão (KAN-15). */
@@ -10,8 +10,8 @@ const LIMIAR_RENOVACAO_MS = 5 * 60_000
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Provedor da sessão
  * Objetivo: Guardar a sessão da pessoa logada, restaurá-la ao recarregar a página e oferecer entrar, sair
  *           e renovar a todas as telas.
@@ -19,7 +19,8 @@ const LIMIAR_RENOVACAO_MS = 5 * 60_000
  *           restaurada pelo cookie HttpOnly, mas só se houver a marca de sessão ativa, para visitantes não
  *           dispararem um 401 a cada visita. O cliente HTTP renova sozinho quando recebe 401; se a renovação
  *           falhar, a sessão vira anônima com "expirou". A tela acompanha o fim da sessão por inatividade
- *           e o uso real da tela renova a sessão perto do fim (KAN-15).
+ *           e o uso real da tela renova a sessão perto do fim (KAN-15). Contas da equipe entram em dois passos:
+ *           a senha devolve um desafio, e o código do aplicativo abre a sessão (KAN-75).
  */
 export function SessaoProvider({ children }: { children: ReactNode }) {
   const [estado, setEstado] = useState<EstadoSessao>(() =>
@@ -155,13 +156,19 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
     return () => eventos.forEach((e) => window.removeEventListener(e, aoUsar))
   }, [fimDaSessao, renovar])
 
-  const papeis: Papel[] = estado.status === 'autenticado' ? estado.usuario.papeis.filter((p) => p !== 'ADMIN') : []
+  const papeis: Papel[] = estado.status === 'autenticado' ? estado.usuario.papeis.filter(ehPapelPublico) : []
   const papelAtivo = papelEscolhido && papeis.includes(papelEscolhido) ? papelEscolhido : (papeis[0] ?? null)
 
   const sessao = useMemo<Sessao>(() => ({
     estado,
     papelAtivo,
-    entrar: async (email, senha) => aplicar(await autenticacao.entrar(email, senha)),
+    entrar: async (email, senha) => {
+      const resposta = await autenticacao.entrar(email, senha)
+      if (autenticacao.ehDesafio(resposta)) return resposta
+      aplicar(resposta)
+      return null
+    },
+    confirmarSegundoFator: async (desafio, codigo) => aplicar(await autenticacao.confirmarSegundoFator(desafio, codigo)),
     sair: async () => {
       await autenticacao.sair()
       encerrarLocal(false)

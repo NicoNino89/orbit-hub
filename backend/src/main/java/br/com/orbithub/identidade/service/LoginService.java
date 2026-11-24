@@ -19,14 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Login e logout
- * Objetivo: Conferir e-mail e senha, abrir a sessão, bloquear temporariamente após falhas seguidas e
- *           encerrar a sessão no logout.
+ * Objetivo: Conferir e-mail e senha, abrir a sessão (ou pedir o segundo fator, nas contas da equipe),
+ *           bloquear temporariamente após falhas seguidas e encerrar a sessão no logout.
  * Decisões: Credenciais erradas, e-mail inexistente e conta desativada dão a mesma resposta. Quando o
  *           e-mail não existe, a senha é conferida contra um hash fictício, para o tempo de resposta não
  *           revelar se a conta existe. O bloqueio é por e-mail (hash) e vale também para e-mails sem conta.
+ *           Conta interna nunca recebe sessão só com a senha: recebe um desafio de segundo fator (KAN-75).
  */
 @Service
 public class LoginService {
@@ -37,6 +38,7 @@ public class LoginService {
     private final BloqueioDeLoginRepository bloqueios;
     private final PasswordEncoder senhas;
     private final SessaoService sessoes;
+    private final SegundoFatorService segundoFator;
     private final Parametros parametros;
     private final Clock relogio;
     private final String hashFicticio;
@@ -44,18 +46,20 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:10
-     * Cartão Jira: KAN-13
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Criação do serviço
-     * Objetivo: Receber repositórios, codificador de senhas, sessões, parâmetros e relógio.
+     * Objetivo: Receber repositórios, codificador de senhas, sessões, segundo fator, parâmetros e relógio.
      * Decisões: O hash fictício é calculado uma vez, com o mesmo algoritmo das senhas reais.
      */
     public LoginService(UsuarioRepository usuarios, BloqueioDeLoginRepository bloqueios, PasswordEncoder senhas,
-                        SessaoService sessoes, Parametros parametros, Clock relogio) {
+                        SessaoService sessoes, SegundoFatorService segundoFator, Parametros parametros,
+                        Clock relogio) {
         this.usuarios = usuarios;
         this.bloqueios = bloqueios;
         this.senhas = senhas;
         this.sessoes = sessoes;
+        this.segundoFator = segundoFator;
         this.parametros = parametros;
         this.relogio = relogio;
         this.hashFicticio = senhas.encode("senha-ficticia-para-tempo-constante");
@@ -64,17 +68,20 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:10
-     * Cartão Jira: KAN-13
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Entrar
-     * Objetivo: Abrir a sessão para e-mail e senha corretos de uma conta ativa.
+     * Objetivo: Abrir a sessão para e-mail e senha corretos de uma conta ativa, ou devolver o desafio do
+     *           segundo fator quando a conta é da equipe.
      * Decisões: Bloqueado: 429 antes de conferir a senha. Senha errada: soma falha (gravada mesmo com a
      *           exceção) e responde 401 genérico. Senha certa de conta pendente: 403 "conta_pendente", para a
-     *           pessoa saber que falta confirmar o e-mail (só quem sabe a senha vê essa mensagem).
+     *           pessoa saber que falta confirmar o e-mail (só quem sabe a senha vê essa mensagem). Na conta
+     *           interna, as falhas só são zeradas depois do código correto, para quem tem a senha não ganhar
+     *           tentativas novas de código a cada login (KAN-75).
      */
     @Transactional(noRollbackFor = {CredenciaisInvalidasException.class, LoginBloqueadoException.class,
         ContaPendenteException.class})
-    public SessaoService.SessaoEmitida entrar(String email, String senha) {
+    public ResultadoLogin entrar(String email, String senha) {
         Instant agora = relogio.instant();
         String emailNormalizado = Usuario.normalizarEmail(email);
         String chave = SessaoService.hash(emailNormalizado);
@@ -98,12 +105,27 @@ public class LoginService {
             throw contagem.bloqueado(agora) ? new LoginBloqueadoException() : new CredenciaisInvalidasException();
         }
 
-        bloqueio.ifPresent(bloqueios::delete);
         Usuario conta = usuario.get();
         if (conta.getStatus() == StatusUsuario.PENDENTE_CONFIRMACAO) {
             throw new ContaPendenteException();
         }
-        return sessoes.abrir(conta);
+        if (conta.isInterna()) {
+            return new ResultadoLogin(null, segundoFator.emitir(conta));
+        }
+        bloqueio.ifPresent(bloqueios::delete);
+        return new ResultadoLogin(sessoes.abrir(conta), null);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
+     * Título: Resultado do login
+     * Objetivo: Levar a sessão aberta ou o desafio do segundo fator.
+     * Decisões: Exatamente um dos dois vem preenchido.
+     */
+    public record ResultadoLogin(SessaoService.SessaoEmitida sessao, SegundoFatorService.Desafio desafio) {
     }
 
     /**

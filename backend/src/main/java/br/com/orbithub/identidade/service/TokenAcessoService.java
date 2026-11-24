@@ -53,17 +53,18 @@ public class TokenAcessoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 10:39
+     * Cartão Jira: KAN-75
      * Título: Gerar access token
      * Objetivo: Assinar um access token para a conta, ligado à sessão informada.
-     * Decisões: Papéis em ordem alfabética, para o token ser estável entre emissões.
+     * Decisões: Papéis em ordem alfabética, para o token ser estável entre emissões. Contas da equipe não
+     *           ficam bloqueadas pelos termos dos usuários da plataforma (KAN-75): seguem as regras internas.
      */
     public TokenAcesso gerar(Usuario usuario, UUID sessaoId) {
         Instant agora = relogio.instant();
         Instant expiraEm = agora.plus(propriedades.jwt().duracao());
         List<String> papeis = usuario.getPapeis().stream().map(Papel::name).sorted().toList();
-        boolean termosPendentes = aceites.temPendenciaBloqueante(usuario.getId());
+        boolean termosPendentes = !usuario.isInterna() && aceites.temPendenciaBloqueante(usuario.getId());
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(propriedades.jwt().emissor())
                 .subject(usuario.getId().toString())

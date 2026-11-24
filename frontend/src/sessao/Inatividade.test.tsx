@@ -30,11 +30,13 @@ function sessao(minutosAteOFim: number): SessaoApi {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:20
- * Cartão Jira: KAN-15
+ * Hora: 12:59
+ * Cartão Jira: KAN-75
  * Título: Abrir já logado
  * Objetivo: Abrir o endereço com a sessão restaurada pelo cookie.
- * Decisões: A marca de sessão ativa faz o provedor renovar ao abrir.
+ * Decisões: A marca de sessão ativa faz o provedor renovar ao abrir. O act vazio no fim roda os efeitos pendentes
+ *           antes de o teste simular o uso: com o relógio simulado, o efeito que escuta o uso da tela às vezes só
+ *           rodava depois do avanço do tempo, e o teste falhava de forma intermitente no CI.
  */
 async function abrirLogado(endereco: string) {
   localStorage.setItem(CHAVE_SESSAO_ATIVA, '1')
@@ -44,6 +46,7 @@ async function abrirLogado(endereco: string) {
     </MemoryRouter>,
   )
   await screen.findByRole('heading', { name: 'Olá, Ana' })
+  await act(async () => {})
 }
 
 describe('Sessão por inatividade (KAN-15)', () => {

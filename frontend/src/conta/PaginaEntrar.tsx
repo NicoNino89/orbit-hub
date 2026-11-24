@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router'
+import type { DesafioApi } from '../api/autenticacao'
 import { ErroApi } from '../api/cliente'
 import { reenviarConfirmacao } from '../api/contas'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro, Campo, MolduraConta } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
+import { EtapaSegundoFator } from './EtapaSegundoFator'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -23,12 +25,13 @@ function destinoSeguro(voltar: string | null) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 10:39
+ * Cartão Jira: KAN-75
  * Título: Tela de login
  * Objetivo: Entrar com e-mail e senha e voltar à página de origem.
  * Decisões: Mostra as mensagens da API (genéricas para credenciais e bloqueio). Para conta não confirmada,
- *           oferece o reenvio do link. Quem já está logado vai direto ao destino.
+ *           oferece o reenvio do link. Quem já está logado vai direto ao destino. Conta da equipe segue para a
+ *           etapa do segundo fator (KAN-75).
  */
 export function PaginaEntrar() {
   const { estado, entrar } = useSessao()
@@ -39,26 +42,36 @@ export function PaginaEntrar() {
   const [erro, setErro] = useState<ErroApi | null>(null)
   const [enviando, setEnviando] = useState(false)
   const [reenviado, setReenviado] = useState(false)
+  const [desafio, setDesafio] = useState<DesafioApi | null>(null)
 
   if (estado.status === 'autenticado') {
     return <Navigate to={destino} replace />
   }
 
+  if (desafio) {
+    return <EtapaSegundoFator desafio={desafio} aoVoltar={() => { setDesafio(null); setSenha('') }} />
+  }
+
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 01:10
-   * Cartão Jira: KAN-13
+   * Hora: 10:39
+   * Cartão Jira: KAN-75
    * Título: Enviar login
    * Objetivo: Chamar a API e tratar o erro.
-   * Decisões: Em caso de sucesso a sessão muda e o Navigate acima leva ao destino.
+   * Decisões: Em caso de sucesso a sessão muda e o Navigate acima leva ao destino. Se a API pedir o segundo
+   *           fator, guarda o desafio e mostra a etapa do código.
    */
   async function enviar(evento: FormEvent) {
     evento.preventDefault()
     setErro(null)
     setEnviando(true)
     try {
-      await entrar(email, senha)
+      const pendente = await entrar(email, senha)
+      if (pendente) {
+        setDesafio(pendente)
+        setEnviando(false)
+      }
     } catch (e) {
       setErro(e instanceof ErroApi ? e : new ErroApi(0, 'Não foi possível entrar. Tente novamente.'))
       setEnviando(false)

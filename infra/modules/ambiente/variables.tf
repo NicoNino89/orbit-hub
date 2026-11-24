@@ -132,3 +132,17 @@ variable "confirmar_email" {
   type        = bool
   default     = false
 }
+
+variable "primeiro_admin_email" {
+  description = "E-mail do primeiro administrador, criado na subida da API se ainda não houver nenhum (KAN-75, docs/operacao/primeiro-administrador.md). Vazio não cria ninguém. Vem do segredo PRIMEIRO_ADMIN_EMAIL do GitHub."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "primeiro_admin_nome" {
+  description = "Nome do primeiro administrador (KAN-75)."
+  type        = string
+  default     = "Administrador"
+  sensitive   = true
+}
