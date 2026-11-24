@@ -90,6 +90,7 @@ br.com.orbithub
   - entrada em dois fatores: a senha devolve um desafio, e só o código TOTP (RFC 6238, aplicativo autenticador) abre a sessão. O segredo fica cifrado com AES-GCM; códigos errados contam no mesmo bloqueio do login, e um código vale uma única vez;
   - trocar papéis, desligar ou redefinir o segundo fator derruba as sessões do membro na hora. O desligamento devolve os casos abertos às filas (`CasosDoMembro`, registrado por cada fila);
   - revisão de acessos a cada `acesso.revisao_meses` (padrão: 3), com a fotografia dos membros confirmados.
+- **Segunda aprovação (KAN-81):** ações graves (banimento definitivo, remoção de startup por fraude, transferência de titularidade, parâmetro sensível, dados pessoais fora do fluxo) nunca são aplicadas direto. O módulo dono chama `SegundaAprovacaoService.propor(...)` e registra um `ExecutorDeAcaoGrave` (com os papéis que podem aprovar); o executor só roda quando outra pessoa aprova, na mesma transação. Quem propõe não decide; proposta parada além de `aprovacao.prazo_horas` (padrão: 48) alerta o administrador.
 - Separação entre informações públicas (Nível 1) e confidenciais (Nível 2), com liberação explícita pelo empreendedor (KAN-28 a KAN-33).
 - Tratamento de dados pessoais conforme a LGPD.
 

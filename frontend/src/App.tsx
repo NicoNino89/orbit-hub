@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { AreaAdmin, InicioAdmin, RotaInterna } from './admin/AreaAdmin'
+import { PaginaAprovacoes } from './admin/PaginaAprovacoes'
 import { PaginaAuditoria } from './admin/PaginaAuditoria'
 import { PaginaEquipe } from './admin/PaginaEquipe'
 import { PocCatalogo } from './catalogo/PocCatalogo'
@@ -20,15 +21,16 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:39
- * Cartão Jira: KAN-75
+ * Hora: 10:52
+ * Cartão Jira: KAN-81
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
  *           rota (SPA). A sessão envolve todas as rotas; as da área logada passam pela RotaProtegida e
  *           pela moldura com o cabeçalho. As rotas podem ser montadas sem o BrowserRouter nos testes. O
  *           backoffice fica em /admin, atrás da RotaInterna, e cada tela confere o papel exigido (KAN-80). O
- *           aceite do convite da equipe é público, protegido pelo token do link (KAN-75).
+ *           aceite do convite da equipe é público, protegido pelo token do link (KAN-75). A fila de segunda
+ *           aprovação é de toda a equipe (KAN-81).
  */
 export function Rotas() {
   return (
@@ -58,6 +60,7 @@ export function Rotas() {
             <Route element={<RotaInterna />}>
               <Route path="/admin" element={<AreaAdmin />}>
                 <Route index element={<InicioAdmin />} />
+                <Route path="aprovacoes" element={<PaginaAprovacoes />} />
                 <Route element={<RotaInterna papeis={['ADMIN']} />}>
                   <Route path="equipe" element={<PaginaEquipe />} />
                 </Route>
