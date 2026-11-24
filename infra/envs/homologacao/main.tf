@@ -53,25 +53,20 @@ provider "postgresql" {
   superuser = false
 }
 
-# O ambiente do Container Apps de homologação foi criado pelo azurerm e convertido para o modo
-# WorkloadProfiles à mão em 22/11/2026 (ADR 0005); aqui ele passa a ser do azapi sem ser recriado.
-import {
-  to = module.ambiente.azapi_resource.ambiente
-  id = "/subscriptions/${var.assinatura_id}/resourceGroups/rg-orbithub-hml/providers/Microsoft.App/managedEnvironments/cae-orbithub-hml"
-}
-
 module "ambiente" {
   source = "../../modules/ambiente"
 
-  ambiente               = "homologacao"
-  sigla                  = "hml"
-  regiao                 = local.compartilhado.regiao
-  log_analytics_id       = local.compartilhado.log_analytics_id
-  postgres_servidor_id   = local.compartilhado.postgres_servidor_id
-  postgres_host          = local.compartilhado.postgres_host
-  postgres_admin_usuario = local.compartilhado.postgres_admin_usuario
-  replicas_minimas       = 0
-  teste_disponibilidade  = false
-  ghcr_token             = var.ghcr_token
-  email_alertas          = var.email_alertas
+  ambiente                   = "homologacao"
+  sigla                      = "hml"
+  regiao                     = local.compartilhado.regiao
+  log_analytics_id           = local.compartilhado.log_analytics_id
+  container_apps_ambiente_id = local.compartilhado.container_apps_ambiente_id
+  container_apps_dominio     = local.compartilhado.container_apps_dominio
+  postgres_servidor_id       = local.compartilhado.postgres_servidor_id
+  postgres_host              = local.compartilhado.postgres_host
+  postgres_admin_usuario     = local.compartilhado.postgres_admin_usuario
+  replicas_minimas           = 0
+  teste_disponibilidade      = false
+  ghcr_token                 = var.ghcr_token
+  email_alertas              = var.email_alertas
 }

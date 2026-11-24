@@ -116,3 +116,13 @@ variable "postgres_admin_usuario" {
   description = "Usuário administrador do servidor compartilhado."
   type        = string
 }
+
+variable "container_apps_ambiente_id" {
+  description = "Ambiente do Container Apps compartilhado por homologação e produção (camada compartilhado, ADR 0007)."
+  type        = string
+}
+
+variable "container_apps_dominio" {
+  description = "Domínio padrão do ambiente do Container Apps, usado para montar o endereço da web (CORS)."
+  type        = string
+}

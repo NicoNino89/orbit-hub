@@ -1,5 +1,6 @@
 # Recursos compartilhados entre homologação e produção (KAN-55).
-# Para economizar o crédito do Azure for Students, há UM servidor PostgreSQL e UM workspace de logs.
+# Para economizar o crédito do Azure for Students, há UM servidor PostgreSQL, UM workspace de logs e UM ambiente
+# do Container Apps (a assinatura só permite um por região, ADR 0007).
 # Cada ambiente cria o próprio banco e o próprio usuário nesse servidor (modules/ambiente).
 
 terraform {
@@ -9,6 +10,10 @@ terraform {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 5.14"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.14"
     }
     random = {
       source  = "hashicorp/random"
@@ -166,4 +171,50 @@ resource "azurerm_key_vault_secret" "postgres_admin" {
   content_type = "senha do usuário administrador do PostgreSQL"
 
   depends_on = [azurerm_role_assignment.kv_compartilhado_operador]
+}
+
+# ---------- Ambiente do Container Apps ----------
+
+# Um só ambiente para homologação e produção: a Azure for Students permite um por região (ADR 0007).
+# Os apps de cada ambiente ficam nos próprios grupos (rg-orbithub-hml, rg-orbithub-prd), com identidades,
+# Key Vaults e bancos separados.
+#
+# Criado pelo azapi porque, sem informar o modo, a Azure cria o ambiente como "Express", que não aceita
+# segredos lidos do Key Vault, e o azurerm ainda não tem como informá-lo (ADR 0005). "WorkloadProfiles"
+# só com o perfil Consumption mantém o plano de consumo: escala a zero e nenhum custo fixo.
+resource "azapi_resource" "container_apps" {
+  type      = "Microsoft.App/managedEnvironments@2026-07-01"
+  name      = "cae-orbithub"
+  location  = azurerm_resource_group.compartilhado.location
+  parent_id = azurerm_resource_group.compartilhado.id
+  tags      = local.tags
+
+  body = {
+    properties = {
+      environmentMode = "WorkloadProfiles"
+      workloadProfiles = [{
+        name                = "Consumption"
+        workloadProfileType = "Consumption"
+      }]
+      appLogsConfiguration = {
+        destination = "log-analytics"
+        logAnalyticsConfiguration = {
+          customerId = azurerm_log_analytics_workspace.logs.workspace_id
+        }
+      }
+    }
+  }
+
+  # A chave do workspace vai só na requisição; não fica no estado nem entra na comparação
+  sensitive_body = {
+    properties = {
+      appLogsConfiguration = {
+        logAnalyticsConfiguration = {
+          sharedKey = azurerm_log_analytics_workspace.logs.primary_shared_key
+        }
+      }
+    }
+  }
+
+  response_export_values = ["properties.defaultDomain"]
 }

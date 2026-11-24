@@ -22,3 +22,5 @@ O modo Express **não aceita segredos lidos do Key Vault** (`ExpressKeyVaultSecr
 - Produção nasce direto no modo certo.
 - Quando o `azurerm` passar a aceitar o modo, dá para voltar ao `azurerm_container_app_environment` com um novo `import`. Não há pressa: o azapi é mantido pela Microsoft.
 - O bloco `import` de homologação pode ser removido depois do primeiro apply. Se ficar, não muda nada.
+
+> **Atualização em 23/11/2026:** o ambiente saiu do módulo `ambiente` e passou a ser um só, na camada `compartilhado` ([ADR 0007](0007-ambiente-container-apps-compartilhado.md)). Continua criado pelo azapi, no mesmo modo. O bloco `import` de homologação foi removido.
