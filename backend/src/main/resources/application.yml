@@ -36,6 +36,19 @@ orbit:
       endpoint: ${ORBIT_BLOB_ENDPOINT:}
       container: ${ORBIT_BLOB_CONTAINER:arquivos}
       connection-string: ${ORBIT_BLOB_CONNECTION_STRING:}
+  conta:
+    # endereço da web, usado nos links enviados por e-mail
+    web-url: ${ORBIT_WEB_URL:http://localhost:5173}
+    # desligar só enquanto a nuvem não tiver provedor de e-mail (as contas já nascem ativas)
+    confirmar-email: ${ORBIT_CONTA_CONFIRMAR_EMAIL:true}
+    # cadastro.link_confirmacao_horas (docs/requisitos/processos-e-operacao.md)
+    link-confirmacao: PT24H
+    link-redefinicao: PT30M
+    link-troca-email: PT24H
+  email:
+    # smtp (servidor de spring.mail: Mailpit no ambiente local) ou registro (só registra no log)
+    tipo: ${ORBIT_EMAIL_TIPO:registro}
+    remetente: ${ORBIT_EMAIL_REMETENTE:Orbit Hub <nao-responda@orbithub.local>}
   seguranca:
     jwt:
       # Base64, pelo menos 256 bits. Na nuvem vem do Key Vault; no ambiente local, vazio gera uma chave por início.
@@ -64,6 +77,10 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+  health:
+    mail:
+      # a saúde da API não depende do provedor de e-mail
+      enabled: false
   endpoint:
     health:
       probes:

@@ -126,3 +126,9 @@ variable "container_apps_dominio" {
   description = "Domínio padrão do ambiente do Container Apps, usado para montar o endereço da web (CORS)."
   type        = string
 }
+
+variable "confirmar_email" {
+  description = "Exige a confirmação do e-mail no cadastro (KAN-12). Fica desligada até a nuvem ter um provedor de e-mail; com ela ligada e sem provedor, ninguém consegue ativar a conta."
+  type        = bool
+  default     = false
+}

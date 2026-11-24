@@ -41,6 +41,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- E-mail transacional (SMTP), atrás da interface EnvioDeEmail - KAN-12 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- Segurança: Spring Security e JWT (Nimbus, via resource server) - KAN-57 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
