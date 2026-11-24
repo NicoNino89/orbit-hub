@@ -228,11 +228,11 @@ Continuam a numeração de [processos e operação](processos-e-operacao.md).
 
 | Rotina | O que faz | Frequência |
 |---|---|---|
-| R15 | Expira propostas do marketplace vencidas | Diária |
-| R16 | Aceita automaticamente entregas sem resposta no prazo e libera o pagamento | Diária |
-| R17 | Coloca na fila de atualização os conteúdos com revisão vencida | Semanal |
-| R18 | Sugere a especialistas as perguntas sem resposta | Diária |
-| R19 | Arquiva grupos inativos (sinaliza para a curadoria) | Mensal |
+| R20 | Expira propostas do marketplace vencidas | Diária |
+| R21 | Aceita automaticamente entregas sem resposta no prazo e libera o pagamento | Diária |
+| R22 | Coloca na fila de atualização os conteúdos com revisão vencida | Semanal |
+| R23 | Sugere a especialistas as perguntas sem resposta | Diária |
+| R24 | Arquiva grupos inativos (sinaliza para a curadoria) | Mensal |
 | R20 | Recalcula reputação e selos | Diária |
 | R21 | Gera o indicador mensal de conteúdos nascidos da comunidade | Mensal |
 

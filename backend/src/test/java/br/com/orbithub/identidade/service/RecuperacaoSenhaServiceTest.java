@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
@@ -57,8 +58,8 @@ class RecuperacaoSenhaServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Preparação
      * Objetivo: Montar o serviço com uma conta ativa e repositórios simulados.
      * Decisões: Codificador de senha falso ("hash:" + senha).
@@ -83,7 +84,7 @@ class RecuperacaoSenhaServiceTest {
         when(senhas.encode(anyString())).thenAnswer(i -> "hash:" + i.getArgument(0));
         var propriedades = new ContaProperties("https://web.exemplo", true);
         servico = new RecuperacaoSenhaService(usuarios, bloqueios, new TokenDeContaService(tokens, relogio), sessoes,
-                senhas, email, propriedades, new ParametrosFixos(), relogio);
+                senhas, email, propriedades, new ParametrosFixos(), mock(NotificacoesService.class), relogio);
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "hash:antiga-senha-longa", Set.of(Papel.INVESTIDOR), AGORA);
         ana.confirmarEmail(AGORA);

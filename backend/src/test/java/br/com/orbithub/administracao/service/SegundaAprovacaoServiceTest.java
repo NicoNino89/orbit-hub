@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.identidade.service.ConsultaDeContas;
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.administracao.domain.AcaoGrave;
@@ -49,8 +51,8 @@ class SegundaAprovacaoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Preparação
      * Objetivo: Montar o serviço com um executor de parâmetro sensível aprovado por administrador.
      * Decisões: Prazo de 48 h.
@@ -62,7 +64,8 @@ class SegundaAprovacaoServiceTest {
         executor = new ExecutorDeTeste();
         relogio = new RelogioAjustavel(AGORA);
         servico = new SegundaAprovacaoService(repositorio, List.of(executor),
-                new ParametrosFixos(), relogio);
+                new ParametrosFixos(), mock(NotificacoesService.class),
+                mock(ConsultaDeContas.class), relogio);
     }
 
     /**
@@ -143,8 +146,8 @@ class SegundaAprovacaoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Recusas na proposta
      * Objetivo: Conferir que ação sem executor, proposta repetida e proposta sem justificativa são recusadas.
      * Decisões: A conferência do executor também roda na proposta.
@@ -163,7 +166,8 @@ class SegundaAprovacaoServiceTest {
         assertThatThrownBy(() -> propor("x")).extracting("codigo").isEqualTo("valor_fora_dos_limites");
         assertThat(servico.acoesDisponiveis()).containsExactly(AcaoGrave.PARAMETRO_SENSIVEL);
         assertThatThrownBy(() -> new SegundaAprovacaoService(repositorio, List.of(executor, new ExecutorDeTeste()),
-                new ParametrosFixos(), relogio))
+                new ParametrosFixos(), mock(NotificacoesService.class),
+                mock(ConsultaDeContas.class), relogio))
                 .isInstanceOf(IllegalStateException.class);
     }
 

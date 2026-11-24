@@ -4,6 +4,9 @@ import br.com.orbithub.administracao.domain.DocumentoLegal;
 import br.com.orbithub.administracao.domain.TipoDocumento;
 import br.com.orbithub.administracao.repository.DocumentoLegalRepository;
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
+import br.com.orbithub.identidade.service.ConsultaDeContas;
+import br.com.orbithub.notificacoes.domain.TipoDeNotificacao;
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import java.time.Clock;
@@ -19,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 00:40
- * Cartão Jira: KAN-92
+ * Hora: 12:34
+ * Cartão Jira: KAN-146
  * Título: Publicação e consulta de documentos legais
  * Objetivo: Publicar versões novas de termos, políticas e avisos e responder qual versão vale agora.
  * Decisões: O jurídico redige e o administrador publica (P14); a publicação é só a gravação de uma versão
@@ -33,19 +36,24 @@ public class DocumentoLegalService {
     static final Duration TOLERANCIA_VIGENCIA_PASSADA = Duration.ofMinutes(5);
 
     private final DocumentoLegalRepository documentos;
+    private final NotificacoesService notificacoes;
+    private final ConsultaDeContas contas;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:40
-     * Cartão Jira: KAN-92
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber o repositório e o relógio.
      * Decisões: Injeção pelo construtor.
      */
-    public DocumentoLegalService(DocumentoLegalRepository documentos, Clock relogio) {
+    public DocumentoLegalService(DocumentoLegalRepository documentos, NotificacoesService notificacoes,
+                                 ConsultaDeContas contas, Clock relogio) {
         this.documentos = documentos;
+        this.notificacoes = notificacoes;
+        this.contas = contas;
         this.relogio = relogio;
     }
 
@@ -129,8 +137,8 @@ public class DocumentoLegalService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:09
-     * Cartão Jira: KAN-80
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Publicar nova versão
      * Objetivo: Gravar a próxima versão de um tipo com a data de vigência informada.
      * Decisões: Sem data, vale a partir de agora. Vigência no passado é recusada (fora uma folga de 5 min),
@@ -153,6 +161,11 @@ public class DocumentoLegalService {
                 DocumentoLegal.publicar(tipo, proxima, titulo, conteudo, inicio, agora, publicadoPor));
         ContextoDeAuditoria.descrever("DOCUMENTO_LEGAL_PUBLICADO", "documento_legal", publicado.getId(),
                 "Tipo " + tipo + ", versão " + proxima + ", vigente desde " + inicio);
+        if (tipo.aceite() != TipoDocumento.Aceite.NENHUM) {
+            notificacoes.notificarTodos(contas.contasPublicasAtivas(), TipoDeNotificacao.TERMOS_ATUALIZADOS,
+                    titulo + " atualizado", "Publicamos uma nova versão de \"" + titulo + "\". Ela passa a valer a partir "
+                            + "da data indicada no documento, e o aceite será pedido no seu próximo acesso.", "/termos");
+        }
         return publicado;
     }
 }

@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.identidade.service.ConsultaDeContas;
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.administracao.domain.DocumentoLegal;
 import br.com.orbithub.administracao.domain.TipoDocumento;
@@ -39,8 +41,8 @@ class DocumentoLegalServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:40
-     * Cartão Jira: KAN-92
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Preparação
      * Objetivo: Montar o serviço com repositório simulado.
      * Decisões: O save devolve o próprio documento.
@@ -49,7 +51,8 @@ class DocumentoLegalServiceTest {
     void preparar() {
         repositorio = mock(DocumentoLegalRepository.class);
         when(repositorio.save(any())).thenAnswer(i -> i.getArgument(0));
-        servico = new DocumentoLegalService(repositorio, new RelogioAjustavel(AGORA));
+        servico = new DocumentoLegalService(repositorio, mock(NotificacoesService.class),
+                mock(ConsultaDeContas.class), new RelogioAjustavel(AGORA));
     }
 
     /**

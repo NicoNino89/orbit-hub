@@ -2,6 +2,7 @@ package br.com.orbithub.identidade.repository;
 
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,4 +68,33 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
             where u.interna = true and u.status = br.com.orbithub.identidade.domain.StatusUsuario.ATIVO
             and p = :papel""")
     long contarEquipeAtivaComPapel(@Param("papel") Papel papel);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
+     * Título: Equipe ativa com algum dos papéis
+     * Objetivo: Listar os ids dos membros ativos da equipe que têm pelo menos um dos papéis (destinatários de avisos).
+     * Decisões: Sem repetição.
+     */
+    @Query("""
+            select distinct u.id from Usuario u join u.papeis p
+            where u.interna = true and u.status = br.com.orbithub.identidade.domain.StatusUsuario.ATIVO
+            and p in :papeis""")
+    List<UUID> idsDaEquipeAtivaComPapeis(@Param("papeis") Collection<Papel> papeis);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
+     * Título: Contas públicas ativas
+     * Objetivo: Listar os ids das contas de investidor e empreendedor ativas (aviso de termos atualizados).
+     * Decisões: Sem contas da equipe nem desativadas.
+     */
+    @Query("""
+            select u.id from Usuario u
+            where u.interna = false and u.status = br.com.orbithub.identidade.domain.StatusUsuario.ATIVO""")
+    List<UUID> idsPublicosAtivos();
 }

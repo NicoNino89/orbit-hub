@@ -8,6 +8,9 @@ import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
 import br.com.orbithub.compartilhado.parametros.Chaves;
 import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
+import br.com.orbithub.identidade.service.ConsultaDeContas;
+import br.com.orbithub.notificacoes.domain.TipoDeNotificacao;
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.Papel;
 import java.time.Clock;
@@ -25,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:08
- * Cartão Jira: KAN-78
+ * Hora: 12:34
+ * Cartão Jira: KAN-146
  * Título: Ações com segunda aprovação
  * Objetivo: Receber propostas de ações graves, deixar uma segunda pessoa aprovar ou rejeitar, e só então executar
  *           a ação.
@@ -47,19 +50,24 @@ public class SegundaAprovacaoService {
     private final PropostaDeAprovacaoRepository propostas;
     private final Map<AcaoGrave, ExecutorDeAcaoGrave> executores;
     private final LeituraDeParametros parametros;
+    private final NotificacoesService notificacoes;
+    private final ConsultaDeContas contas;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Indexar os executores por ação e receber o prazo e o relógio.
      * Decisões: Dois executores para a mesma ação é erro de configuração e falha na inicialização.
      */
     public SegundaAprovacaoService(PropostaDeAprovacaoRepository propostas, List<ExecutorDeAcaoGrave> executores,
-                                   LeituraDeParametros parametros, Clock relogio) {
+                                   LeituraDeParametros parametros, NotificacoesService notificacoes,
+                                   ConsultaDeContas contas, Clock relogio) {
+        this.notificacoes = notificacoes;
+        this.contas = contas;
         this.propostas = propostas;
         Map<AcaoGrave, ExecutorDeAcaoGrave> indice = new EnumMap<>(AcaoGrave.class);
         for (ExecutorDeAcaoGrave executor : executores) {
@@ -75,8 +83,8 @@ public class SegundaAprovacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
      * Título: Propor ação grave
      * Objetivo: Registrar a proposta, que fica pendente até a segunda pessoa decidir.
      * Decisões: Sem executor, a ação não existe ainda; proposta igual pendente é recusada; o executor confere os
@@ -98,6 +106,7 @@ public class SegundaAprovacaoService {
                 dados, proponente, justificativa, relogio.instant()));
         ContextoDeAuditoria.descrever(ACAO_PROPOSTA, OBJETO, proposta.getId(), acao + ": " + resumo);
         ContextoDeAuditoria.justificar(justificativa);
+        avisarQuemAprova(proposta, "Nova ação aguardando a sua aprovação");
         return proposta;
     }
 
@@ -306,5 +315,26 @@ public class SegundaAprovacaoService {
                     "Esta ação ainda não está disponível na plataforma.");
         }
         return executor;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
+     * Título: Avisar quem aprova
+     * Objetivo: Notificar os membros ativos com papel para decidir a proposta, menos quem propôs.
+     * Decisões: Aviso obrigatório para a equipe; usado na proposta nova e no alerta de proposta parada (R15).
+     */
+    public void avisarQuemAprova(PropostaDeAprovacao proposta, String titulo) {
+        ExecutorDeAcaoGrave executor = executores.get(proposta.getTipo());
+        if (executor == null) {
+            return;
+        }
+        List<UUID> destinatarios = contas.equipeAtivaComPapeis(executor.papeisQueAprovam()).stream()
+                .filter(id -> !id.equals(proposta.getPropostoPor())).toList();
+        notificacoes.notificarTodos(destinatarios, TipoDeNotificacao.EQUIPE_APROVACAO, titulo,
+                proposta.getTipo().getDescricao() + ": " + proposta.getResumo() + ". Justificativa: "
+                        + proposta.getJustificativa(), "/admin/aprovacoes");
     }
 }

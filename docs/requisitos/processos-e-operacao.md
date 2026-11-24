@@ -483,8 +483,13 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R14 – Monitor de prazos (SLA) | De hora em hora | Alerta sobre casos de verificação, curadoria, moderação, suporte e LGPD próximos do prazo | `*.sla_*` |
 | R15 – Propostas paradas | De hora em hora | Alerta o administrador das propostas de segunda aprovação sem decisão no prazo (KAN-81) | `aprovacao.prazo_horas` |
 | R16 – Revisão de acessos | Diária | Lembra o administrador quando a revisão dos acessos da equipe vence (KAN-75) | `acesso.revisao_meses` |
+| R17 – Envio dos avisos por e-mail | A cada minuto | Envia os e-mails da central de notificações e tenta de novo os que falharam (1, 5, 15, 60 minutos, depois de 6 em 6 horas), até desistir (KAN-146) | `notificacoes.max_tentativas_email` |
+| R18 – Resumo diário dos avisos | Diária, às 7h | Junta num único e-mail os avisos de quem escolheu o resumo; avisos obrigatórios não entram (KAN-146) | — |
+| R19 – Limpeza das notificações | Diária, às 3h30 | Apaga as notificações mais antigas que a retenção (KAN-146) | `notificacoes.retencao_dias` |
 
 O mecanismo comum (agendamento no horário de Brasília, trava entre instâncias, registro de cada execução, pausa, execução manual e alertas de falha e de atraso) está em `compartilhado.rotinas` (KAN-104). Em produção, as rotinas só rodam com a API ligada: com escala a zero, nenhuma réplica fica no ar para disparar o horário.
+
+A central de notificações (KAN-146) é o único caminho de aviso para as pessoas: os módulos chamam `NotificacoesService.notificar`, na mesma transação do evento, e o serviço grava o aviso no sino e/ou põe o e-mail na fila conforme a preferência da pessoa. O envio é feito pela R17, então a ação nunca espera nem falha por causa do e-mail. Avisos obrigatórios (segurança da conta, termos atualizados, prazos que encerram conexão e avisos à equipe) chegam sempre pelos dois canais, na hora. As rotinas dos serviços e do conhecimento (fase futura) continuam a numeração a partir da R20.
 
 ---
 
@@ -531,6 +536,8 @@ O mecanismo comum (agendamento no horário de Brasília, trava entre instâncias
 | `convite.validade_dias` | 14 | Não |
 | `acesso.revisao_meses` | 3 | Sim |
 | `aprovacao.prazo_horas` | 48 | Não |
+| `notificacoes.retencao_dias` | 180 | Não |
+| `notificacoes.max_tentativas_email` | 5 | Não |
 | `operacao.alerta_sla_percentual` | 80% | Não |
 | `equipe.horario_atendimento` | Por time | Não |
 | `publicidade.intervalo_paginas` (F2) | A definir | Não |

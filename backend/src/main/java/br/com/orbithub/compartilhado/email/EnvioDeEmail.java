@@ -27,6 +27,21 @@ public interface EnvioDeEmail {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 12:34
+     * Cartão Jira: KAN-146
+     * Título: Tentar enviar
+     * Objetivo: Entregar a mensagem e dizer se deu certo, para a fila de notificações tentar de novo depois.
+     * Decisões: Padrão: envia e considera entregue (o modo "registro" nunca falha); o SMTP responde falso quando o
+     *           servidor recusa.
+     */
+    default boolean tentarEnviar(MensagemEmail mensagem) {
+        enviar(mensagem);
+        return true;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 01:00
      * Cartão Jira: KAN-12
      * Título: Mensagem de e-mail
