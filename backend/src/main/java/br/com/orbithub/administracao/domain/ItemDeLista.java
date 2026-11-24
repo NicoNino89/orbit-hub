@@ -108,15 +108,16 @@ public class ItemDeLista {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:14
+     * Hora: 13:00
      * Cartão Jira: KAN-79
      * Título: Código a partir de um texto
      * Objetivo: Transformar um texto em código estável (por exemplo, "Saúde (healthtech)" vira "SAUDE_HEALTHTECH").
-     * Decisões: Remove acentos, deixa só letras, números e sublinhado, e limita o tamanho.
+     * Decisões: Remove acentos, deixa só letras, números e sublinhado, e limita o tamanho. A expressão que tira o
+     *           sublinhado das pontas agrupa cada alternativa, para a precedência ficar explícita.
      */
     public static String codigoDe(String texto) {
         String semAcento = Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
-        String codigo = semAcento.toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_").replaceAll("^_+|_+$", "");
+        String codigo = semAcento.toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_").replaceAll("(^_+)|(_+$)", "");
         return codigo.length() > TAMANHO_MAXIMO_CODIGO ? codigo.substring(0, TAMANHO_MAXIMO_CODIGO) : codigo;
     }
 
