@@ -14,6 +14,11 @@ spring:
   threads:
     virtual:
       enabled: true
+  servlet:
+    multipart:
+      # foto do perfil até 2 MB (KAN-16); folga para o envelope do formulário
+      max-file-size: 3MB
+      max-request-size: 3MB
 
 server:
   port: ${PORT:8080}

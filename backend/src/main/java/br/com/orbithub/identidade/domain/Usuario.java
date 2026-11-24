@@ -62,6 +62,12 @@ public class Usuario {
     @Column(name = "atualizado_em", nullable = false)
     private Instant atualizadoEm;
 
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(name = "foto_chave", length = 300)
+    private String fotoChave;
+
     @Version
     private long versao;
 
@@ -262,5 +268,118 @@ public class Usuario {
     public void trocarSenha(String novoHash, Instant agora) {
         this.senhaHash = Objects.requireNonNull(novoHash, "novoHash");
         this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Atualizar dados do perfil
+     * Objetivo: Trocar nome e telefone de contato.
+     * Decisões: Telefone opcional (vazio vira nulo); e-mail e senha têm fluxos próprios.
+     */
+    public void atualizarPerfil(String novoNome, String novoTelefone, Instant agora) {
+        this.nome = Objects.requireNonNull(novoNome, "novoNome").strip();
+        this.telefone = novoTelefone == null || novoTelefone.isBlank() ? null : novoTelefone.strip();
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Definir foto
+     * Objetivo: Guardar a chave da foto no armazenamento de arquivos.
+     * Decisões: Devolve a chave anterior, para o serviço apagar o arquivo antigo.
+     */
+    public String definirFoto(String chave, Instant agora) {
+        String anterior = this.fotoChave;
+        this.fotoChave = chave;
+        this.atualizadoEm = agora;
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Trocar e-mail
+     * Objetivo: Substituir o e-mail depois da confirmação pelo novo endereço.
+     * Decisões: Normaliza como no cadastro.
+     */
+    public void trocarEmail(String novoEmail, Instant agora) {
+        this.email = normalizarEmail(Objects.requireNonNull(novoEmail, "novoEmail"));
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Ativar papel
+     * Objetivo: Acrescentar um papel público à conta.
+     * Decisões: Devolve falso se a conta já tinha o papel (nada muda).
+     */
+    public boolean ativarPapel(Papel papel, Instant agora) {
+        if (!papel.publico()) {
+            throw new IllegalArgumentException("Papel interno não é ativado pelo usuário");
+        }
+        boolean mudou = papeis.add(papel);
+        if (mudou) {
+            atualizadoEm = agora;
+        }
+        return mudou;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Desativar papel
+     * Objetivo: Retirar um papel público da conta.
+     * Decisões: A conta precisa continuar com pelo menos um papel público; pendências do papel são
+     *           conferidas no serviço antes de chamar aqui.
+     */
+    public void desativarPapel(Papel papel, Instant agora) {
+        if (!papeis.contains(papel)) {
+            return;
+        }
+        long publicosRestantes = papeis.stream().filter(p -> p.publico() && p != papel).count();
+        if (papel.publico() && publicosRestantes == 0) {
+            throw new IllegalStateException("A conta precisa de pelo menos um papel");
+        }
+        papeis.remove(papel);
+        atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Acesso ao telefone
+     * Objetivo: Expor o telefone de contato.
+     * Decisões: Pode ser nulo.
+     */
+    public String getTelefone() {
+        return telefone;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Acesso à foto
+     * Objetivo: Expor a chave da foto no armazenamento.
+     * Decisões: Nula quando não há foto.
+     */
+    public String getFotoChave() {
+        return fotoChave;
     }
 }
