@@ -182,6 +182,37 @@ class PerfilDeInvestimentoIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
+     * Título: Preferências complementares
+     * Objetivo: Conferir que as preferências são opcionais, que valem só códigos das listas e que são salvas e lidas.
+     * Decisões: Sem o bloco, o perfil salva com tudo vazio.
+     */
+    @Test
+    void preferenciasComplementares() throws Exception {
+        Usuario ana = conta();
+        salvar(ana, null, VALIDO).andExpect(status().isOk())
+                .andExpect(jsonPath("$.perfil.complementares.modelos.length()").value(0))
+                .andExpect(jsonPath("$.perfil.complementares.horizonte").doesNotExist());
+        String comPreferencias = VALIDO.replace("\"localizacoes\":[\"SP\",\"MG\"]}", "\"localizacoes\":[\"SP\",\"MG\"],"
+                + "\"complementares\":{\"modelos\":[\"SAAS\"],\"modalidades\":[\"PARTICIPACAO_SOCIETARIA\"],"
+                + "\"horizonte\":\"DE_5_A_8_ANOS\",\"perfilRisco\":\"ARROJADO\",\"experiencia\":\"ATE_5\","
+                + "\"interesses\":[\"IMPACTO\",\"MENTORIA\"]}}");
+        salvar(ana, null, comPreferencias.replace("\"ARROJADO\"", "\"TEMERARIO\"")).andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.codigo").value("opcao_indisponivel"));
+        salvar(ana, null, comPreferencias).andExpect(status().isOk())
+                .andExpect(jsonPath("$.perfil.complementares.modelos[0]").value("SAAS"))
+                .andExpect(jsonPath("$.perfil.complementares.horizonte").value("DE_5_A_8_ANOS"))
+                .andExpect(jsonPath("$.perfil.complementares.perfilRisco").value("ARROJADO"))
+                .andExpect(jsonPath("$.perfil.complementares.experiencia").value("ATE_5"))
+                .andExpect(jsonPath("$.perfil.complementares.interesses.length()").value(2));
+        salvar(ana, null, comPreferencias.replace("\"horizonte\":\"DE_5_A_8_ANOS\"", "\"horizonte\":\"\""))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.perfil.complementares.horizonte").doesNotExist());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 14:16
      * Cartão Jira: KAN-61
      * Título: Salvar pela API

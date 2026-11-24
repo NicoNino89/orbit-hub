@@ -122,6 +122,31 @@ public class PerfilDeInvestimento {
     @Column(name = "localizacao", length = 40)
     private Set<String> localizacoes = new TreeSet<>();
 
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "perfil_investimento_modelo", joinColumns = @JoinColumn(name = "perfil_id"))
+    @Column(name = "modelo", length = 40)
+    private Set<String> modelos = new TreeSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "perfil_investimento_modalidade", joinColumns = @JoinColumn(name = "perfil_id"))
+    @Column(name = "modalidade", length = 40)
+    private Set<String> modalidades = new TreeSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "perfil_investimento_interesse", joinColumns = @JoinColumn(name = "perfil_id"))
+    @Column(name = "interesse", length = 40)
+    private Set<String> interesses = new TreeSet<>();
+
+    @Column(length = 40)
+    private String horizonte;
+
+    @Column(name = "perfil_risco", length = 40)
+    private String perfilRisco;
+
+    @Column(length = 40)
+    private String experiencia;
+
     @Column(name = "atualizado_por", nullable = false)
     private UUID atualizadoPor;
 
@@ -167,8 +192,8 @@ public class PerfilDeInvestimento {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:25
-     * Cartão Jira: KAN-18
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
      * Título: Atualizar
      * Objetivo: Gravar os dados de como o investidor investe e quem alterou.
      * Decisões: Os instrumentos substituem os anteriores; "tipo_outro" só fica com o tipo "Outros".
@@ -187,6 +212,13 @@ public class PerfilDeInvestimento {
         substituir(this.estagios, dados.estagios());
         substituir(this.maturidades, dados.maturidades());
         substituir(this.localizacoes, dados.localizacoes());
+        Complementares c = dados.complementares() == null ? Complementares.VAZIAS : dados.complementares();
+        substituir(this.modelos, c.modelos());
+        substituir(this.modalidades, c.modalidades());
+        substituir(this.interesses, c.interesses());
+        this.horizonte = c.horizonte();
+        this.perfilRisco = c.perfilRisco();
+        this.experiencia = c.experiencia();
         this.atualizadoPor = autor;
         this.atualizadoEm = agora;
     }
@@ -194,8 +226,8 @@ public class PerfilDeInvestimento {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:25
-     * Cartão Jira: KAN-18
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
      * Título: Dados do perfil
      * Objetivo: Ler o conteúdo do perfil de uma vez, para a resposta da API e para a compatibilidade.
      * Decisões: Cópia dos instrumentos.
@@ -203,7 +235,8 @@ public class PerfilDeInvestimento {
     public Dados dados() {
         return new Dados(tipo, tipoOutro, ticketMinimo, ticketMaximo, lideranca, followOn, participacaoNaGestao,
                 Set.copyOf(instrumentos), Set.copyOf(segmentos), Set.copyOf(estagios), Set.copyOf(maturidades),
-                Set.copyOf(localizacoes));
+                Set.copyOf(localizacoes), new Complementares(Set.copyOf(modelos), Set.copyOf(modalidades), horizonte,
+                perfilRisco, experiencia, Set.copyOf(interesses)));
     }
 
     /**
@@ -277,15 +310,32 @@ public class PerfilDeInvestimento {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:25
-     * Cartão Jira: KAN-18
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
      * Título: Dados
      * Objetivo: Levar os campos do perfil.
-     * Decisões: Valores em reais, com centavos. Inclui a tese.
+     * Decisões: Valores em reais, com centavos. Inclui a tese. E as preferências complementares.
      */
     public record Dados(String tipo, String tipoOutro, BigDecimal ticketMinimo, BigDecimal ticketMaximo,
                         Lideranca lideranca, boolean followOn, ParticipacaoNaGestao participacaoNaGestao,
                         Set<String> instrumentos, Set<String> segmentos, Set<String> estagios,
-                        Set<MaturidadeDoNegocio> maturidades, Set<String> localizacoes) {
+                        Set<MaturidadeDoNegocio> maturidades, Set<String> localizacoes,
+                        Complementares complementares) {
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
+     * Título: Preferências complementares
+     * Objetivo: Levar as preferências opcionais: modelos de negócio, modalidades, horizonte, perfil de risco,
+     *           experiência e interesses estratégicos.
+     * Decisões: Todas opcionais; códigos de listas padronizadas.
+     */
+    public record Complementares(Set<String> modelos, Set<String> modalidades, String horizonte, String perfilRisco,
+                                 String experiencia, Set<String> interesses) {
+
+        public static final Complementares VAZIAS = new Complementares(Set.of(), Set.of(), null, null, null, Set.of());
     }
 }

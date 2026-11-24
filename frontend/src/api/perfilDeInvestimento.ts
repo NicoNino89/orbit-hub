@@ -75,10 +75,10 @@ export const NOMES_DA_PARTICIPACAO: Record<ParticipacaoNaGestao, string> = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
  * Título: Dados do perfil
- * Objetivo: Tipar o perfil de investimento, com a tese (KAN-18).
+ * Objetivo: Tipar o perfil de investimento, com a tese (KAN-18) e as preferências complementares (KAN-19).
  * Decisões: Ticket em reais; segmentos, estágios e localizações são códigos das listas.
  */
 export interface DadosDoPerfil {
@@ -94,6 +94,25 @@ export interface DadosDoPerfil {
   estagios: string[]
   maturidades: Maturidade[]
   localizacoes: string[]
+  complementares: Complementares
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
+ * Título: Preferências complementares
+ * Objetivo: Tipar as preferências opcionais do investidor.
+ * Decisões: Códigos de listas padronizadas; respostas únicas podem ser nulas.
+ */
+export interface Complementares {
+  modelos: string[]
+  modalidades: string[]
+  horizonte: string | null
+  perfilRisco: string | null
+  experiencia: string | null
+  interesses: string[]
 }
 
 /**

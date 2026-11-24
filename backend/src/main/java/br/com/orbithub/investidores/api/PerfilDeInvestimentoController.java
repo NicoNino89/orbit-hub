@@ -92,30 +92,31 @@ class PerfilDeInvestimentoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:25
-     * Cartão Jira: KAN-18
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
      * Título: Pedido do perfil
-     * Objetivo: Receber os campos do perfil, inclusive a tese.
+     * Objetivo: Receber os campos do perfil, inclusive a tese e as preferências complementares.
      * Decisões: As regras de conteúdo ficam no serviço; aqui só a presença do follow-on.
      */
     record PerfilRequest(String tipo, String tipoOutro, BigDecimal ticketMinimo, BigDecimal ticketMaximo,
                          Lideranca lideranca,
                          @NotNull(message = "Informe se reserva capital para follow-on.") Boolean followOn,
                          ParticipacaoNaGestao participacaoNaGestao, Set<String> instrumentos, Set<String> segmentos,
-                         Set<String> estagios, Set<MaturidadeDoNegocio> maturidades, Set<String> localizacoes) {
+                         Set<String> estagios, Set<MaturidadeDoNegocio> maturidades, Set<String> localizacoes,
+                         PerfilDeInvestimento.Complementares complementares) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 14:25
-         * Cartão Jira: KAN-18
+         * Hora: 17:04
+         * Cartão Jira: KAN-19
          * Título: Para o serviço
          * Objetivo: Converter o pedido nos dados do perfil.
          * Decisões: Copia os campos.
          */
         PerfilDeInvestimento.Dados dados() {
             return new PerfilDeInvestimento.Dados(tipo, tipoOutro, ticketMinimo, ticketMaximo, lideranca, followOn,
-                    participacaoNaGestao, instrumentos, segmentos, estagios, maturidades, localizacoes);
+                    participacaoNaGestao, instrumentos, segmentos, estagios, maturidades, localizacoes, complementares);
         }
     }
 

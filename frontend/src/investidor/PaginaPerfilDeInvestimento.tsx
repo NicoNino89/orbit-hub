@@ -13,6 +13,19 @@ import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 
 type Opcao = { codigo: string; rotulo: string; grupo?: string | null }
 
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
+ * Título: Completar o perfil recebido
+ * Objetivo: Preencher com vazio o que o perfil recebido não trouxer, para o formulário nunca ler campo ausente.
+ * Decisões: As preferências complementares também são completadas.
+ */
+function completar(perfil: DadosDoPerfil): DadosDoPerfil {
+  return { ...VAZIO, ...perfil, complementares: { ...VAZIO.complementares, ...perfil.complementares } }
+}
+
 const REGIOES: Record<string, string> = {
   NORTE: 'Norte', NORDESTE: 'Nordeste', CENTRO_OESTE: 'Centro-Oeste', SUDESTE: 'Sudeste', SUL: 'Sul', EXTERIOR: 'Exterior',
 }
@@ -20,20 +33,22 @@ const REGIOES: Record<string, string> = {
 const VAZIO: DadosDoPerfil = {
   tipo: '', tipoOutro: null, ticketMinimo: 0, ticketMaximo: 0, lideranca: 'AMBOS', followOn: false,
   participacaoNaGestao: 'NAO_PARTICIPA', instrumentos: [], segmentos: [], estagios: [], maturidades: [], localizacoes: [],
+  complementares: { modelos: [], modalidades: [], horizonte: null, perfilRisco: null, experiencia: null, interesses: [] },
 }
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
  * Título: Perfil de investimento
  * Objetivo: Informar o tipo de investidor, o ticket, a liderança, o follow-on, a participação na gestão e os
  *           instrumentos aceitos, da pessoa ou da organização em nome da qual ela atua.
  * Decisões: Recarrega quando a atuação muda. Na organização, o tipo é o dela (só exibido) e quem não é administrador vê
  *           o formulário bloqueado, com a explicação. Na pessoa física, o tipo é investidor-anjo ou outro. A tese
  *           (segmentos, estágios da rodada, maturidade do negócio e localização, KAN-18) faz parte do mesmo formulário.
- *           No modo onboarding, a pessoa pode pular por agora; salvar ou pular leva à área do investidor.
+ *           No modo onboarding, a pessoa pode pular por agora; salvar ou pular leva à área do investidor. As
+ *           preferências complementares (KAN-19) ficam numa seção opcional, recolhida no onboarding.
  */
 export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?: boolean }) {
   const navegar = useNavigate()
@@ -46,6 +61,7 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
   const [segmentos, setSegmentos] = useState<Opcao[]>([])
   const [estagios, setEstagios] = useState<Opcao[]>([])
   const [localizacoes, setLocalizacoes] = useState<Opcao[]>([])
+  const [listasComplementares, setListasComplementares] = useState<Record<string, Opcao[]>>({})
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -56,6 +72,9 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
     opcoesDaLista('SEGMENTO').then(setSegmentos).catch(() => setSegmentos([]))
     opcoesDaLista('ESTAGIO_RODADA').then(setEstagios).catch(() => setEstagios([]))
     opcoesDaLista('LOCALIZACAO').then(setLocalizacoes).catch(() => setLocalizacoes([]))
+    for (const lista of ['MODELO_NEGOCIO', 'MODALIDADE_INVESTIMENTO', 'HORIZONTE_INVESTIMENTO', 'PERFIL_RISCO', 'EXPERIENCIA_INVESTIDOR', 'INTERESSE_ESTRATEGICO']) {
+      opcoesDaLista(lista).then((r) => setListasComplementares((atual) => ({ ...atual, [lista]: r }))).catch(() => undefined)
+    }
   }, [])
 
   useEffect(() => {
@@ -64,7 +83,7 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
       .then((s) => {
         if (!ativo) return
         setSituacao(s)
-        setDados(s.perfil ? { ...VAZIO, ...s.perfil } : { ...VAZIO, tipo: s.tipoFixo ?? '' })
+        setDados(s.perfil ? completar(s.perfil) : { ...VAZIO, tipo: s.tipoFixo ?? '' })
         setErro(null)
         setAviso(null)
       })
@@ -87,7 +106,7 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
     try {
       const s = await salvarPerfil(dados)
       setSituacao(s)
-      if (s.perfil) setDados({ ...VAZIO, ...s.perfil })
+      if (s.perfil) setDados(completar(s.perfil))
       setErro(null)
       setAviso('Perfil salvo.')
       if (onboarding) void navegar('/investidor')
@@ -106,6 +125,8 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
     ...dados,
     instrumentos: dados.instrumentos.includes(codigo) ? dados.instrumentos.filter((i) => i !== codigo) : [...dados.instrumentos, codigo],
   })
+  const comp = dados.complementares
+  const mudarComp = (parte: Partial<typeof comp>) => setDados({ ...dados, complementares: { ...comp, ...parte } })
   const regioes = [...new Set(localizacoes.map((l) => l.grupo ?? 'EXTERIOR'))]
   const estadosDa = (regiao: string) => localizacoes.filter((l) => (l.grupo ?? 'EXTERIOR') === regiao).map((l) => l.codigo)
   const marcarRegiao = (regiao: string) => {
@@ -259,6 +280,23 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
             ))}
           </fieldset>
         </fieldset>
+        <details className="rounded-lg border border-line bg-surface p-5" open={!onboarding}>
+          <summary className="cursor-pointer font-semibold">Preferências complementares (opcionais)</summary>
+          <fieldset disabled={bloqueado} className="mt-4 flex flex-col gap-4">
+            <Multipla titulo="Modelos de negócio preferidos" opcoes={listasComplementares.MODELO_NEGOCIO ?? []} escolhidos={comp.modelos}
+              aoMudar={(v) => mudarComp({ modelos: v })} />
+            <Multipla titulo="Modalidade" opcoes={listasComplementares.MODALIDADE_INVESTIMENTO ?? []} escolhidos={comp.modalidades}
+              aoMudar={(v) => mudarComp({ modalidades: v })} />
+            <UmaOpcao titulo="Horizonte de investimento" opcoes={listasComplementares.HORIZONTE_INVESTIMENTO ?? []} valor={comp.horizonte}
+              aoMudar={(v) => mudarComp({ horizonte: v })} />
+            <UmaOpcao titulo="Perfil de risco" opcoes={listasComplementares.PERFIL_RISCO ?? []} valor={comp.perfilRisco}
+              aoMudar={(v) => mudarComp({ perfilRisco: v })} />
+            <UmaOpcao titulo="Experiência como investidor" opcoes={listasComplementares.EXPERIENCIA_INVESTIDOR ?? []} valor={comp.experiencia}
+              aoMudar={(v) => mudarComp({ experiencia: v })} />
+            <Multipla titulo="Interesses estratégicos" opcoes={listasComplementares.INTERESSE_ESTRATEGICO ?? []} escolhidos={comp.interesses}
+              aoMudar={(v) => mudarComp({ interesses: v })} />
+          </fieldset>
+        </details>
         {!bloqueado && (
           <div className="flex flex-wrap items-center gap-4">
             <button type="submit" disabled={salvando} className={CLASSE_BOTAO_PRIMARIO}>
@@ -302,5 +340,31 @@ function Multipla({ titulo, dica, opcoes, escolhidos, aoMudar }: {
         ))}
       </div>
     </fieldset>
+  )
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
+ * Título: Uma opção
+ * Objetivo: Mostrar uma lista suspensa opcional, com "Sem preferência".
+ * Decisões: Vazio vira nulo.
+ */
+function UmaOpcao({ titulo, opcoes, valor, aoMudar }: {
+  titulo: string
+  opcoes: Opcao[]
+  valor: string | null
+  aoMudar: (v: string | null) => void
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-sm">
+      <span className="font-semibold">{titulo}</span>
+      <select value={valor ?? ''} onChange={(e) => aoMudar(e.target.value || null)} className="rounded-md border border-line bg-surface px-3 py-2">
+        <option value="">Sem preferência</option>
+        {opcoes.map((o) => <option key={o.codigo} value={o.codigo}>{o.rotulo}</option>)}
+      </select>
+    </label>
   )
 }

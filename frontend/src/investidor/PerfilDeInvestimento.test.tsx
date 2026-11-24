@@ -23,6 +23,8 @@ const LISTAS = {
   'GET /api/v1/listas/LOCALIZACAO': () => ({ corpo: [
     { codigo: 'SP', rotulo: 'São Paulo', grupo: 'SUDESTE' }, { codigo: 'MG', rotulo: 'Minas Gerais', grupo: 'SUDESTE' },
   ] }),
+  'GET /api/v1/listas/HORIZONTE_INVESTIMENTO': () => ({ corpo: [{ codigo: 'DE_5_A_8_ANOS', rotulo: 'De 5 a 8 anos', grupo: null }] }),
+  'GET /api/v1/listas/INTERESSE_ESTRATEGICO': () => ({ corpo: [{ codigo: 'IMPACTO', rotulo: 'Impacto socioambiental', grupo: null }] }),
   'GET /api/v1/listas/INSTRUMENTO': () => ({ corpo: [
     { codigo: 'MUTUO_CONVERSIVEL', rotulo: 'Mútuo conversível', grupo: null },
     { codigo: 'PARTICIPACAO_SOCIETARIA', rotulo: 'Participação societária', grupo: null },
@@ -51,7 +53,7 @@ function abrir(rotas: Parameters<typeof simularApi>[0], endereco = '/investidor/
   return api
 }
 
-describe('Perfil e tese de investimento (KAN-61, KAN-18)', () => {
+describe('Perfil, tese e preferências de investimento (KAN-61, KAN-18, KAN-19)', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     localStorage.clear()
@@ -60,10 +62,10 @@ describe('Perfil e tese de investimento (KAN-61, KAN-18)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 14:25
-   * Cartão Jira: KAN-18
+   * Hora: 17:04
+   * Cartão Jira: KAN-19
    * Título: Perfil pessoal
-   * Objetivo: Conferir os tipos de pessoa física, a descrição de "outros", a tese (com o atalho da região) e o envio dos campos.
+   * Objetivo: Conferir os tipos de pessoa física, a descrição de "outros", a tese (com o atalho da região), as preferências complementares e o envio dos campos.
    * Decisões: O servidor devolve o perfil salvo.
    */
   it('salva o perfil pessoal', async () => {
@@ -93,12 +95,15 @@ describe('Perfil e tese de investimento (KAN-61, KAN-18)', () => {
     await userEvent.click(within(form).getByLabelText('Tração'))
     await userEvent.click(within(form).getByRole('button', { name: 'Marcar Sudeste' }))
     await userEvent.click(within(form).getByLabelText('Minas Gerais'))
+    await userEvent.selectOptions(within(form).getByLabelText('Horizonte de investimento'), 'DE_5_A_8_ANOS')
+    await userEvent.click(within(form).getByLabelText('Impacto socioambiental'))
     await userEvent.click(screen.getByRole('button', { name: 'Salvar perfil' }))
     expect(await screen.findByText('Perfil salvo.')).toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'PUT /api/v1/investidores/perfil')?.corpo).toEqual({
       tipo: 'OUTROS', tipoOutro: 'Clube de investimento', ticketMinimo: 50000, ticketMaximo: 250000, lideranca: 'SO_COINVESTE',
       followOn: true, participacaoNaGestao: 'ACEITA_OBSERVADOR', instrumentos: ['MUTUO_CONVERSIVEL'],
       segmentos: ['FINTECH'], estagios: ['SEED'], maturidades: ['TRACAO'], localizacoes: ['SP'],
+      complementares: { modelos: [], modalidades: [], horizonte: 'DE_5_A_8_ANOS', perfilRisco: null, experiencia: null, interesses: ['IMPACTO'] },
     })
     expect(screen.getByText(/Última alteração por Ana Investidora/)).toBeInTheDocument()
   })

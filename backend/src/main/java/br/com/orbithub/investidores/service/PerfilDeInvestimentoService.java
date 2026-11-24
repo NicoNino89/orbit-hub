@@ -9,6 +9,7 @@ import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.investidores.domain.Organizacao;
 import br.com.orbithub.investidores.domain.PapelNaOrganizacao;
 import br.com.orbithub.investidores.domain.PerfilDeInvestimento;
+import br.com.orbithub.investidores.domain.PerfilDeInvestimento.Complementares;
 import br.com.orbithub.investidores.domain.PerfilDeInvestimento.Dados;
 import br.com.orbithub.investidores.repository.OrganizacaoRepository;
 import br.com.orbithub.investidores.repository.PerfilDeInvestimentoRepository;
@@ -28,15 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
+ * Hora: 17:04
+ * Cartão Jira: KAN-19
  * Título: Perfil de investimento
  * Objetivo: Ler e salvar o tipo de investidor, o ticket, a liderança, o follow-on, a participação na gestão e os
  *           instrumentos aceitos, da pessoa ou da organização em nome da qual ela atua.
  * Decisões: O dono vem da atuação (KAN-60). Na organização, o tipo é o da própria organização e só o administrador
  *           altera; membros e observadores veem. Na pessoa física, o tipo é investidor-anjo ou "outros" (com descrição).
  *           Instrumentos vêm da lista gerenciável e precisam estar ativos. A tese (KAN-18) exige pelo menos um
- *           segmento, um estágio de rodada e uma localização; a maturidade do negócio é opcional.
+ *           segmento, um estágio de rodada e uma localização; a maturidade do negócio é opcional. As preferências
+ *           complementares (KAN-19) são todas opcionais, de listas padronizadas.
  */
 @Service
 public class PerfilDeInvestimentoService {
@@ -126,8 +128,8 @@ public class PerfilDeInvestimentoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:25
-     * Cartão Jira: KAN-18
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
      * Título: Conferir os dados
      * Objetivo: Validar tipo, ticket, liderança, participação, instrumentos e tese, e normalizar os textos.
      * Decisões: Mensagens de negócio, para os formulários.
@@ -175,7 +177,40 @@ public class PerfilDeInvestimentoService {
         Set<MaturidadeDoNegocio> maturidades = pedido.maturidades() == null || pedido.maturidades().isEmpty() ? Set.of()
                 : EnumSet.copyOf(pedido.maturidades());
         return new Dados(tipo, tipoOutro, minimo, maximo, pedido.lideranca(), pedido.followOn(),
-                pedido.participacaoNaGestao(), instrumentos, segmentos, estagios, maturidades, localizacoes);
+                pedido.participacaoNaGestao(), instrumentos, segmentos, estagios, maturidades, localizacoes,
+                complementares(pedido.complementares()));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
+     * Título: Conferir as preferências complementares
+     * Objetivo: Validar contra as listas padronizadas as preferências opcionais.
+     * Decisões: Ausente vira vazio; código inexistente ou desativado é recusado.
+     */
+    private Complementares complementares(Complementares pedido) {
+        if (pedido == null) {
+            return Complementares.VAZIAS;
+        }
+        return new Complementares(codigos(Lista.MODELO_NEGOCIO, pedido.modelos()),
+                codigos(Lista.MODALIDADE_INVESTIMENTO, pedido.modalidades()), umCodigo(Lista.HORIZONTE_INVESTIMENTO, pedido.horizonte()),
+                umCodigo(Lista.PERFIL_RISCO, pedido.perfilRisco()), umCodigo(Lista.EXPERIENCIA_INVESTIDOR, pedido.experiencia()),
+                codigos(Lista.INTERESSE_ESTRATEGICO, pedido.interesses()));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:04
+     * Cartão Jira: KAN-19
+     * Título: Um código de lista
+     * Objetivo: Conferir uma resposta única opcional contra a lista.
+     * Decisões: Vazio vira nulo.
+     */
+    private String umCodigo(Lista lista, String codigo) {
+        return codigo == null || codigo.isBlank() ? null : listas.exigirAtivo(lista, codigo).getCodigo();
     }
 
     /**
