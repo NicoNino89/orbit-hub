@@ -22,6 +22,7 @@ final class ChaveJwt {
 
     static final int TAMANHO_MINIMO_BYTES = 32;
     private static final Logger LOG = LoggerFactory.getLogger(ChaveJwt.class);
+    private static final SecureRandom ALEATORIO = new SecureRandom();
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -53,7 +54,7 @@ final class ChaveJwt {
                         "Defina ORBIT_JWT_CHAVE (Base64, pelo menos 256 bits) no ambiente " + ambiente);
             }
             bytes = new byte[TAMANHO_MINIMO_BYTES];
-            new SecureRandom().nextBytes(bytes);
+            ALEATORIO.nextBytes(bytes);
             LOG.warn("ORBIT_JWT_CHAVE não definida: usando chave aleatória; as sessões caem a cada reinício");
         } else {
             bytes = Base64.getDecoder().decode(chaveBase64.strip());
