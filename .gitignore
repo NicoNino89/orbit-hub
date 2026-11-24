@@ -23,6 +23,8 @@ desktop.ini
 
 # ===== Back-end (Java / Maven) =====
 backend/target/
+# arquivos enviados no ambiente local (armazenamento em disco, ORBIT_ARMAZENAMENTO_PASTA)
+backend/dados/
 *.class
 *.log
 hs_err_pid*
