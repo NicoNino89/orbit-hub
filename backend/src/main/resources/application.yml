@@ -62,6 +62,10 @@ orbit:
       duracao-maxima: ${ORBIT_SESSAO_DURACAO_MAXIMA:PT12H}
       # duas abas renovando ao mesmo tempo não contam como reuso de token
       tolerancia-reuso: PT10S
+    login:
+      # falhas seguidas que bloqueiam o login e por quanto tempo (KAN-13)
+      max-tentativas: ${ORBIT_LOGIN_MAX_TENTATIVAS:5}
+      bloqueio: ${ORBIT_LOGIN_BLOQUEIO:PT15M}
 
 logging:
   structured:

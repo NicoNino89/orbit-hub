@@ -2,31 +2,43 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
 import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
+import { PaginaEntrar } from './conta/PaginaEntrar'
 import { Inicio } from './Inicio'
+import { AreaLogada, Painel } from './painel/AreaLogada'
+import { RotaProtegida } from './sessao/RotaProtegida'
+import { SessaoProvider } from './sessao/SessaoProvider'
 import { PaginaTermos } from './termos/PaginaTermos'
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 00:40
- * Cartão Jira: KAN-92
+ * Hora: 01:10
+ * Cartão Jira: KAN-13
  * Título: Rotas da aplicação
- * Objetivo: Associar cada endereço à sua tela.
- * Decisões: Roteador definitivo (React Router) no lugar das rotas por hash da S0, como previsto. O nginx
- *           já devolve o index.html para qualquer rota (SPA), então endereços como /termos/privacidade
- *           funcionam ao recarregar a página. As rotas podem ser montadas sem o BrowserRouter nos testes.
+ * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
+ * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
+ *           rota (SPA). A sessão envolve todas as rotas; as da área logada passam pela RotaProtegida e
+ *           pela moldura com o cabeçalho. As rotas podem ser montadas sem o BrowserRouter nos testes.
  */
 export function Rotas() {
   return (
-    <Routes>
-      <Route path="/" element={<Inicio />} />
-      <Route path="/poc-catalogo" element={<PocCatalogo />} />
-      <Route path="/cadastro" element={<PaginaCadastro />} />
-      <Route path="/confirmar-email" element={<PaginaConfirmacao />} />
-      <Route path="/termos" element={<PaginaTermos />} />
-      <Route path="/termos/:endereco" element={<PaginaTermos />} />
-      <Route path="*" element={<Inicio />} />
-    </Routes>
+    <SessaoProvider>
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+        <Route path="/poc-catalogo" element={<PocCatalogo />} />
+        <Route path="/cadastro" element={<PaginaCadastro />} />
+        <Route path="/confirmar-email" element={<PaginaConfirmacao />} />
+        <Route path="/entrar" element={<PaginaEntrar />} />
+        <Route path="/termos" element={<PaginaTermos />} />
+        <Route path="/termos/:endereco" element={<PaginaTermos />} />
+        <Route element={<RotaProtegida />}>
+          <Route element={<AreaLogada />}>
+            <Route path="/painel" element={<Painel />} />
+          </Route>
+        </Route>
+        <Route path="*" element={<Inicio />} />
+      </Routes>
+    </SessaoProvider>
   )
 }
 

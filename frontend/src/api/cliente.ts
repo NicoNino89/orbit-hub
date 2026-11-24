@@ -45,6 +45,40 @@ export class ErroApi extends Error {
 
 /** Fonte do access token atual; registrada pela sessão (KAN-13). */
 let fornecedorDeToken: () => string | null = () => null
+/** Renova a sessão quando o access token vence; devolve se conseguiu (KAN-13). */
+let renovador: (() => Promise<boolean>) | null = null
+let renovacaoEmAndamento: Promise<boolean> | null = null
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 01:10
+ * Cartão Jira: KAN-13
+ * Título: Registrar o renovador da sessão
+ * Objetivo: Permitir que o cliente renove a sessão sozinho quando a API responder 401.
+ * Decisões: A renovação só acontece quando a pessoa usa a plataforma (uma chamada recebe 401), nunca por
+ *           temporizador: assim a sessão expira de verdade por inatividade (KAN-15).
+ */
+export function definirRenovador(funcao: (() => Promise<boolean>) | null) {
+  renovador = funcao
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 01:10
+ * Cartão Jira: KAN-13
+ * Título: Renovar uma vez
+ * Objetivo: Garantir uma única renovação mesmo com várias chamadas recebendo 401 ao mesmo tempo.
+ * Decisões: As chamadas simultâneas esperam a mesma promessa.
+ */
+function renovarUmaVez(): Promise<boolean> {
+  if (!renovador) return Promise.resolve(false)
+  renovacaoEmAndamento ??= renovador().finally(() => {
+    renovacaoEmAndamento = null
+  })
+  return renovacaoEmAndamento
+}
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -75,9 +109,30 @@ export interface OpcoesRequisicao {
  * Título: Chamada à API
  * Objetivo: Fazer a requisição com JSON, token e cookie, e converter erros em ErroApi.
  * Decisões: credentials 'include' para o cookie de sessão ir nas rotas de autenticação; 204 devolve
- *           undefined; a mensagem de erro vem do "detail" da API, que já é escrita para o usuário.
+ *           undefined; a mensagem de erro vem do "detail" da API, que já é escrita para o usuário. Desde o
+ *           KAN-13, um 401 numa rota autenticada renova a sessão uma vez e repete a chamada.
  */
 export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = {}): Promise<T> {
+  try {
+    return await executar<T>(caminho, opcoes)
+  } catch (erro) {
+    if (erro instanceof ErroApi && erro.status === 401 && !opcoes.anonima && (await renovarUmaVez())) {
+      return executar<T>(caminho, opcoes)
+    }
+    throw erro
+  }
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 01:10
+ * Cartão Jira: KAN-13
+ * Título: Executar a requisição
+ * Objetivo: Fazer uma chamada à API, sem nova tentativa.
+ * Decisões: Separado de requisitar para a nova tentativa após renovar a sessão reaproveitar o mesmo código.
+ */
+async function executar<T>(caminho: string, opcoes: OpcoesRequisicao): Promise<T> {
   const cabecalhos: Record<string, string> = { Accept: 'application/json' }
   if (opcoes.corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
   const token = opcoes.anonima ? null : fornecedorDeToken()
