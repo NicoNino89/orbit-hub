@@ -38,7 +38,8 @@ Cada módulo é um pacote de topo com suas próprias camadas. Um módulo só usa
 | `marketplace` | Prestadores, serviços, propostas, contratações, avaliações e pagamentos | KAN-115 (Fase 2) |
 | `conhecimento` | Conteúdos, taxonomia, fluxo editorial, cursos, trilhas, acesso e Market Insights | KAN-116 (Fase 2) |
 | `comunidade` | Feed, seguidores, grupos, perguntas e respostas, discussões, reputação e mensagens | KAN-117 (Fase 3) |
-| `administracao` | Usuários e papéis internos, parâmetros e listas, filas de verificação e curadoria, edições do catálogo, termos versionados e trilha de auditoria | KAN-62, KAN-66, P2 a P5, P14, P15 |
+| `administracao` | Usuários e papéis internos, parâmetros e listas, filas de verificação e curadoria, edições do catálogo e termos versionados | KAN-62, KAN-66, P2 a P5, P14, P15 |
+| `auditoria` | Trilha imutável das ações da equipe interna e acesso justificado a dados confidenciais (Nível 2) dentro de um caso aberto. Módulo próprio porque todos os outros registram nele | KAN-80 |
 
 As rotinas automáticas (R1 a R14) ficam em cada módulo dono da regra, com agendamento e monitoramento comuns em `compartilhado`. Prazos e limites vêm sempre dos **parâmetros configuráveis**, nunca de valores fixos no código. Detalhes em [`requisitos/processos-e-operacao.md`](requisitos/processos-e-operacao.md) e, para marketplace, conhecimento e comunidade, em [`requisitos/servicos-e-conhecimento.md`](requisitos/servicos-e-conhecimento.md).
 
@@ -77,6 +78,11 @@ br.com.orbithub
   - dono do recurso por `@PreAuthorize("@acesso.ehDono('startup', #id)")`, com um `DonoDeRecurso` registrado pelo módulo dono do recurso; tipo sem regra é negado;
   - toda recusa responde em Problem Details (401 `nao_autenticado`, 403 `acesso_negado`) e fica registrada na tabela `acesso_negado` e no log;
   - o access token traz o id da sessão e é recusado na hora depois do logout ou da troca de senha (KAN-57).
+- **Backoffice e trilha de auditoria (KAN-80):**
+  - toda rota da equipe interna fica em `/api/v1/admin/**`. Rota de backoffice fora desse prefixo não é registrada;
+  - cada requisição a essas rotas vira um registro em `registro_auditoria`: quem, ação, objeto, resultado (sucesso ou falha, com o status) e quando. O serviço dá nome de negócio à ação com `ContextoDeAuditoria.descrever(...)` (por exemplo, `DOCUMENTO_LEGAL_PUBLICADO`); sem isso, a ação fica registrada como método e rota;
+  - a trilha é imutável no próprio banco: um gatilho recusa `UPDATE`, `DELETE` e `TRUNCATE`;
+  - a equipe só vê dados de Nível 2 por `AcessoJustificadoService.exigir(...)`, que pede um caso aberto (cada módulo com casos registra um `CasoAberto`) e justificativa, e grava o acesso antes de devolver os dados. Para a startup, o autor aparece como "equipe Orbit Hub".
 - Separação entre informações públicas (Nível 1) e confidenciais (Nível 2), com liberação explícita pelo empreendedor (KAN-28 a KAN-33).
 - Tratamento de dados pessoais conforme a LGPD.
 

@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router'
+import { PAPEIS_INTERNOS } from '../admin/papeisInternos'
 import type { Papel } from '../api/contas'
 import { useSessao } from '../sessao/contexto'
 
@@ -7,17 +8,19 @@ const NOMES: Record<Papel, string> = { INVESTIDOR: 'Investidor', EMPREENDEDOR: '
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 11:00
+ * Cartão Jira: KAN-80
  * Título: Moldura da área logada
  * Objetivo: Cabeçalho comum com a marca, o papel em que a pessoa está atuando, o nome e o botão de sair.
  * Decisões: Com os dois papéis, um seletor deixa claro e troca o papel ativo (critério do KAN-12); com um só,
- *           o papel aparece como etiqueta. Sair encerra a sessão no servidor.
+ *           o papel aparece como etiqueta. Sair encerra a sessão no servidor. Contas da equipe veem o link
+ *           do backoffice (KAN-80).
  */
 export function AreaLogada() {
   const { estado, papelAtivo, escolherPapel, sair } = useSessao()
   if (estado.status !== 'autenticado') return null
   const papeis = estado.usuario.papeis.filter((p) => p !== 'ADMIN')
+  const daEquipe = estado.usuario.papeis.some((p) => PAPEIS_INTERNOS.includes(p))
 
   return (
     <div className="min-h-svh">
@@ -41,6 +44,7 @@ export function AreaLogada() {
             ) : (
               papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES[papelAtivo]}</span>
             )}
+            {daEquipe && <Link to="/admin" className="font-semibold text-primary underline-offset-2 hover:underline">Backoffice</Link>}
             <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
             <button type="button" onClick={() => void sair()} className="rounded-md border border-line px-3 py-1 font-semibold">
               Sair
@@ -58,12 +62,12 @@ export function AreaLogada() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 11:00
+ * Cartão Jira: KAN-80
  * Título: Painel inicial
  * Objetivo: Dar as boas-vindas e indicar o próximo passo do papel ativo.
  * Decisões: Os onboardings (tese do investidor, KAN-18; cadastro da startup, KAN-21) chegam na S3 e na S4;
- *           até lá o cartão explica o que vem.
+ *           até lá o cartão explica o que vem. Conta só da equipe é levada ao backoffice (KAN-80).
  */
 export function Painel() {
   const { estado, papelAtivo } = useSessao()
@@ -87,7 +91,14 @@ export function Painel() {
             <Link to="/empreendedor" className="font-semibold text-primary">Abrir a área do empreendedor</Link>
           </p>
         )}
-        {papelAtivo === null && <p className="text-muted">Sua conta não tem papel público.</p>}
+        {papelAtivo === null && (
+          <p className="text-muted">
+            Sua conta não tem papel público.{' '}
+            {estado.usuario.papeis.some((p) => PAPEIS_INTERNOS.includes(p)) && (
+              <Link to="/admin" className="font-semibold text-primary">Abrir o backoffice</Link>
+            )}
+          </p>
+        )}
       </div>
     </section>
   )

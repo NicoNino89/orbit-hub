@@ -3,6 +3,7 @@ package br.com.orbithub.administracao.service;
 import br.com.orbithub.administracao.domain.DocumentoLegal;
 import br.com.orbithub.administracao.domain.TipoDocumento;
 import br.com.orbithub.administracao.repository.DocumentoLegalRepository;
+import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import java.time.Clock;
@@ -128,24 +129,30 @@ public class DocumentoLegalService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:40
-     * Cartão Jira: KAN-92
+     * Hora: 10:25
+     * Cartão Jira: KAN-80
      * Título: Publicar nova versão
      * Objetivo: Gravar a próxima versão de um tipo com a data de vigência informada.
      * Decisões: Sem data, vale a partir de agora. Vigência no passado é recusada (fora uma folga de 5 min),
-     *           para ninguém "publicar retroativamente" um texto que os usuários não viram.
+     *           para ninguém "publicar retroativamente" um texto que os usuários não viram (KAN-92). A
+     *           publicação é descrita para a trilha de auditoria como DOCUMENTO_LEGAL_PUBLICADO (KAN-80).
      */
     @Transactional
     public DocumentoLegal publicar(TipoDocumento tipo, String titulo, String conteudo, Instant vigenteDesde,
                                    UUID publicadoPor) {
         Instant agora = relogio.instant();
         Instant inicio = vigenteDesde != null ? vigenteDesde : agora;
+        ContextoDeAuditoria.descrever("DOCUMENTO_LEGAL_PUBLICADO", "documento_legal", null, "Tipo " + tipo);
         if (inicio.isBefore(agora.minus(TOLERANCIA_VIGENCIA_PASSADA))) {
             throw new RegraDeNegocioException("vigencia_no_passado",
                     "A vigência não pode começar no passado.");
         }
         Integer maior = documentos.maiorVersao(tipo);
         int proxima = maior == null ? 1 : maior + 1;
-        return documentos.save(DocumentoLegal.publicar(tipo, proxima, titulo, conteudo, inicio, agora, publicadoPor));
+        DocumentoLegal publicado = documentos.save(
+                DocumentoLegal.publicar(tipo, proxima, titulo, conteudo, inicio, agora, publicadoPor));
+        ContextoDeAuditoria.descrever("DOCUMENTO_LEGAL_PUBLICADO", "documento_legal", publicado.getId(),
+                "Tipo " + tipo + ", versão " + proxima + ", vigente desde " + inicio);
+        return publicado;
     }
 }
