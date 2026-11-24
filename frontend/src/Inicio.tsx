@@ -61,9 +61,13 @@ export function Inicio() {
         <StatusApi estado={api} />
       </section>
 
-      <a href="#/poc-catalogo" className="self-start rounded-md bg-primary px-4 py-2 font-semibold text-on-primary">
+      <a href="/poc-catalogo" className="self-start rounded-md bg-primary px-4 py-2 font-semibold text-on-primary">
         Ver a prova de conceito do catálogo
       </a>
+
+      <footer className="border-t border-line pt-4 text-sm text-muted">
+        <a href="/termos" className="text-primary">Termos, políticas e avisos</a>
+      </footer>
     </main>
   )
 }

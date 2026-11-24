@@ -1,32 +1,33 @@
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
 /**
  * Autor: Nicholas Bruno Pimentel
- * Data: 18/11/2026
- * Hora: 21:02
- * Cartão Jira: KAN-58
- * Título: Testes das rotas da S0
+ * Data: 24/11/2026
+ * Hora: 00:40
+ * Cartão Jira: KAN-92
+ * Título: Testes das rotas da aplicação
  * Objetivo: Verificar qual tela abre para cada endereço.
- * Decisões: fetch substituído por uma promessa que nunca resolve, para a página inicial não chamar a rede.
+ * Decisões: Endereço definido com history.pushState antes de montar o BrowserRouter; fetch substituído
+ *           por uma promessa que nunca resolve, para as telas não chamarem a rede.
  */
-describe('App (rotas da S0)', () => {
+describe('App (rotas)', () => {
   afterEach(() => {
-    window.location.hash = ''
+    window.history.pushState({}, '', '/')
     vi.unstubAllGlobals()
   })
 
   /**
    * Autor: Nicholas Bruno Pimentel
-   * Data: 18/11/2026
-   * Hora: 21:02
-   * Cartão Jira: KAN-58
+   * Data: 24/11/2026
+   * Hora: 00:40
+   * Cartão Jira: KAN-92
    * Título: Página inicial por padrão
-   * Objetivo: Garantir que sem hash a página inicial seja exibida.
+   * Objetivo: Garantir que a raiz e endereços desconhecidos abram a página inicial.
    * Decisões: Identifica a tela pelo título, como o usuário a reconhece.
    */
-  it('abre a página inicial por padrão', () => {
+  it('abre a página inicial na raiz e em endereço desconhecido', () => {
     vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
     render(<App />)
     expect(screen.getByRole('heading', { name: 'A plataforma está sendo construída' })).toBeInTheDocument()
@@ -34,20 +35,33 @@ describe('App (rotas da S0)', () => {
 
   /**
    * Autor: Nicholas Bruno Pimentel
-   * Data: 18/11/2026
-   * Hora: 21:02
-   * Cartão Jira: KAN-58
+   * Data: 24/11/2026
+   * Hora: 00:40
+   * Cartão Jira: KAN-92
    * Título: Rota da prova de conceito
-   * Objetivo: Garantir que #/poc-catalogo abra o catálogo.
-   * Decisões: Dispara o hashchange dentro de act, como o navegador faria.
+   * Objetivo: Garantir que /poc-catalogo abra o catálogo.
+   * Decisões: Endereço sem hash, servido pelo fallback de SPA do nginx.
    */
-  it('abre a prova de conceito do catálogo pelo endereço #/poc-catalogo', () => {
+  it('abre a prova de conceito do catálogo em /poc-catalogo', () => {
     vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
+    window.history.pushState({}, '', '/poc-catalogo')
     render(<App />)
-    act(() => {
-      window.location.hash = '#/poc-catalogo'
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
-    })
     expect(screen.getByRole('heading', { name: 'Catálogo com virada de páginas' })).toBeInTheDocument()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 00:40
+   * Cartão Jira: KAN-92
+   * Título: Rota dos termos
+   * Objetivo: Garantir que /termos abra a página de termos e políticas.
+   * Decisões: Basta o título da página; o conteúdo é testado em PaginaTermos.test.
+   */
+  it('abre os termos em /termos', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
+    window.history.pushState({}, '', '/termos')
+    render(<App />)
+    expect(screen.getByRole('heading', { name: 'Termos, políticas e avisos' })).toBeInTheDocument()
   })
 })

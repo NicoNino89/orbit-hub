@@ -196,7 +196,8 @@ public class SessaoService implements VerificadorDeSessao {
                 propriedades.sessao().inatividade(), limiteDaFamilia);
         tokens.save(novo);
         TokenAcessoService.TokenAcesso acesso = tokenAcesso.gerar(usuario, familia);
-        return new SessaoEmitida(acesso.valor(), acesso.expiraEm(), refreshBruto, novo.getExpiraEm(), usuario);
+        return new SessaoEmitida(acesso.valor(), acesso.expiraEm(), refreshBruto, novo.getExpiraEm(), usuario,
+                acesso.termosPendentes());
     }
 
     /**
@@ -245,7 +246,7 @@ public class SessaoService implements VerificadorDeSessao {
      * Decisões: O valor bruto do refresh token nunca é registrado em log nem gravado.
      */
     public record SessaoEmitida(String tokenAcesso, Instant acessoExpiraEm, String refreshToken,
-                                Instant refreshExpiraEm, Usuario usuario) {
+                                Instant refreshExpiraEm, Usuario usuario, boolean termosPendentes) {
 
         /**
          * Autor: Nicholas Bruno Pimentel

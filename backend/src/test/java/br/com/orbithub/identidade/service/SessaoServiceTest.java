@@ -75,7 +75,7 @@ class SessaoServiceTest {
         ana.confirmarEmail(INICIO);
         when(usuarios.findById(ana.getId())).thenReturn(Optional.of(ana));
         when(tokenAcesso.gerar(any(), any())).thenAnswer(i ->
-                new TokenAcessoService.TokenAcesso("jwt-" + i.getArgument(1), relogio.instant().plusSeconds(900)));
+                new TokenAcessoService.TokenAcesso("jwt-" + i.getArgument(1), relogio.instant().plusSeconds(900), false));
         when(tokens.save(any())).thenAnswer(i -> {
             gravados.add(i.getArgument(0));
             return i.getArgument(0);
