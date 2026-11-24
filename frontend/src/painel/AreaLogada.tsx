@@ -76,10 +76,16 @@ export function Painel() {
       <div className="rounded-lg border border-line bg-surface p-5">
         <h2 className="mb-1 font-semibold">Próximo passo</h2>
         {papelAtivo === 'INVESTIDOR' && (
-          <p className="text-muted">Defina sua tese de investimento para receber startups compatíveis. Disponível em breve.</p>
+          <p className="text-muted">
+            Defina sua tese de investimento para receber startups compatíveis. Disponível em breve.{" "}
+            <Link to="/investidor" className="font-semibold text-primary">Abrir a área do investidor</Link>
+          </p>
         )}
         {papelAtivo === 'EMPREENDEDOR' && (
-          <p className="text-muted">Cadastre sua startup para apresentá-la a investidores. Disponível em breve.</p>
+          <p className="text-muted">
+            Cadastre sua startup para apresentá-la a investidores. Disponível em breve.{" "}
+            <Link to="/empreendedor" className="font-semibold text-primary">Abrir a área do empreendedor</Link>
+          </p>
         )}
         {papelAtivo === null && <p className="text-muted">Sua conta não tem papel público.</p>}
       </div>

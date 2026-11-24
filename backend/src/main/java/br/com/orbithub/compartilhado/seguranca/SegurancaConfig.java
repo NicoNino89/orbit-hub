@@ -3,6 +3,7 @@ package br.com.orbithub.compartilhado.seguranca;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import java.time.Clock;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -72,10 +73,12 @@ public class SegurancaConfig {
      * Título: Cadeia de filtros de segurança
      * Objetivo: Definir rotas públicas, exigir token no resto e ligar o resource server de JWT.
      * Decisões: Stateless; CORS pela política de CorsConfig; qualquer rota nova nasce protegida; /api/v1/admin
-     *           exige ADMIN já no filtro, além das regras nos métodos (defesa em profundidade, KAN-92).
+     *           exige ADMIN já no filtro, além das regras nos métodos (defesa em profundidade, KAN-92). As
+     *           recusas (401 e 403) respondem em Problem Details e ficam registradas (KAN-34).
      */
     @Bean
-    SecurityFilterChain cadeiaDeSeguranca(HttpSecurity http, JwtAuthenticationConverter conversor) throws Exception {
+    SecurityFilterChain cadeiaDeSeguranca(HttpSecurity http, JwtAuthenticationConverter conversor,
+                                          RespostasDeSeguranca respostas) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
@@ -88,8 +91,27 @@ public class SegurancaConfig {
                         .requestMatchers(HttpMethod.POST, ROTAS_PUBLICAS_ENVIO).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(conversor)));
+                .exceptionHandling(e -> e.authenticationEntryPoint(respostas).accessDeniedHandler(respostas))
+                .oauth2ResourceServer(o -> o
+                        .jwt(j -> j.jwtAuthenticationConverter(conversor))
+                        .authenticationEntryPoint(respostas)
+                        .accessDeniedHandler(respostas));
         return http.build();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:50
+     * Cartão Jira: KAN-34
+     * Título: Respostas de acesso recusado
+     * Objetivo: Criar o componente que responde e registra 401 e 403.
+     * Decisões: Criado aqui (e não por varredura) para a configuração de segurança funcionar também nos testes
+     *           só da camada web, sem banco.
+     */
+    @Bean
+    RespostasDeSeguranca respostasDeSeguranca(ObjectProvider<AcessoNegadoRepository> registros, Clock relogio) {
+        return new RespostasDeSeguranca(registros, relogio);
     }
 
     /**
