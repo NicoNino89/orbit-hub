@@ -94,6 +94,19 @@ resource "azurerm_key_vault_secret" "ghcr_token" {
   depends_on   = [azurerm_role_assignment.kv_operador_pipeline]
 }
 
+# Chave HMAC (256 bits) que assina os access tokens da API (KAN-57). Gerada aqui e lida só pela API.
+resource "random_bytes" "jwt" {
+  length = 32
+}
+
+resource "azurerm_key_vault_secret" "jwt_chave" {
+  name         = "jwt-chave"
+  value        = random_bytes.jwt.base64
+  key_vault_id = azurerm_key_vault.ambiente.id
+  content_type = "chave HMAC-SHA256 dos access tokens, em Base64"
+  depends_on   = [azurerm_role_assignment.kv_operador_pipeline]
+}
+
 # ---------- Arquivos (Blob Storage) ----------
 
 resource "azurerm_storage_account" "arquivos" {

@@ -38,6 +38,8 @@ services:
       ORBIT_DB_USUARIO: ${ORBIT_DB_USUARIO:-orbithub}
       ORBIT_DB_SENHA: ${ORBIT_DB_SENHA}
       ORBIT_ARMAZENAMENTO_TIPO: local
+      # vazio no ambiente local: a API gera uma chave aleatória a cada início (as sessões caem ao reiniciar)
+      ORBIT_JWT_CHAVE: ${ORBIT_JWT_CHAVE:-}
     ports:
       - "127.0.0.1:8080:8080"
     volumes:

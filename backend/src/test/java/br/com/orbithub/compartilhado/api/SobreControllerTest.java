@@ -6,7 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import br.com.orbithub.compartilhado.seguranca.SegurancaConfig;
+import br.com.orbithub.compartilhado.seguranca.VerificadorDeSessao;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,8 +24,12 @@ import org.springframework.test.web.servlet.MockMvc;
  * Decisões: {@code @WebMvcTest} só da camada web, para o teste rodar em segundos.
  */
 @WebMvcTest(SobreController.class)
+@Import(SegurancaConfig.class)
 @TestPropertySource(properties = "orbit.ambiente=homologacao")
 class SobreControllerTest {
+
+    @MockitoBean
+    VerificadorDeSessao verificador;
 
     @Autowired
     MockMvc mvc;
