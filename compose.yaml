@@ -6,6 +6,7 @@
 #   API ........ http://localhost:8080/swagger-ui.html
 #   Grafana .... http://localhost:3000
 #   Prometheus . http://localhost:9090
+#   E-mails .... http://localhost:8025   (Mailpit: caixa de entrada falsa, KAN-12)
 
 name: orbit-hub
 
@@ -40,10 +41,20 @@ services:
       ORBIT_ARMAZENAMENTO_TIPO: local
       # vazio no ambiente local: a API gera uma chave aleatória a cada início (as sessões caem ao reiniciar)
       ORBIT_JWT_CHAVE: ${ORBIT_JWT_CHAVE:-}
+      ORBIT_WEB_URL: http://localhost:5173
+      # e-mails vão para o Mailpit (nada sai para a internet)
+      ORBIT_EMAIL_TIPO: smtp
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: "1025"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
       - arquivos:/dados/arquivos
+
+  mailpit:
+    image: axllent/mailpit:v1.29
+    ports:
+      - "127.0.0.1:8025:8025"
 
   web:
     build: ./frontend

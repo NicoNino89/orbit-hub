@@ -98,6 +98,20 @@ resource "azurerm_container_app" "api" {
         secret_name = "jwt-chave"
       }
       env {
+        name  = "ORBIT_WEB_URL"
+        value = local.web_url
+      }
+      # Sem provedor de e-mail na nuvem por enquanto (decisão pendente): os e-mails só são registrados no
+      # log e a confirmação de e-mail fica desligada, para os cadastros funcionarem (KAN-12).
+      env {
+        name  = "ORBIT_EMAIL_TIPO"
+        value = "registro"
+      }
+      env {
+        name  = "ORBIT_CONTA_CONFIRMAR_EMAIL"
+        value = tostring(var.confirmar_email)
+      }
+      env {
         name  = "ORBIT_ARMAZENAMENTO_TIPO"
         value = "azure-blob"
       }

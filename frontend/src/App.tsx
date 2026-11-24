@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { PocCatalogo } from './catalogo/PocCatalogo'
+import { PaginaCadastro } from './conta/PaginaCadastro'
+import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
 import { Inicio } from './Inicio'
 import { PaginaTermos } from './termos/PaginaTermos'
 
@@ -19,6 +21,8 @@ export function Rotas() {
     <Routes>
       <Route path="/" element={<Inicio />} />
       <Route path="/poc-catalogo" element={<PocCatalogo />} />
+      <Route path="/cadastro" element={<PaginaCadastro />} />
+      <Route path="/confirmar-email" element={<PaginaConfirmacao />} />
       <Route path="/termos" element={<PaginaTermos />} />
       <Route path="/termos/:endereco" element={<PaginaTermos />} />
       <Route path="*" element={<Inicio />} />

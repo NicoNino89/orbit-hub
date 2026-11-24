@@ -43,6 +43,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableConfigurationProperties(SegurancaProperties.class)
 public class SegurancaConfig {
 
+    /** Envios abertos sem login: cadastro, confirmação e reenvio da confirmação (KAN-12). */
+    static final String[] ROTAS_PUBLICAS_ENVIO = {
+        "/api/v1/contas", "/api/v1/contas/confirmacao", "/api/v1/contas/confirmacao/reenvio"
+    };
+
     /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92). */
     static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais"};
 
@@ -79,6 +84,7 @@ public class SegurancaConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
                         .requestMatchers(HttpMethod.GET, ROTAS_PUBLICAS_LEITURA).permitAll()
+                        .requestMatchers(HttpMethod.POST, ROTAS_PUBLICAS_ENVIO).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(conversor)));

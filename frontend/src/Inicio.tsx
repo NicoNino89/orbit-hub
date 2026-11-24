@@ -61,7 +61,12 @@ export function Inicio() {
         <StatusApi estado={api} />
       </section>
 
-      <a href="/poc-catalogo" className="self-start rounded-md bg-primary px-4 py-2 font-semibold text-on-primary">
+      <div className="flex flex-wrap gap-3">
+        <a href="/cadastro" className="rounded-md bg-primary px-4 py-2 font-semibold text-on-primary">Criar conta</a>
+        <a href="/entrar" className="rounded-md border border-line px-4 py-2 font-semibold">Entrar</a>
+      </div>
+
+      <a href="/poc-catalogo" className="self-start text-sm font-semibold text-primary">
         Ver a prova de conceito do catálogo
       </a>
 
