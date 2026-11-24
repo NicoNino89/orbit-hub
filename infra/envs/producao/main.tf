@@ -56,15 +56,17 @@ provider "postgresql" {
 module "ambiente" {
   source = "../../modules/ambiente"
 
-  ambiente               = "producao"
-  sigla                  = "prd"
-  regiao                 = local.compartilhado.regiao
-  log_analytics_id       = local.compartilhado.log_analytics_id
-  postgres_servidor_id   = local.compartilhado.postgres_servidor_id
-  postgres_host          = local.compartilhado.postgres_host
-  postgres_admin_usuario = local.compartilhado.postgres_admin_usuario
-  replicas_minimas       = 0
-  teste_disponibilidade  = false # desligado por custo (ADR 0006); religar quando formos testar a disponibilidade
-  ghcr_token             = var.ghcr_token
-  email_alertas          = var.email_alertas
+  ambiente                   = "producao"
+  sigla                      = "prd"
+  regiao                     = local.compartilhado.regiao
+  log_analytics_id           = local.compartilhado.log_analytics_id
+  container_apps_ambiente_id = local.compartilhado.container_apps_ambiente_id
+  container_apps_dominio     = local.compartilhado.container_apps_dominio
+  postgres_servidor_id       = local.compartilhado.postgres_servidor_id
+  postgres_host              = local.compartilhado.postgres_host
+  postgres_admin_usuario     = local.compartilhado.postgres_admin_usuario
+  replicas_minimas           = 0
+  teste_disponibilidade      = false # desligado por custo (ADR 0006); religar quando formos testar a disponibilidade
+  ghcr_token                 = var.ghcr_token
+  email_alertas              = var.email_alertas
 }
