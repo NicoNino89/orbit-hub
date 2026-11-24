@@ -3,6 +3,7 @@ import { AreaAdmin, InicioAdmin, RotaInterna } from './admin/AreaAdmin'
 import { PaginaAprovacoes } from './admin/PaginaAprovacoes'
 import { PaginaAuditoria } from './admin/PaginaAuditoria'
 import { PaginaEquipe } from './admin/PaginaEquipe'
+import { PaginaListas } from './admin/PaginaListas'
 import { PaginaParametros } from './admin/PaginaParametros'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -22,8 +23,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:08
- * Cartão Jira: KAN-78
+ * Hora: 12:06
+ * Cartão Jira: KAN-79
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
@@ -31,7 +32,7 @@ import { PaginaTermos } from './termos/PaginaTermos'
  *           pela moldura com o cabeçalho. As rotas podem ser montadas sem o BrowserRouter nos testes. O
  *           backoffice fica em /admin, atrás da RotaInterna, e cada tela confere o papel exigido (KAN-80). O
  *           aceite do convite da equipe é público, protegido pelo token do link (KAN-75). A fila de segunda
- *           aprovação é de toda a equipe (KAN-81); parâmetros são do administrador (KAN-78).
+ *           aprovação é de toda a equipe (KAN-81); parâmetros e listas são do administrador (KAN-78, KAN-79).
  */
 export function Rotas() {
   return (
@@ -65,6 +66,7 @@ export function Rotas() {
                 <Route element={<RotaInterna papeis={['ADMIN']} />}>
                   <Route path="equipe" element={<PaginaEquipe />} />
                   <Route path="parametros" element={<PaginaParametros />} />
+                  <Route path="listas" element={<PaginaListas />} />
                 </Route>
                 <Route element={<RotaInterna papeis={['ADMIN', 'ENCARREGADO_DADOS']} />}>
                   <Route path="auditoria" element={<PaginaAuditoria />} />
