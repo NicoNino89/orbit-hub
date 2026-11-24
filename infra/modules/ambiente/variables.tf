@@ -57,8 +57,19 @@ variable "ghcr_token" {
   sensitive   = true
 }
 
+variable "modo_revisao" {
+  description = "Single (uma revisão ativa) ou Multiple (várias revisões; a anterior pode ser reativada no rollback, KAN-54)."
+  type        = string
+  default     = "Multiple"
+
+  validation {
+    condition     = contains(["Single", "Multiple"], var.modo_revisao)
+    error_message = "Use Single ou Multiple."
+  }
+}
+
 variable "replicas_minimas" {
-  description = "0 em homologação (escala a zero). Produção também pode ficar em 0 para economizar crédito."
+  description = "0 em homologação (escala a zero). Produção também pode ficar em 0 para economizar crédito, mas aí as rotinas automáticas (KAN-104) só rodam quando alguém acorda a API."
   type        = number
   default     = 0
 }

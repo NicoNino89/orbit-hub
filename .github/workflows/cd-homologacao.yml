@@ -4,13 +4,14 @@
 #
 # Autor: Nicholas Bruno Pimentel
 # Data: 24/11/2026
-# Hora: 08:30
-# Cartão Jira: KAN-163
+# Hora: 12:49
+# Cartão Jira: KAN-54
 # Título: Publicação em homologação só manual, por enquanto (ADR 0008)
 # Objetivo: não ligar o PostgreSQL da Azure a cada merge na main; o desenvolvimento roda no ambiente local.
 # Decisões: o gatilho automático (workflow_run) fica comentado logo abaixo, intacto. Para voltar ao automático
 #           no fim do projeto, basta descomentar as 4 linhas. Publicar agora: aba Actions → "Entrega em
-#           homologação" → Run workflow (ou `gh workflow run cd-homologacao.yml`).
+#           homologação" → Run workflow (ou `gh workflow run cd-homologacao.yml`). Com várias revisões (KAN-54),
+#           a revisão nova recebe o tráfego explicitamente e as antigas são desativadas depois do smoke test.
 name: Entrega em homologação
 
 on:
@@ -86,6 +87,7 @@ jobs:
             --set-env-vars "ORBIT_VERSAO=${{ steps.versao.outputs.curto }}" \
             --revision-suffix "v${{ steps.versao.outputs.curto }}" \
             --output none
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$API" "$API--v${{ steps.versao.outputs.curto }}"
 
       # ---------- Web ----------
       # A mesma imagem publicada pelo CI; o nginx dela repassa /api para a API do ambiente.
@@ -95,6 +97,7 @@ jobs:
             --image "ghcr.io/niconino89/orbit-hub-web:${{ steps.versao.outputs.curto }}" \
             --revision-suffix "v${{ steps.versao.outputs.curto }}" \
             --output none
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$WEB" "$WEB--v${{ steps.versao.outputs.curto }}"
 
       # ---------- Smoke test ----------
       - name: Smoke test
@@ -103,6 +106,12 @@ jobs:
           WEB_URL: ${{ steps.enderecos.outputs.web }}
           VERSAO: ${{ steps.versao.outputs.curto }}
         run: bash .github/scripts/smoke-test.sh
+
+      # Várias revisões (KAN-54): as antigas ficam desativadas, sem custo, para o ensaio de rollback.
+      - name: Desativar as revisões antigas
+        run: |
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$API" "$API--v${{ steps.versao.outputs.curto }}"
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$WEB" "$WEB--v${{ steps.versao.outputs.curto }}"
 
       - name: Resumo
         if: always()

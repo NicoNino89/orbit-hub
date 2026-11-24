@@ -1,0 +1,112 @@
+# Rollback em produção (KAN-54).
+#
+# Autor: Nicholas Bruno Pimentel
+# Data: 24/11/2026
+# Hora: 12:49
+# Cartão Jira: KAN-54
+# Título: Rollback em produção
+# Objetivo: Voltar a API e a web de produção para a revisão anterior do Azure Container Apps (ou para uma revisão
+#           escolhida), com aprovação no environment "producao" e smoke test da versão que voltou.
+# Decisões: Reativa a revisão desativada, manda 100% do tráfego para ela e desativa a que saiu. Não desfaz
+#           migrações: elas são sempre compatíveis com a versão anterior (regra em docs/operacao/producao.md), e o
+#           Flyway da versão antiga ignora as migrações mais novas que já estão no banco. Em homologação, o mesmo
+#           script serve para o ensaio (ambiente = homologacao).
+name: Rollback em produção
+
+on:
+  workflow_dispatch:
+    inputs:
+      ambiente:
+        description: Ambiente
+        type: choice
+        options: [producao, homologacao]
+        default: producao
+      revisao_api:
+        description: Revisão da API para voltar (vazio = a anterior à que está no ar)
+        required: false
+      revisao_web:
+        description: Revisão da web para voltar (vazio = a anterior à que está no ar)
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: entrega-${{ inputs.ambiente }}
+  cancel-in-progress: false
+
+jobs:
+  voltar:
+    name: Voltar à revisão anterior (${{ inputs.ambiente }})
+    if: vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.ambiente }}
+      url: ${{ steps.alvo.outputs.web }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Revisões de origem e destino
+        id: alvo
+        env:
+          AMBIENTE: ${{ inputs.ambiente }}
+          REVISAO_API: ${{ inputs.revisao_api }}
+          REVISAO_WEB: ${{ inputs.revisao_web }}
+        run: |
+          sigla=$([[ "$AMBIENTE" == producao ]] && echo prd || echo hml)
+          grupo="rg-orbithub-$sigla"; api="ca-orbithub-$sigla-api"; web="ca-orbithub-$sigla-web"
+          api_no_ar=$(bash .github/scripts/revisoes.sh no-ar "$grupo" "$api")
+          web_no_ar=$(bash .github/scripts/revisoes.sh no-ar "$grupo" "$web")
+          api_alvo="${REVISAO_API:-$(bash .github/scripts/revisoes.sh anterior "$grupo" "$api" "$api_no_ar")}"
+          web_alvo="${REVISAO_WEB:-$(bash .github/scripts/revisoes.sh anterior "$grupo" "$web" "$web_no_ar")}"
+          if [[ -z "$api_alvo" || -z "$web_alvo" ]]; then
+            echo "::error::Não há revisão anterior para voltar (API: ${api_alvo:-nenhuma}, web: ${web_alvo:-nenhuma})"; exit 1
+          fi
+          {
+            echo "grupo=$grupo"; echo "api=$api"; echo "web_app=$web"
+            echo "api_no_ar=$api_no_ar"; echo "web_no_ar=$web_no_ar"
+            echo "api_alvo=$api_alvo"; echo "web_alvo=$web_alvo"
+            echo "versao=$(bash .github/scripts/revisoes.sh versao "$grupo" "$api" "$api_alvo")"
+            echo "api_url=https://$(az containerapp show -g "$grupo" -n "$api" --query properties.configuration.ingress.fqdn -o tsv)"
+            echo "web=https://$(az containerapp show -g "$grupo" -n "$web" --query properties.configuration.ingress.fqdn -o tsv)"
+          } >> "$GITHUB_OUTPUT"
+          echo "API: $api_no_ar → $api_alvo · web: $web_no_ar → $web_alvo"
+
+      - name: Ligar o PostgreSQL, se estiver parado
+        run: bash infra/bootstrap/postgres.sh ligar
+
+      - name: Mandar o tráfego para as revisões de destino
+        run: |
+          bash .github/scripts/revisoes.sh fixar "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.api }}" "${{ steps.alvo.outputs.api_alvo }}"
+          bash .github/scripts/revisoes.sh fixar "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.web_app }}" "${{ steps.alvo.outputs.web_alvo }}"
+
+      - name: Smoke test da versão que voltou
+        env:
+          API_URL: ${{ steps.alvo.outputs.api_url }}
+          WEB_URL: ${{ steps.alvo.outputs.web }}
+          VERSAO: ${{ steps.alvo.outputs.versao }}
+          AMBIENTE: ${{ inputs.ambiente }}
+        run: bash .github/scripts/smoke-test.sh
+
+      - name: Desativar as revisões que saíram
+        run: |
+          bash .github/scripts/revisoes.sh desativar-outras "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.api }}" "${{ steps.alvo.outputs.api_alvo }}"
+          bash .github/scripts/revisoes.sh desativar-outras "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.web_app }}" "${{ steps.alvo.outputs.web_alvo }}"
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "### Rollback (${{ inputs.ambiente }}) · ${{ job.status }}"
+            echo "- API: ${{ steps.alvo.outputs.api_no_ar }} → ${{ steps.alvo.outputs.api_alvo }} (versão ${{ steps.alvo.outputs.versao }})"
+            echo "- Web: ${{ steps.alvo.outputs.web_no_ar }} → ${{ steps.alvo.outputs.web_alvo }}"
+          } >> "$GITHUB_STEP_SUMMARY"

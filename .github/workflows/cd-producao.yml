@@ -1,0 +1,251 @@
+# Publicação em produção com aprovação e rollback (KAN-54).
+#
+# Autor: Nicholas Bruno Pimentel
+# Data: 24/11/2026
+# Hora: 12:49
+# Cartão Jira: KAN-54
+# Título: Publicação em produção
+# Objetivo: Publicar uma versão numerada (tag de imagem, tag git e release) da main em produção, só depois da
+#           aprovação manual no environment "producao", com smoke test e volta automática à versão anterior se ele
+#           falhar.
+# Decisões: Duas etapas. "Conferir" roda sem aprovação: versão nova no formato X.Y.Z, commit na main com o CI verde,
+#           imagens no GHCR e migrações (alterar migração aplicada nunca; destrutiva só com a confirmação, depois da
+#           revisão específica). "Publicar" espera a aprovação. As imagens ganham a tag da versão (a mesma imagem
+#           testada no CI, sem rebuild); cada app ganha a revisão "v<versão>" com 100% do tráfego; o Flyway aplica
+#           as migrações quando a API nova sobe. Passou no smoke test: as revisões antigas são desativadas (sem custo,
+#           prontas para o rollback) e saem a tag e o release. Falhou: o tráfego volta para as revisões anteriores.
+#           Rollback manual: workflow "Rollback em produção". Procedimento em docs/operacao/producao.md.
+name: Publicação em produção
+
+on:
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: Versão a publicar (X.Y.Z, por exemplo 1.0.0)
+        required: true
+      commit:
+        description: Commit da main a publicar (SHA completo; vazio = último da main)
+        required: false
+      migracao_destrutiva_revisada:
+        description: Confirmo a revisão específica da migração destrutiva desta versão
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: entrega-producao
+  cancel-in-progress: false
+
+env:
+  GRUPO: rg-orbithub-prd
+  API: ca-orbithub-prd-api
+  WEB: ca-orbithub-prd-web
+  REGISTRO: ghcr.io/niconino89
+
+jobs:
+  conferir:
+    name: Conferir a versão
+    if: vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+    outputs:
+      sha: ${{ steps.versao.outputs.sha }}
+      curto: ${{ steps.versao.outputs.curto }}
+      sufixo: ${{ steps.versao.outputs.sufixo }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Versão e commit
+        id: versao
+        env:
+          VERSAO: ${{ inputs.versao }}
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          if [[ ! "$VERSAO" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Versão \"$VERSAO\" fora do formato X.Y.Z"; exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/v$VERSAO" >/dev/null; then
+            echo "::error::A versão v$VERSAO já existe"; exit 1
+          fi
+          sha=$(git rev-parse "${COMMIT:-origin/main}^{commit}")
+          if ! git merge-base --is-ancestor "$sha" origin/main; then
+            echo "::error::O commit $sha não está na main"; exit 1
+          fi
+          {
+            echo "sha=$sha"
+            echo "curto=${sha:0:7}"
+            echo "sufixo=v${VERSAO//./-}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: CI verde no commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.versao.outputs.sha }}
+        run: |
+          conclusao=$(gh run list --workflow ci.yml --commit "$SHA" --event push --json conclusion --jq '.[0].conclusion')
+          if [[ "$conclusao" != "success" ]]; then
+            echo "::error::O CI da main no commit $SHA não terminou verde (${conclusao:-sem execução})"; exit 1
+          fi
+
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Imagens do commit no GHCR
+        env:
+          CURTO: ${{ steps.versao.outputs.curto }}
+        run: |
+          for imagem in orbit-hub-api orbit-hub-web; do
+            docker buildx imagetools inspect "$REGISTRO/$imagem:$CURTO" > /dev/null
+            echo "OK   $imagem:$CURTO"
+          done
+
+      - name: Migrações desde a última versão
+        env:
+          SHA: ${{ steps.versao.outputs.sha }}
+          REVISADA: ${{ inputs.migracao_destrutiva_revisada }}
+        run: |
+          anterior=$(git describe --tags --abbrev=0 --match 'v*' "$SHA" 2>/dev/null || git rev-list --max-parents=0 "$SHA" | tail -1)
+          status=0
+          bash .github/scripts/migracoes.sh "$anterior" "$SHA" || status=$?
+          if [[ $status -eq 2 && "$REVISADA" != "true" ]]; then
+            echo "::error::Há migração destrutiva. Faça a revisão específica e publique de novo marcando a confirmação."
+            exit 1
+          fi
+          [[ $status -eq 0 || $status -eq 2 ]]
+
+      - name: Resumo
+        run: |
+          {
+            echo "### Produção · v${{ inputs.versao }} (${{ steps.versao.outputs.curto }})"
+            echo "Conferências ok. A publicação espera a aprovação no environment **producao**."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publicar:
+    name: Publicar em produção
+    needs: conferir
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    environment:
+      name: producao
+      url: ${{ steps.enderecos.outputs.web }}
+    env:
+      VERSAO: ${{ inputs.versao }}
+      SHA: ${{ needs.conferir.outputs.sha }}
+      CURTO: ${{ needs.conferir.outputs.curto }}
+      SUFIXO: ${{ needs.conferir.outputs.sufixo }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.conferir.outputs.sha }}
+          fetch-depth: 0
+
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # A mesma imagem que passou no CI, com mais uma tag: nada é recompilado para produção.
+      - name: Tag da versão nas imagens
+        run: |
+          for imagem in orbit-hub-api orbit-hub-web; do
+            docker buildx imagetools create -t "$REGISTRO/$imagem:$VERSAO" "$REGISTRO/$imagem:$CURTO"
+          done
+
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Endereços e revisões no ar
+        id: enderecos
+        run: |
+          {
+            echo "api=https://$(az containerapp show -g "$GRUPO" -n "$API" --query properties.configuration.ingress.fqdn -o tsv)"
+            echo "web=https://$(az containerapp show -g "$GRUPO" -n "$WEB" --query properties.configuration.ingress.fqdn -o tsv)"
+            echo "api_anterior=$(bash .github/scripts/revisoes.sh no-ar "$GRUPO" "$API")"
+            echo "web_anterior=$(bash .github/scripts/revisoes.sh no-ar "$GRUPO" "$WEB")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ligar o PostgreSQL, se estiver parado
+        run: bash infra/bootstrap/postgres.sh ligar
+
+      # ---------- API (o Flyway aplica as migrações na subida) ----------
+      - name: Publicar a API
+        run: |
+          az containerapp update -g "$GRUPO" -n "$API" \
+            --image "$REGISTRO/orbit-hub-api:$VERSAO" \
+            --set-env-vars "ORBIT_VERSAO=$VERSAO" \
+            --revision-suffix "$SUFIXO" \
+            --output none
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$API" "$API--$SUFIXO"
+
+      # ---------- Web ----------
+      - name: Publicar a web
+        run: |
+          az containerapp update -g "$GRUPO" -n "$WEB" \
+            --image "$REGISTRO/orbit-hub-web:$VERSAO" \
+            --revision-suffix "$SUFIXO" \
+            --output none
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$WEB" "$WEB--$SUFIXO"
+
+      # ---------- Smoke test ----------
+      - name: Smoke test
+        id: smoke
+        env:
+          API_URL: ${{ steps.enderecos.outputs.api }}
+          WEB_URL: ${{ steps.enderecos.outputs.web }}
+          AMBIENTE: producao
+        run: bash .github/scripts/smoke-test.sh
+
+      # ---------- Falhou: volta para as revisões anteriores ----------
+      - name: Voltar à versão anterior (smoke test falhou)
+        if: failure() && steps.enderecos.outputs.api_anterior != ''
+        env:
+          API_ANTERIOR: ${{ steps.enderecos.outputs.api_anterior }}
+          WEB_ANTERIOR: ${{ steps.enderecos.outputs.web_anterior }}
+        run: |
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$API" "$API_ANTERIOR"
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$WEB" "$WEB_ANTERIOR"
+          echo "### Produção · v$VERSAO NÃO publicada: smoke test falhou, tráfego de volta em $API_ANTERIOR e $WEB_ANTERIOR" >> "$GITHUB_STEP_SUMMARY"
+
+      # ---------- Passou: desativa as antigas e registra a versão ----------
+      - name: Desativar as revisões antigas
+        run: |
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$API" "$API--$SUFIXO"
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$WEB" "$WEB--$SUFIXO"
+
+      - name: Tag e release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag "v$VERSAO" "$SHA"
+          git push origin "v$VERSAO"
+          gh release create "v$VERSAO" --verify-tag --generate-notes --title "v$VERSAO" \
+            --notes "Publicada em produção em $(TZ=America/Sao_Paulo date '+%d/%m/%Y %H:%M') (horário de Brasília). Imagens: \`$REGISTRO/orbit-hub-api:$VERSAO\` e \`$REGISTRO/orbit-hub-web:$VERSAO\` (commit $CURTO)."
+
+      - name: Resumo
+        if: success()
+        run: |
+          {
+            echo "### Produção · v$VERSAO ($CURTO)"
+            echo "- Web: ${{ steps.enderecos.outputs.web }}"
+            echo "- API: ${{ steps.enderecos.outputs.api }}/swagger-ui.html"
+            echo "- Revisões no ar: $API--$SUFIXO e $WEB--$SUFIXO"
+            echo "- Anteriores (desativadas, prontas para o rollback): ${{ steps.enderecos.outputs.api_anterior }} e ${{ steps.enderecos.outputs.web_anterior }}"
+          } >> "$GITHUB_STEP_SUMMARY"
