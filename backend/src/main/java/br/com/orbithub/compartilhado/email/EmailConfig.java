@@ -60,14 +60,28 @@ class EmailConfig {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 01:00
-         * Cartão Jira: KAN-12
+         * Hora: 12:36
+         * Cartão Jira: KAN-146
          * Título: Enviar pelo SMTP
-         * Objetivo: Montar e enviar a mensagem de texto simples.
-         * Decisões: Remetente fixo da configuração ("não responda").
+         * Objetivo: Enviar a mensagem de texto simples sem derrubar quem chamou.
+         * Decisões: Usa a tentativa e ignora o resultado (os fluxos de conta oferecem o reenvio).
          */
         @Override
         public void enviar(MensagemEmail mensagem) {
+            tentarEnviar(mensagem);
+        }
+
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 24/11/2026
+         * Hora: 12:36
+         * Cartão Jira: KAN-146
+         * Título: Tentar enviar pelo SMTP
+         * Objetivo: Montar e enviar a mensagem e dizer se o servidor aceitou.
+         * Decisões: Remetente fixo da configuração ("não responda"); a falha vai para o log sem o conteúdo.
+         */
+        @Override
+        public boolean tentarEnviar(MensagemEmail mensagem) {
             SimpleMailMessage email = new SimpleMailMessage();
             email.setFrom(remetente);
             email.setTo(mensagem.para());
@@ -75,8 +89,10 @@ class EmailConfig {
             email.setText(mensagem.texto());
             try {
                 remetenteSmtp.send(email);
+                return true;
             } catch (MailException falha) {
                 LOG.warn("Falha ao enviar e-mail {}: {}", mensagem, falha.getClass().getSimpleName());
+                return false;
             }
         }
     }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.administracao.domain.TipoDocumento;
@@ -67,8 +68,8 @@ class PerfilServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
      * Título: Preparação
      * Objetivo: Montar o serviço com uma conta ativa de empreendedora.
      * Decisões: Codificador de senha que compara "hash:" + senha.
@@ -94,7 +95,8 @@ class PerfilServiceTest {
         when(senhas.matches(anyString(), anyString())).thenAnswer(i -> ("hash:" + i.getArgument(0)).equals(i.getArgument(1)));
         var propriedades = new ContaProperties("https://web.exemplo", true);
         servico = new PerfilService(usuarios, historico, senhas, sessoes, links, aceites, arquivos, email,
-                List.of(pendencias), propriedades, new ParametrosFixos(), new RelogioAjustavel(AGORA));
+                List.of(pendencias), propriedades, new ParametrosFixos(), mock(NotificacoesService.class),
+                new RelogioAjustavel(AGORA));
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "hash:senha-atual-longa", Set.of(Papel.EMPREENDEDOR), AGORA);
         ana.confirmarEmail(AGORA);

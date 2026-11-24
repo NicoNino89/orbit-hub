@@ -1,11 +1,14 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -67,5 +70,47 @@ public class ConsultaDeContas {
     public Map<UUID, String> nomes(Collection<UUID> contas) {
         return usuarios.findAllById(contas.stream().filter(Objects::nonNull).distinct().toList()).stream()
                 .collect(Collectors.toMap(Usuario::getId, Usuario::getNome));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
+     * Título: E-mail de uma conta ativa
+     * Objetivo: Devolver o e-mail para entregar um aviso.
+     * Decisões: Vazio se a conta não existe ou não está ativa (conta desativada não recebe e-mail).
+     */
+    @Transactional(readOnly = true)
+    public Optional<String> emailParaAviso(UUID contaId) {
+        return usuarios.findById(contaId).filter(Usuario::podeTerSessao).map(Usuario::getEmail);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
+     * Título: Equipe ativa com papéis
+     * Objetivo: Listar os membros ativos que têm algum dos papéis (por exemplo, quem aprova uma ação grave).
+     * Decisões: Conjunto vazio devolve lista vazia.
+     */
+    @Transactional(readOnly = true)
+    public List<UUID> equipeAtivaComPapeis(Set<Papel> papeis) {
+        return papeis.isEmpty() ? List.of() : usuarios.idsDaEquipeAtivaComPapeis(papeis);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
+     * Título: Contas públicas ativas
+     * Objetivo: Listar as contas de investidor e empreendedor ativas.
+     * Decisões: Para avisos a todos os usuários (termos atualizados).
+     */
+    @Transactional(readOnly = true)
+    public List<UUID> contasPublicasAtivas() {
+        return usuarios.idsPublicosAtivos();
     }
 }

@@ -9,6 +9,8 @@ import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.EventoDaConta;
+import br.com.orbithub.notificacoes.domain.TipoDeNotificacao;
+import br.com.orbithub.notificacoes.service.NotificacoesService;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.PerfilDePapel;
 import br.com.orbithub.identidade.domain.PoliticaDeSenha;
@@ -31,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:08
- * Cartão Jira: KAN-78
+ * Hora: 12:36
+ * Cartão Jira: KAN-146
  * Título: Perfil e papéis da conta
  * Objetivo: Editar nome, foto e contato; trocar e-mail (com confirmação pelo novo endereço) e senha (com a
  *           atual); ativar e desativar papéis, registrando tudo no histórico da conta.
@@ -57,13 +59,14 @@ public class PerfilService {
     private final List<PendenciasDePapel> pendencias;
     private final ContaProperties propriedades;
     private final LeituraDeParametros parametros;
+    private final NotificacoesService notificacoes;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, serviços, armazenamento, e-mail, verificadores de pendência e relógio.
      * Decisões: A lista de verificadores pode estar vazia (nenhum módulo com pendências ainda).
@@ -71,7 +74,9 @@ public class PerfilService {
     public PerfilService(UsuarioRepository usuarios, EventoDaContaRepository historico, PasswordEncoder senhas,
                          SessaoService sessoes, TokenDeContaService links, AceiteService aceites,
                          ArmazenamentoArquivos arquivos, EnvioDeEmail email, List<PendenciasDePapel> pendencias,
-                         ContaProperties propriedades, LeituraDeParametros parametros, Clock relogio) {
+                         ContaProperties propriedades, LeituraDeParametros parametros,
+                         NotificacoesService notificacoes, Clock relogio) {
+        this.notificacoes = notificacoes;
         this.usuarios = usuarios;
         this.historico = historico;
         this.senhas = senhas;
@@ -196,8 +201,8 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:40
-     * Cartão Jira: KAN-16
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
      * Título: Confirmar troca de e-mail
      * Objetivo: Aplicar o novo e-mail a partir do link enviado a ele.
      * Decisões: Confere de novo a unicidade (alguém pode ter se cadastrado com o endereço no meio-tempo).
@@ -212,13 +217,16 @@ public class PerfilService {
         Instant agora = relogio.instant();
         usuario.trocarEmail(link.getDado(), agora);
         historico.save(EventoDaConta.registrar(usuario.getId(), EventoDaConta.Tipo.EMAIL_ALTERADO, null, agora));
+        notificacoes.notificar(usuario.getId(), TipoDeNotificacao.SEGURANCA_CONTA, "E-mail da conta alterado",
+                "O e-mail de acesso da sua conta foi trocado. Se não foi você, recupere a senha e fale com o suporte.",
+                "/conta");
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:40
-     * Cartão Jira: KAN-16
+     * Hora: 12:36
+     * Cartão Jira: KAN-146
      * Título: Trocar senha
      * Objetivo: Trocar a senha com a senha atual e desconectar os outros aparelhos.
      * Decisões: A sessão em uso continua; as demais caem.
@@ -234,6 +242,9 @@ public class PerfilService {
         usuario.trocarSenha(senhas.encode(novaSenha), agora);
         sessoes.encerrarOutras(usuarioId, sessaoAtual, "senha_alterada");
         historico.save(EventoDaConta.registrar(usuarioId, EventoDaConta.Tipo.SENHA_ALTERADA, null, agora));
+        notificacoes.notificar(usuarioId, TipoDeNotificacao.SEGURANCA_CONTA, "Senha alterada",
+                "A senha da sua conta foi trocada e os outros aparelhos foram desconectados. Se não foi você, recupere a "
+                        + "senha agora.", "/conta");
     }
 
     /**

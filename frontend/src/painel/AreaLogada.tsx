@@ -1,18 +1,19 @@
 import { Link, Outlet } from 'react-router'
 import { ehPapelPublico, NOMES_DOS_PAPEIS } from '../api/contas'
+import { Sino } from '../notificacoes/Sino'
 import { useSessao } from '../sessao/contexto'
 
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:09
- * Cartão Jira: KAN-80
+ * Hora: 12:36
+ * Cartão Jira: KAN-146
  * Título: Moldura da área logada
  * Objetivo: Cabeçalho comum com a marca, o papel em que a pessoa está atuando, o nome e o botão de sair.
  * Decisões: Com os dois papéis, um seletor deixa claro e troca o papel ativo (critério do KAN-12); com um só,
  *           o papel aparece como etiqueta. Sair encerra a sessão no servidor. Contas da equipe veem o link
- *           do backoffice (KAN-80).
+ *           do backoffice (KAN-80). O sino leva à central de notificações (KAN-146).
  */
 export function AreaLogada() {
   const { estado, papelAtivo, escolherPapel, sair } = useSessao()
@@ -43,6 +44,7 @@ export function AreaLogada() {
               papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES_DOS_PAPEIS[papelAtivo]}</span>
             )}
             {daEquipe && <Link to="/admin" className="font-semibold text-primary underline-offset-2 hover:underline">Backoffice</Link>}
+            <Sino />
             <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
             <button type="button" onClick={() => void sair()} className="rounded-md border border-line px-3 py-1 font-semibold">
               Sair

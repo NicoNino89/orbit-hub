@@ -14,21 +14,23 @@ import org.springframework.web.servlet.HandlerInterceptor;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 00:40
- * Cartão Jira: KAN-92
+ * Hora: 12:36
+ * Cartão Jira: KAN-146
  * Título: Bloqueio por aceite pendente
  * Objetivo: Impedir o uso da plataforma enquanto houver Termos de Uso ou Política de Privacidade
  *           vigentes sem aceite ("aceita a nova versão no próximo acesso").
  * Decisões: A pendência vem no próprio access token (claim "termos_pendentes"), sem consulta ao banco por
  *           requisição. Depois de aceitar, o front-end renova a sessão e recebe um token sem a marca.
- *           Ficam liberadas só as rotas de autenticação, de aceite e de leitura dos documentos. Resposta
+ *           Ficam liberadas só as rotas de autenticação, de aceite, de leitura dos documentos e as notificações (o
+ *           aviso de termos atualizados precisa aparecer, KAN-146). Resposta
  *           403 com o código "aceite_pendente", para a tela abrir o aceite.
  */
 public class AceitePendenteInterceptor implements HandlerInterceptor {
 
     static final String CLAIM = "termos_pendentes";
     static final List<String> LIBERADAS = List.of(
-            "/api/v1/auth/", "/api/v1/conta/aceites", "/api/v1/documentos-legais", "/api/v1/sobre");
+            "/api/v1/auth/", "/api/v1/conta/aceites", "/api/v1/documentos-legais", "/api/v1/sobre",
+            "/api/v1/notificacoes");
 
     /**
      * Autor: Nicholas Bruno Pimentel
