@@ -12,9 +12,24 @@
 3. Faça commits pequenos e frequentes.
 4. Abra um pull request para a `main` preenchendo o template.
 5. Aguarde o pipeline e a revisão de pelo menos uma pessoa do time.
-6. Depois de aprovado, faça o merge e apague a branch.
+6. Depois de aprovado, faça o merge. A branch é apagada sozinha no GitHub.
 
 A `main` deve estar sempre estável. Nada é enviado diretamente para ela.
+
+## Proteção da `main`
+
+A `main` é protegida no GitHub (o repositório é público justamente para isso: em repositório privado, a proteção exige o plano Pro):
+
+- nada entra por push direto, só por pull request, e a regra vale também para administradores;
+- o merge só é liberado com estes checks verdes e com a branch atualizada em relação à `main`:
+  - `Back-end (build, testes e cobertura)`
+  - `Front-end (lint, tipos, testes e build)`
+  - `SonarCloud (quality gate)`
+  - `Observabilidade (Prometheus e Grafana)`
+- todas as conversas do pull request precisam estar resolvidas;
+- a `main` não aceita push forçado nem pode ser apagada.
+
+Enquanto o time tiver uma só conta no GitHub, a revisão é a aprovação do Product Owner registrada no próprio pull request ou no cartão do Jira: o GitHub não deixa o autor aprovar o próprio pull request, então a regra não exige aprovação formal. Quando entrar a segunda pessoa, passa a exigir uma aprovação.
 
 ## Nome das branches
 
