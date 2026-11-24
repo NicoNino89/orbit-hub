@@ -20,7 +20,7 @@ export function PocCatalogo() {
           <span className="text-xs font-semibold uppercase tracking-widest text-muted">Prova de conceito · KAN-58</span>
           <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Catálogo com virada de páginas</h1>
         </div>
-        <a href="#/" className="text-sm text-primary">Voltar ao início</a>
+        <a href="/" className="text-sm text-primary">Voltar ao início</a>
       </header>
 
       <p className="max-w-prose text-sm text-muted">

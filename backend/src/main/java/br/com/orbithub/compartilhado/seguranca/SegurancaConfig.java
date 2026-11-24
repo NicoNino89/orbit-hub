@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,6 +43,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableConfigurationProperties(SegurancaProperties.class)
 public class SegurancaConfig {
 
+    /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92). */
+    static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais"};
+
     /** Rotas abertas sem login: saúde, métricas, contrato da API e autenticação. */
     static final String[] ROTAS_PUBLICAS = {
         "/actuator/health/**",
@@ -61,7 +65,8 @@ public class SegurancaConfig {
      * Cartão Jira: KAN-57
      * Título: Cadeia de filtros de segurança
      * Objetivo: Definir rotas públicas, exigir token no resto e ligar o resource server de JWT.
-     * Decisões: Stateless; CORS pela política de CorsConfig; qualquer rota nova nasce protegida.
+     * Decisões: Stateless; CORS pela política de CorsConfig; qualquer rota nova nasce protegida; /api/v1/admin
+     *           exige ADMIN já no filtro, além das regras nos métodos (defesa em profundidade, KAN-92).
      */
     @Bean
     SecurityFilterChain cadeiaDeSeguranca(HttpSecurity http, JwtAuthenticationConverter conversor) throws Exception {
@@ -73,6 +78,8 @@ public class SegurancaConfig {
                 .formLogin(f -> f.disable())
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
+                        .requestMatchers(HttpMethod.GET, ROTAS_PUBLICAS_LEITURA).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o.jwt(j -> j.jwtAuthenticationConverter(conversor)));
         return http.build();

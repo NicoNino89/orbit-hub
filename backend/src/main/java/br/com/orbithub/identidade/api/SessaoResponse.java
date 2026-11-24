@@ -16,7 +16,7 @@ import java.util.UUID;
  * Objetivo: Devolver ao front-end o access token, a expiração e um resumo da conta.
  * Decisões: O refresh token nunca vai no corpo, só no cookie HttpOnly.
  */
-public record SessaoResponse(String tokenAcesso, Instant expiraEm, UsuarioResumo usuario) {
+public record SessaoResponse(String tokenAcesso, Instant expiraEm, UsuarioResumo usuario, boolean termosPendentes) {
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -31,7 +31,7 @@ public record SessaoResponse(String tokenAcesso, Instant expiraEm, UsuarioResumo
         var usuario = sessao.usuario();
         return new SessaoResponse(sessao.tokenAcesso(), sessao.acessoExpiraEm(),
                 new UsuarioResumo(usuario.getId(), usuario.getNome(), usuario.getEmail(),
-                        new TreeSet<>(usuario.getPapeis())));
+                        new TreeSet<>(usuario.getPapeis())), sessao.termosPendentes());
     }
 
     /**

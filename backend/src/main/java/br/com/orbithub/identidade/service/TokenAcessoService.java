@@ -1,5 +1,6 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.administracao.service.AceiteService;
 import br.com.orbithub.compartilhado.seguranca.SegurancaProperties;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
@@ -21,8 +22,8 @@ import org.springframework.stereotype.Service;
  * Cartão Jira: KAN-57
  * Título: Emissão do access token
  * Objetivo: Gerar o JWT curto que autentica cada requisição.
- * Decisões: Claims mínimas: sub (id da conta), sid (sessão), papeis, iss, iat, exp e jti. Nada de e-mail
- *           ou nome no token, para não espalhar dado pessoal em logs e ferramentas.
+ * Decisões: Claims mínimas: sub (id da conta), sid (sessão), papeis, termos_pendentes (KAN-92), iss, iat,
+ *           exp e jti. Nada de e-mail ou nome no token, para não espalhar dado pessoal em logs e ferramentas.
  */
 @Service
 public class TokenAcessoService {
@@ -30,6 +31,7 @@ public class TokenAcessoService {
     private final JwtEncoder codificador;
     private final SegurancaProperties propriedades;
     private final Clock relogio;
+    private final AceiteService aceites;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -40,10 +42,12 @@ public class TokenAcessoService {
      * Objetivo: Receber o assinador, os parâmetros e o relógio.
      * Decisões: Relógio injetado para os testes controlarem o tempo.
      */
-    public TokenAcessoService(JwtEncoder codificador, SegurancaProperties propriedades, Clock relogio) {
+    public TokenAcessoService(JwtEncoder codificador, SegurancaProperties propriedades, Clock relogio,
+                              AceiteService aceites) {
         this.codificador = codificador;
         this.propriedades = propriedades;
         this.relogio = relogio;
+        this.aceites = aceites;
     }
 
     /**
@@ -59,6 +63,7 @@ public class TokenAcessoService {
         Instant agora = relogio.instant();
         Instant expiraEm = agora.plus(propriedades.jwt().duracao());
         List<String> papeis = usuario.getPapeis().stream().map(Papel::name).sorted().toList();
+        boolean termosPendentes = aceites.temPendenciaBloqueante(usuario.getId());
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(propriedades.jwt().emissor())
                 .subject(usuario.getId().toString())
@@ -67,10 +72,11 @@ public class TokenAcessoService {
                 .id(UUID.randomUUID().toString())
                 .claim("sid", sessaoId.toString())
                 .claim("papeis", papeis)
+                .claim("termos_pendentes", termosPendentes)
                 .build();
         JwsHeader cabecalho = JwsHeader.with(MacAlgorithm.HS256).build();
         String valor = codificador.encode(JwtEncoderParameters.from(cabecalho, claims)).getTokenValue();
-        return new TokenAcesso(valor, expiraEm);
+        return new TokenAcesso(valor, expiraEm, termosPendentes);
     }
 
     /**
@@ -80,8 +86,9 @@ public class TokenAcessoService {
      * Cartão Jira: KAN-57
      * Título: Access token emitido
      * Objetivo: Devolver o token e o instante em que expira.
-     * Decisões: O front-end usa a expiração para renovar um pouco antes.
+     * Decisões: O front-end usa a expiração para renovar um pouco antes e a pendência de termos (KAN-92)
+     *           para abrir o aceite antes de qualquer outra tela.
      */
-    public record TokenAcesso(String valor, Instant expiraEm) {
+    public record TokenAcesso(String valor, Instant expiraEm, boolean termosPendentes) {
     }
 }

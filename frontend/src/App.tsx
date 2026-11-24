@@ -1,32 +1,44 @@
-import { useSyncExternalStore } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { Inicio } from './Inicio'
+import { PaginaTermos } from './termos/PaginaTermos'
 
 /**
  * Autor: Nicholas Bruno Pimentel
- * Data: 18/11/2026
- * Hora: 21:02
- * Cartão Jira: KAN-58
- * Título: Assinar mudanças de endereço
- * Objetivo: Avisar o React quando o hash da URL mudar.
- * Decisões: Devolve a função de cancelamento exigida pelo useSyncExternalStore.
+ * Data: 24/11/2026
+ * Hora: 00:40
+ * Cartão Jira: KAN-92
+ * Título: Rotas da aplicação
+ * Objetivo: Associar cada endereço à sua tela.
+ * Decisões: Roteador definitivo (React Router) no lugar das rotas por hash da S0, como previsto. O nginx
+ *           já devolve o index.html para qualquer rota (SPA), então endereços como /termos/privacidade
+ *           funcionam ao recarregar a página. As rotas podem ser montadas sem o BrowserRouter nos testes.
  */
-function assinarHash(aoMudar: () => void) {
-  window.addEventListener('hashchange', aoMudar)
-  return () => window.removeEventListener('hashchange', aoMudar)
+export function Rotas() {
+  return (
+    <Routes>
+      <Route path="/" element={<Inicio />} />
+      <Route path="/poc-catalogo" element={<PocCatalogo />} />
+      <Route path="/termos" element={<PaginaTermos />} />
+      <Route path="/termos/:endereco" element={<PaginaTermos />} />
+      <Route path="*" element={<Inicio />} />
+    </Routes>
+  )
 }
 
 /**
  * Autor: Nicholas Bruno Pimentel
- * Data: 18/11/2026
- * Hora: 21:02
- * Cartão Jira: KAN-58
- * Título: Rotas da S0
- * Objetivo: Exibir a página inicial ou a prova de conceito do catálogo, conforme o endereço.
- * Decisões: Rotas por hash, para funcionar em qualquer servidor estático sem regra de reescrita.
- *           O roteador definitivo entra junto com as primeiras telas do produto (S1).
+ * Data: 24/11/2026
+ * Hora: 00:40
+ * Cartão Jira: KAN-92
+ * Título: Aplicação
+ * Objetivo: Montar o roteador do navegador com as rotas.
+ * Decisões: BrowserRouter (URLs sem #).
  */
 export default function App() {
-  const hash = useSyncExternalStore(assinarHash, () => window.location.hash, () => '')
-  return hash === '#/poc-catalogo' ? <PocCatalogo /> : <Inicio />
+  return (
+    <BrowserRouter>
+      <Rotas />
+    </BrowserRouter>
+  )
 }

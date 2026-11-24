@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import br.com.orbithub.TestcontainersConfiguration;
+import br.com.orbithub.administracao.domain.DocumentoLegal;
+import br.com.orbithub.administracao.service.AceiteService;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
@@ -54,6 +56,9 @@ class AutenticacaoIT {
     @Autowired
     SessaoService sessoes;
 
+    @Autowired
+    AceiteService aceites;
+
     private Usuario ana;
 
     /**
@@ -62,7 +67,7 @@ class AutenticacaoIT {
      * Hora: 00:20
      * Cartão Jira: KAN-57
      * Título: Conta de teste
-     * Objetivo: Gravar uma conta ativa nova para cada teste.
+     * Objetivo: Gravar uma conta ativa nova para cada teste, com os termos vigentes aceitos (KAN-92).
      * Decisões: E-mail aleatório, para os testes não colidirem no índice único.
      */
     @BeforeEach
@@ -71,6 +76,7 @@ class AutenticacaoIT {
                 Set.of(Papel.INVESTIDOR), Instant.now());
         ana.confirmarEmail(Instant.now());
         usuarios.save(ana);
+        aceites.aceitar(ana.getId(), aceites.pendentes(ana.getId(), true).stream().map(DocumentoLegal::getId).toList());
     }
 
     /**

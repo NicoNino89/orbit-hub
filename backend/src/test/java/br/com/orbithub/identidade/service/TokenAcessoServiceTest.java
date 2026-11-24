@@ -2,7 +2,11 @@ package br.com.orbithub.identidade.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import br.com.orbithub.RelogioAjustavel;
+import br.com.orbithub.administracao.service.AceiteService;
 import br.com.orbithub.compartilhado.seguranca.SegurancaProperties;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
@@ -49,9 +53,11 @@ class TokenAcessoServiceTest {
         var propriedades = new SegurancaProperties(
                 new SegurancaProperties.Jwt("x", "orbit-hub", Duration.ofMinutes(15)),
                 new SegurancaProperties.Sessao(Duration.ofMinutes(30), Duration.ofHours(12), Duration.ofSeconds(10)));
+        AceiteService aceites = mock(AceiteService.class);
         var servico = new TokenAcessoService(new NimbusJwtEncoder(new ImmutableSecret<>(CHAVE)), propriedades,
-                new RelogioAjustavel(agora));
+                new RelogioAjustavel(agora), aceites);
         Usuario ana = Usuario.novo("Ana", "ana@exemplo.com", "h", Set.of(Papel.INVESTIDOR, Papel.EMPREENDEDOR), agora);
+        when(aceites.temPendenciaBloqueante(ana.getId())).thenReturn(true);
         UUID sessao = UUID.randomUUID();
 
         var token = servico.gerar(ana, sessao);
@@ -68,5 +74,7 @@ class TokenAcessoServiceTest {
         assertThat(jwt.getExpiresAt()).isEqualTo(agora.plus(Duration.ofMinutes(15)));
         assertThat(token.expiraEm()).isEqualTo(jwt.getExpiresAt());
         assertThat(jwt.getClaims()).doesNotContainKeys("email", "nome");
+        assertThat(jwt.getClaimAsBoolean("termos_pendentes")).isTrue();
+        assertThat(token.termosPendentes()).isTrue();
     }
 }
