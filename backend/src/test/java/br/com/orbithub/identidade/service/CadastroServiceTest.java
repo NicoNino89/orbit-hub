@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.administracao.domain.DocumentoLegal;
 import br.com.orbithub.administracao.domain.TipoDocumento;
@@ -81,8 +82,8 @@ class CadastroServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Montar o serviço
      * Objetivo: Criar o serviço com a confirmação de e-mail ligada ou desligada.
      * Decisões: Repositório de tokens em memória.
@@ -103,10 +104,9 @@ class CadastroServiceTest {
                 .filter(t -> hashDe(t).equals(i.getArgument(0))).findFirst());
         PasswordEncoder senhas = mock(PasswordEncoder.class);
         when(senhas.encode(anyString())).thenAnswer(i -> "hash:" + i.getArgument(0));
-        var propriedades = new ContaProperties("https://web.exemplo", confirmarEmail, Duration.ofHours(24),
-                Duration.ofMinutes(30), Duration.ofHours(24));
+        var propriedades = new ContaProperties("https://web.exemplo", confirmarEmail);
         return new CadastroService(usuarios, senhas, aceites, documentos, new TokenDeContaService(tokens, relogio),
-                email, propriedades, relogio);
+                email, propriedades, new ParametrosFixos(), relogio);
     }
 
     /**

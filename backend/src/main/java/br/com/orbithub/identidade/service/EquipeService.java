@@ -1,6 +1,8 @@
 package br.com.orbithub.identidade.service;
 
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
@@ -30,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:39
- * Cartão Jira: KAN-75
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Gestão da equipe interna
  * Objetivo: Convidar, trocar papéis, desligar e redefinir o segundo fator dos membros da equipe, e conduzir a
  *           revisão periódica dos acessos.
@@ -59,7 +61,7 @@ public class EquipeService {
     private final SessaoService sessoes;
     private final EnvioDeEmail email;
     private final ContaProperties conta;
-    private final EquipeProperties equipe;
+    private final LeituraDeParametros parametros;
     private final List<CasosDoMembro> filas;
     private final Clock relogio;
     private final SecureRandom aleatorio = new SecureRandom();
@@ -67,15 +69,16 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber contas, revisões, senhas, links, sessões, e-mail, configurações, filas e relógio.
      * Decisões: As filas chegam como lista (vazia até existirem casos).
      */
     public EquipeService(UsuarioRepository usuarios, RevisaoDeAcessoRepository revisoes, PasswordEncoder senhas,
                          TokenDeContaService links, SessaoService sessoes, EnvioDeEmail email,
-                         ContaProperties conta, EquipeProperties equipe, List<CasosDoMembro> filas, Clock relogio) {
+                         ContaProperties conta, LeituraDeParametros parametros, List<CasosDoMembro> filas,
+                         Clock relogio) {
         this.usuarios = usuarios;
         this.revisoes = revisoes;
         this.senhas = senhas;
@@ -83,7 +86,7 @@ public class EquipeService {
         this.sessoes = sessoes;
         this.email = email;
         this.conta = conta;
-        this.equipe = equipe;
+        this.parametros = parametros;
         this.filas = filas;
         this.relogio = relogio;
     }
@@ -258,8 +261,8 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Situação da revisão de acessos
      * Objetivo: Informar a última revisão, a data da próxima e se está vencida.
      * Decisões: Sem revisão anterior, a primeira vence na data de hoje (deve ser feita logo).
@@ -269,11 +272,11 @@ public class EquipeService {
         Instant agora = relogio.instant();
         Optional<RevisaoDeAcesso> ultima = revisoes.findFirstByOrderByRealizadaEmDesc();
         Instant proxima = ultima
-                .map(r -> r.getRealizadaEm().atZone(ZoneOffset.UTC).plusMonths(equipe.revisaoMeses()).toInstant())
+                .map(r -> r.getRealizadaEm().atZone(ZoneOffset.UTC).plusMonths(parametros.inteiro(Chaves.ACESSO_REVISAO)).toInstant())
                 .orElse(agora);
         String revisor = ultima.flatMap(r -> usuarios.findById(r.getRevisorId())).map(Usuario::getNome).orElse(null);
         return new SituacaoRevisao(ultima.map(RevisaoDeAcesso::getRealizadaEm).orElse(null), revisor, proxima,
-                !proxima.isAfter(agora), equipe.revisaoMeses());
+                !proxima.isAfter(agora), (int) parametros.inteiro(Chaves.ACESSO_REVISAO));
     }
 
     /**
@@ -360,8 +363,8 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Enviar convite
      * Objetivo: Gerar o link do convite e mandar o e-mail ao membro.
      * Decisões: Link para a tela /equipe/convite da web, com validade de convite.validade_dias. Devolve o
@@ -372,7 +375,7 @@ public class EquipeService {
         email.enviar(new EnvioDeEmail.MensagemEmail(membro.getEmail(), "Convite para a equipe do Orbit Hub",
                 "Olá, " + membro.getNome() + ".\n\nVocê foi convidado para a equipe interna do Orbit Hub "
                         + "(papéis: " + texto(membro.getPapeis()) + ").\n\nPara escolher sua senha, abra o link:\n\n"
-                        + link + "\n\nO link vale por " + equipe.convite().toDays() + " dias. No primeiro acesso, "
+                        + link + "\n\nO link vale por " + parametros.duracao(Chaves.CONVITE_VALIDADE).toDays() + " dias. No primeiro acesso, "
                         + "você vai configurar um aplicativo autenticador (segundo fator).",
                 "convite_equipe"));
         return link;
@@ -381,14 +384,15 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Link de convite
      * Objetivo: Gerar um link de convite novo para o membro.
      * Decisões: O link anterior deixa de valer (o serviço de links invalida os da mesma finalidade).
      */
     private String novoLinkDeConvite(Usuario membro) {
-        String token = links.gerar(membro.getId(), Finalidade.CONVITE_EQUIPE, equipe.convite(), null);
+        String token = links.gerar(membro.getId(), Finalidade.CONVITE_EQUIPE,
+                parametros.duracao(Chaves.CONVITE_VALIDADE), null);
         return conta.webUrl() + "/equipe/convite?token=" + token;
     }
 

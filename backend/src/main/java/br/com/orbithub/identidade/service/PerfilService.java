@@ -1,5 +1,7 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.administracao.domain.TipoDocumento;
 import br.com.orbithub.administracao.service.AceiteService;
 import br.com.orbithub.compartilhado.armazenamento.ArmazenamentoArquivos;
@@ -29,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:40
- * Cartão Jira: KAN-16
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Perfil e papéis da conta
  * Objetivo: Editar nome, foto e contato; trocar e-mail (com confirmação pelo novo endereço) e senha (com a
  *           atual); ativar e desativar papéis, registrando tudo no histórico da conta.
@@ -54,13 +56,14 @@ public class PerfilService {
     private final EnvioDeEmail email;
     private final List<PendenciasDePapel> pendencias;
     private final ContaProperties propriedades;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:40
-     * Cartão Jira: KAN-16
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, serviços, armazenamento, e-mail, verificadores de pendência e relógio.
      * Decisões: A lista de verificadores pode estar vazia (nenhum módulo com pendências ainda).
@@ -68,7 +71,7 @@ public class PerfilService {
     public PerfilService(UsuarioRepository usuarios, EventoDaContaRepository historico, PasswordEncoder senhas,
                          SessaoService sessoes, TokenDeContaService links, AceiteService aceites,
                          ArmazenamentoArquivos arquivos, EnvioDeEmail email, List<PendenciasDePapel> pendencias,
-                         ContaProperties propriedades, Clock relogio) {
+                         ContaProperties propriedades, LeituraDeParametros parametros, Clock relogio) {
         this.usuarios = usuarios;
         this.historico = historico;
         this.senhas = senhas;
@@ -79,6 +82,7 @@ public class PerfilService {
         this.email = email;
         this.pendencias = pendencias;
         this.propriedades = propriedades;
+        this.parametros = parametros;
         this.relogio = relogio;
     }
 
@@ -160,8 +164,8 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:40
-     * Cartão Jira: KAN-16
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Pedir troca de e-mail
      * Objetivo: Conferir a senha atual e enviar o link de confirmação ao novo endereço.
      * Decisões: O e-mail só muda depois da confirmação; o endereço antigo é avisado do pedido.
@@ -177,7 +181,8 @@ public class PerfilService {
         if (usuarios.existsByEmail(normalizado)) {
             throw new RegraDeNegocioException("email_em_uso", "Já existe uma conta com este e-mail.");
         }
-        String token = links.gerar(usuarioId, Finalidade.TROCA_EMAIL, propriedades.linkTrocaEmail(), normalizado);
+        String token = links.gerar(usuarioId, Finalidade.TROCA_EMAIL,
+                parametros.duracao(Chaves.CONTA_LINK_TROCA_EMAIL), normalizado);
         email.enviar(new EnvioDeEmail.MensagemEmail(normalizado, "Confirme seu novo e-mail no Orbit Hub",
                 "Olá, " + usuario.getNome() + ".\n\nPara passar a usar este endereço na sua conta do Orbit Hub, abra o "
                         + "link abaixo:\n\n" + propriedades.webUrl() + "/confirmar-novo-email?token=" + token

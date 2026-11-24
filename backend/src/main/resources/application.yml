@@ -41,29 +41,20 @@ orbit:
       endpoint: ${ORBIT_BLOB_ENDPOINT:}
       container: ${ORBIT_BLOB_CONTAINER:arquivos}
       connection-string: ${ORBIT_BLOB_CONNECTION_STRING:}
+  # Prazos e limites de regra de negócio (links, login, sessão, convite, revisão de acessos, aprovação...) são
+  # parâmetros no banco, editáveis em Backoffice > Parâmetros (KAN-78). Aqui fica só o que é técnico.
   conta:
     # endereço da web, usado nos links enviados por e-mail
     web-url: ${ORBIT_WEB_URL:http://localhost:5173}
     # desligar só enquanto a nuvem não tiver provedor de e-mail (as contas já nascem ativas)
     confirmar-email: ${ORBIT_CONTA_CONFIRMAR_EMAIL:true}
-    # cadastro.link_confirmacao_horas (docs/requisitos/processos-e-operacao.md)
-    link-confirmacao: PT24H
-    link-redefinicao: PT30M
-    link-troca-email: PT24H
   email:
     # smtp (servidor de spring.mail: Mailpit no ambiente local) ou registro (só registra no log)
     tipo: ${ORBIT_EMAIL_TIPO:registro}
     remetente: ${ORBIT_EMAIL_REMETENTE:Orbit Hub <nao-responda@orbithub.local>}
-  aprovacao:
-    # aprovacao.prazo_horas: proposta de ação grave parada além disto alerta o administrador (KAN-81)
-    prazo: PT48H
   equipe:
-    # convite.validade_dias (docs/requisitos/processos-e-operacao.md): prazo para o membro aceitar o convite
-    convite: P14D
     # tempo para digitar o código do segundo fator depois de acertar a senha
     desafio-segundo-fator: PT10M
-    # acesso.revisao_meses: a cada quantos meses o administrador revisa os acessos da equipe
-    revisao-meses: 3
     # primeiro administrador da implantação (docs/operacao/primeiro-administrador.md); vazio não cria ninguém
     primeiro-administrador:
       email: ${ORBIT_PRIMEIRO_ADMIN_EMAIL:}
@@ -75,16 +66,8 @@ orbit:
       emissor: orbit-hub
       duracao: ${ORBIT_JWT_DURACAO:PT15M}
     sessao:
-      # validade do refresh token: sem uso por esse tempo, a sessão expira (KAN-15)
-      inatividade: ${ORBIT_SESSAO_INATIVIDADE:PT30M}
-      # limite absoluto de uma sessão, mesmo em uso contínuo
-      duracao-maxima: ${ORBIT_SESSAO_DURACAO_MAXIMA:PT12H}
       # duas abas renovando ao mesmo tempo não contam como reuso de token
       tolerancia-reuso: PT10S
-    login:
-      # falhas seguidas que bloqueiam o login e por quanto tempo (KAN-13)
-      max-tentativas: ${ORBIT_LOGIN_MAX_TENTATIVAS:5}
-      bloqueio: ${ORBIT_LOGIN_BLOQUEIO:PT15M}
 
 logging:
   structured:

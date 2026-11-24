@@ -52,7 +52,7 @@ class TokenAcessoServiceTest {
         Instant agora = Instant.parse("2026-11-24T03:00:00Z");
         var propriedades = new SegurancaProperties(
                 new SegurancaProperties.Jwt("x", "orbit-hub", Duration.ofMinutes(15)),
-                new SegurancaProperties.Sessao(Duration.ofMinutes(30), Duration.ofHours(12), Duration.ofSeconds(10)));
+                new SegurancaProperties.Sessao(Duration.ofSeconds(10)));
         AceiteService aceites = mock(AceiteService.class);
         var servico = new TokenAcessoService(new NimbusJwtEncoder(new ImmutableSecret<>(CHAVE)), propriedades,
                 new RelogioAjustavel(agora), aceites);

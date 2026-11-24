@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.administracao.domain.AcaoGrave;
 import br.com.orbithub.administracao.domain.PropostaDeAprovacao;
@@ -48,8 +49,8 @@ class SegundaAprovacaoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Preparação
      * Objetivo: Montar o serviço com um executor de parâmetro sensível aprovado por administrador.
      * Decisões: Prazo de 48 h.
@@ -61,7 +62,7 @@ class SegundaAprovacaoServiceTest {
         executor = new ExecutorDeTeste();
         relogio = new RelogioAjustavel(AGORA);
         servico = new SegundaAprovacaoService(repositorio, List.of(executor),
-                new SegundaAprovacaoService.Parametros(Duration.ofHours(48)), relogio);
+                new ParametrosFixos(), relogio);
     }
 
     /**
@@ -142,8 +143,8 @@ class SegundaAprovacaoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Recusas na proposta
      * Objetivo: Conferir que ação sem executor, proposta repetida e proposta sem justificativa são recusadas.
      * Decisões: A conferência do executor também roda na proposta.
@@ -162,7 +163,7 @@ class SegundaAprovacaoServiceTest {
         assertThatThrownBy(() -> propor("x")).extracting("codigo").isEqualTo("valor_fora_dos_limites");
         assertThat(servico.acoesDisponiveis()).containsExactly(AcaoGrave.PARAMETRO_SENSIVEL);
         assertThatThrownBy(() -> new SegundaAprovacaoService(repositorio, List.of(executor, new ExecutorDeTeste()),
-                new SegundaAprovacaoService.Parametros(Duration.ofHours(48)), relogio))
+                new ParametrosFixos(), relogio))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -267,7 +268,7 @@ class SegundaAprovacaoServiceTest {
          * Decisões: Confere de novo antes, como o executor real.
          */
         @Override
-        public void executar(PropostaDeAprovacao proposta) {
+        public void executar(PropostaDeAprovacao proposta, UUID aprovador) {
             conferir(proposta.getDados());
             executadas.add(proposta.getDados().get("valor"));
         }

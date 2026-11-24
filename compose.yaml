@@ -42,8 +42,8 @@ services:
       # vazio no ambiente local: a API gera uma chave aleatória a cada início (as sessões caem ao reiniciar e
       # a equipe precisa configurar o segundo fator de novo, KAN-75); para manter, fixe a chave no .env
       ORBIT_JWT_CHAVE: ${ORBIT_JWT_CHAVE:-}
-      # inatividade da sessão (KAN-15); para testar a expiração sem esperar, use PT2M no .env
-      ORBIT_SESSAO_INATIVIDADE: ${ORBIT_SESSAO_INATIVIDADE:-PT30M}
+      # a inatividade da sessão (KAN-15) e os outros prazos são parâmetros: para testar a expiração sem esperar,
+      # mude sessao.inatividade_minutos em Backoffice > Parâmetros (KAN-78)
       ORBIT_WEB_URL: http://localhost:5173
       # primeiro administrador (KAN-75, docs/operacao/primeiro-administrador.md); vazio não cria ninguém
       ORBIT_PRIMEIRO_ADMIN_EMAIL: ${ORBIT_PRIMEIRO_ADMIN_EMAIL:-}

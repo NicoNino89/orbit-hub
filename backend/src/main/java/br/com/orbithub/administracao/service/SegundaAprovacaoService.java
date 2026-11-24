@@ -5,11 +5,12 @@ import br.com.orbithub.administracao.domain.PropostaDeAprovacao;
 import br.com.orbithub.administracao.domain.PropostaDeAprovacao.Situacao;
 import br.com.orbithub.administracao.repository.PropostaDeAprovacaoRepository;
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.Papel;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,15 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:52
- * Cartão Jira: KAN-81
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Ações com segunda aprovação
  * Objetivo: Receber propostas de ações graves, deixar uma segunda pessoa aprovar ou rejeitar, e só então executar
  *           a ação.
@@ -46,20 +46,20 @@ public class SegundaAprovacaoService {
 
     private final PropostaDeAprovacaoRepository propostas;
     private final Map<AcaoGrave, ExecutorDeAcaoGrave> executores;
-    private final Parametros parametros;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Indexar os executores por ação e receber o prazo e o relógio.
      * Decisões: Dois executores para a mesma ação é erro de configuração e falha na inicialização.
      */
     public SegundaAprovacaoService(PropostaDeAprovacaoRepository propostas, List<ExecutorDeAcaoGrave> executores,
-                                   Parametros parametros, Clock relogio) {
+                                   LeituraDeParametros parametros, Clock relogio) {
         this.propostas = propostas;
         Map<AcaoGrave, ExecutorDeAcaoGrave> indice = new EnumMap<>(AcaoGrave.class);
         for (ExecutorDeAcaoGrave executor : executores) {
@@ -114,7 +114,7 @@ public class SegundaAprovacaoService {
     @Transactional
     public PropostaDeAprovacao aprovar(UUID propostaId, UUID aprovador, Set<Papel> papeis, String justificativa) {
         PropostaDeAprovacao proposta = decidivel(propostaId, aprovador, papeis, justificativa, ACAO_APROVADA);
-        executor(proposta.getTipo()).executar(proposta);
+        executor(proposta.getTipo()).executar(proposta, aprovador);
         proposta.aprovar(aprovador, justificativa, relogio.instant());
         return proposta;
     }
@@ -190,21 +190,21 @@ public class SegundaAprovacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Proposta vencida
      * Objetivo: Dizer se a proposta passou do prazo de análise.
      * Decisões: Prazo aprovacao.prazo_horas.
      */
     public boolean vencida(PropostaDeAprovacao proposta) {
-        return proposta.vencida(relogio.instant(), parametros.prazo());
+        return proposta.vencida(relogio.instant(), parametros.duracao(Chaves.APROVACAO_PRAZO));
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Vencidas para alertar
      * Objetivo: Devolver as pendentes paradas além do prazo que ainda não geraram alerta, e marcá-las.
      * Decisões: Marca na mesma transação, para a rotina (KAN-104) não alertar duas vezes a mesma proposta.
@@ -212,7 +212,8 @@ public class SegundaAprovacaoService {
     @Transactional
     public List<PropostaDeAprovacao> vencidasParaAlertar() {
         Instant agora = relogio.instant();
-        List<PropostaDeAprovacao> vencidas = propostas.pendentesVencidasSemAlerta(agora.minus(parametros.prazo()));
+        List<PropostaDeAprovacao> vencidas = propostas.pendentesVencidasSemAlerta(
+                agora.minus(parametros.duracao(Chaves.APROVACAO_PRAZO)));
         vencidas.forEach(p -> p.marcarAlertada(agora));
         return vencidas;
     }
@@ -305,18 +306,5 @@ public class SegundaAprovacaoService {
                     "Esta ação ainda não está disponível na plataforma.");
         }
         return executor;
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
-     * Título: Prazo de análise
-     * Objetivo: Configurar em quanto tempo uma proposta deve ser analisada.
-     * Decisões: aprovacao.prazo_horas, padrão 48 h; vira parâmetro editável com a KAN-78.
-     */
-    @ConfigurationProperties("orbit.aprovacao")
-    public record Parametros(Duration prazo) {
     }
 }

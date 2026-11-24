@@ -6,12 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 00:20
- * Cartão Jira: KAN-57
- * Título: Parâmetros de segurança
- * Objetivo: Reunir chave e prazos do JWT e da sessão, lidos de orbit.seguranca.
- * Decisões: Prazos configuráveis por variável de ambiente, sem valor fixo no código. Quando o painel de
- *           parâmetros chegar (KAN-75), os prazos de sessão passam a ser editáveis por ele.
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
+ * Título: Configuração de segurança
+ * Objetivo: Reunir a chave e a duração do JWT e a tolerância técnica de reuso do refresh token.
+ * Decisões: Só o que é técnico fica aqui. A inatividade e a duração máxima da sessão são regra de negócio e
+ *           viraram parâmetros editáveis (sessao.inatividade_minutos, sessao.duracao_maxima_horas, KAN-78).
  */
 @ConfigurationProperties("orbit.seguranca")
 public record SegurancaProperties(Jwt jwt, Sessao sessao) {
@@ -31,13 +31,13 @@ public record SegurancaProperties(Jwt jwt, Sessao sessao) {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
-     * Título: Parâmetros da sessão
-     * Objetivo: Janela de inatividade, duração máxima e tolerância de reuso do refresh token.
-     * Decisões: A inatividade é a validade do refresh token (KAN-15); a duração máxima limita a sessão
-     *           mesmo em uso contínuo; a tolerância cobre duas abas renovando ao mesmo tempo.
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
+     * Título: Configuração técnica da sessão
+     * Objetivo: Tolerância de reuso do refresh token.
+     * Decisões: A tolerância cobre duas abas renovando ao mesmo tempo. Inatividade e duração máxima são
+     *           parâmetros de negócio (KAN-78).
      */
-    public record Sessao(Duration inatividade, Duration duracaoMaxima, Duration toleranciaReuso) {
+    public record Sessao(Duration toleranciaReuso) {
     }
 }

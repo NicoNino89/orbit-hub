@@ -1,5 +1,7 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.seguranca.SegurancaProperties;
 import br.com.orbithub.compartilhado.seguranca.VerificadorDeSessao;
 import br.com.orbithub.identidade.domain.RefreshToken;
@@ -24,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 00:20
- * Cartão Jira: KAN-57
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Sessões com refresh token revogável
  * Objetivo: Abrir, renovar (com rotação) e encerrar sessões, e responder se uma sessão está ativa.
  * Decisões: Cada login abre uma família. A renovação troca o token por um novo e marca o antigo como
@@ -46,32 +48,34 @@ public class SessaoService implements VerificadorDeSessao {
     private final UsuarioRepository usuarios;
     private final TokenAcessoService tokenAcesso;
     private final SegurancaProperties propriedades;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
     private final SecureRandom aleatorio = new SecureRandom();
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, emissor de access token, parâmetros e relógio.
      * Decisões: Injeção pelo construtor.
      */
     public SessaoService(RefreshTokenRepository tokens, UsuarioRepository usuarios, TokenAcessoService tokenAcesso,
-                         SegurancaProperties propriedades, Clock relogio) {
+                         SegurancaProperties propriedades, LeituraDeParametros parametros, Clock relogio) {
         this.tokens = tokens;
         this.usuarios = usuarios;
         this.tokenAcesso = tokenAcesso;
         this.propriedades = propriedades;
+        this.parametros = parametros;
         this.relogio = relogio;
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Abrir sessão
      * Objetivo: Criar uma família nova com o primeiro refresh token e o access token da conta.
      * Decisões: Chamado depois que a senha foi conferida (login, KAN-13); a família recebe o limite
@@ -84,7 +88,7 @@ public class SessaoService implements VerificadorDeSessao {
         }
         Instant agora = relogio.instant();
         UUID familia = UUID.randomUUID();
-        Instant limite = agora.plus(propriedades.sessao().duracaoMaxima());
+        Instant limite = agora.plus(parametros.duracao(Chaves.SESSAO_DURACAO_MAXIMA));
         return emitir(usuario, familia, agora, limite);
     }
 
@@ -202,8 +206,8 @@ public class SessaoService implements VerificadorDeSessao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Emitir par de tokens
      * Objetivo: Gerar e gravar o refresh token da família e assinar o access token.
      * Decisões: 256 bits aleatórios em Base64 URL-safe, sem padding, para caber no cookie.
@@ -213,7 +217,7 @@ public class SessaoService implements VerificadorDeSessao {
         aleatorio.nextBytes(bytes);
         String refreshBruto = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         RefreshToken novo = RefreshToken.emitir(usuario.getId(), familia, hash(refreshBruto), agora,
-                propriedades.sessao().inatividade(), limiteDaFamilia);
+                parametros.duracao(Chaves.SESSAO_INATIVIDADE), limiteDaFamilia);
         tokens.save(novo);
         TokenAcessoService.TokenAcesso acesso = tokenAcesso.gerar(usuario, familia);
         return new SessaoEmitida(acesso.valor(), acesso.expiraEm(), refreshBruto, novo.getExpiraEm(), usuario,

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
@@ -56,8 +57,8 @@ class RecuperacaoSenhaServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:30
-     * Cartão Jira: KAN-14
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Preparação
      * Objetivo: Montar o serviço com uma conta ativa e repositórios simulados.
      * Decisões: Codificador de senha falso ("hash:" + senha).
@@ -80,10 +81,9 @@ class RecuperacaoSenhaServiceTest {
                 .filter(t -> hashDe(t).equals(i.getArgument(0))).findFirst());
         PasswordEncoder senhas = mock(PasswordEncoder.class);
         when(senhas.encode(anyString())).thenAnswer(i -> "hash:" + i.getArgument(0));
-        var propriedades = new ContaProperties("https://web.exemplo", true, Duration.ofHours(24),
-                Duration.ofMinutes(30), Duration.ofHours(24));
+        var propriedades = new ContaProperties("https://web.exemplo", true);
         servico = new RecuperacaoSenhaService(usuarios, bloqueios, new TokenDeContaService(tokens, relogio), sessoes,
-                senhas, email, propriedades, relogio);
+                senhas, email, propriedades, new ParametrosFixos(), relogio);
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "hash:antiga-senha-longa", Set.of(Papel.INVESTIDOR), AGORA);
         ana.confirmarEmail(AGORA);

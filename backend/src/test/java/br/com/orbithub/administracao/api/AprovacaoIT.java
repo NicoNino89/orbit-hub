@@ -255,7 +255,7 @@ class AprovacaoIT {
                 }
 
                 @Override
-                public void executar(PropostaDeAprovacao proposta) {
+                public void executar(PropostaDeAprovacao proposta, UUID aprovador) {
                     EXECUTADAS.add(proposta.getObjetoId());
                 }
             };

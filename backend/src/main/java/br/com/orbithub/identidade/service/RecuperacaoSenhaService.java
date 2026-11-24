@@ -1,5 +1,7 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.PoliticaDeSenha;
@@ -20,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:30
- * Cartão Jira: KAN-14
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Recuperação de senha
  * Objetivo: Enviar o link de redefinição por e-mail e trocar a senha a partir dele.
  * Decisões: O pedido responde igual exista ou não a conta. O link vale 30 minutos e só uma vez, e só é gasto
@@ -42,20 +44,22 @@ public class RecuperacaoSenhaService {
     private final PasswordEncoder senhas;
     private final EnvioDeEmail email;
     private final ContaProperties propriedades;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:30
-     * Cartão Jira: KAN-14
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, links, sessões, codificador, e-mail, parâmetros e relógio.
      * Decisões: Injeção pelo construtor.
      */
     public RecuperacaoSenhaService(UsuarioRepository usuarios, BloqueioDeLoginRepository bloqueios,
                                    TokenDeContaService links, SessaoService sessoes, PasswordEncoder senhas,
-                                   EnvioDeEmail email, ContaProperties propriedades, Clock relogio) {
+                                   EnvioDeEmail email, ContaProperties propriedades, LeituraDeParametros parametros,
+                                   Clock relogio) {
         this.usuarios = usuarios;
         this.bloqueios = bloqueios;
         this.links = links;
@@ -63,6 +67,7 @@ public class RecuperacaoSenhaService {
         this.senhas = senhas;
         this.email = email;
         this.propriedades = propriedades;
+        this.parametros = parametros;
         this.relogio = relogio;
     }
 
@@ -112,19 +117,20 @@ public class RecuperacaoSenhaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:30
-     * Cartão Jira: KAN-14
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Enviar o link
      * Objetivo: Gerar o token e mandar o e-mail com o link de redefinição.
      * Decisões: O texto avisa quem não pediu que pode ignorar (a senha não muda sem o link).
      */
     private void enviarLink(Usuario usuario) {
-        String token = links.gerar(usuario.getId(), Finalidade.REDEFINICAO_SENHA, propriedades.linkRedefinicao(), null);
+        Duration validade = parametros.duracao(Chaves.CONTA_LINK_REDEFINICAO);
+        String token = links.gerar(usuario.getId(), Finalidade.REDEFINICAO_SENHA, validade, null);
         String link = propriedades.webUrl() + "/redefinir-senha?token=" + token;
         email.enviar(new EnvioDeEmail.MensagemEmail(usuario.getEmail(), "Redefinição de senha do Orbit Hub",
                 "Olá, " + usuario.getNome() + ".\n\nRecebemos um pedido para redefinir a senha da sua conta. "
                         + "Para criar uma senha nova, abra o link abaixo:\n\n" + link + "\n\nO link vale por "
-                        + propriedades.linkRedefinicao().toMinutes() + " minutos e só pode ser usado uma vez. "
+                        + validade.toMinutes() + " minutos e só pode ser usado uma vez. "
                         + "Se você não pediu, ignore este e-mail: sua senha continua a mesma.",
                 "redefinicao_senha"));
     }
