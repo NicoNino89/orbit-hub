@@ -32,7 +32,7 @@ import org.springframework.web.servlet.HandlerMapping;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:30
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Testes do registro automático
  * Objetivo: Garantir que cada requisição do backoffice vira um registro com o resultado certo, usando a
@@ -52,7 +52,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Preparação
      * Objetivo: Montar uma requisição de backoffice com um administrador autenticado.
@@ -79,7 +79,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Limpeza
      * Objetivo: Não deixar requisição nem autenticação para o próximo teste.
@@ -94,7 +94,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ação sem descrição
      * Objetivo: Conferir que a ação vira "MÉTODO rota" e o objeto vem da variável do caminho.
@@ -116,7 +116,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ação descrita e recusada
      * Objetivo: Conferir que a descrição do serviço é usada e que 4xx vira falha.
@@ -141,7 +141,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Exceção é falha
      * Objetivo: Conferir que uma exceção não tratada vira falha mesmo com status 200.
@@ -157,7 +157,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Sem conta, sem trilha ou já registrada
      * Objetivo: Não gravar sem conta autenticada, sem trilha no contexto, nem duas vezes a ação que o serviço
@@ -183,7 +183,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Falha ao gravar não derruba a resposta
      * Objetivo: Conferir que um erro na gravação só vai para o log.
@@ -199,7 +199,7 @@ class AuditoriaInterceptorTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Captura da ação gravada
      * Objetivo: Ler a ação enviada à trilha.

@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:15
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Ligação do registro automático às rotas do backoffice
  * Objetivo: Aplicar o interceptor de auditoria a todas as rotas /api/v1/admin/**.
@@ -25,7 +25,7 @@ class AuditoriaWebConfig implements WebMvcConfigurer {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação da configuração
      * Objetivo: Receber a trilha usada pelo interceptor.
@@ -39,7 +39,7 @@ class AuditoriaWebConfig implements WebMvcConfigurer {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registro do interceptor
      * Objetivo: Ligar o interceptor às rotas do backoffice.

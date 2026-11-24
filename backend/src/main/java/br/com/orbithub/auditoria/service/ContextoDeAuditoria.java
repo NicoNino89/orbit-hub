@@ -8,7 +8,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:00
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Descrição da ação da requisição atual
  * Objetivo: Deixar cada serviço dizer, com nome de negócio, o que a requisição fez (ação, objeto, detalhe e
@@ -24,7 +24,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Classe utilitária
      * Objetivo: Impedir instâncias.
@@ -36,7 +36,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Descrever a ação
      * Objetivo: Informar ação, objeto e detalhe da requisição atual.
@@ -50,7 +50,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Informar a justificativa
      * Objetivo: Guardar a justificativa que o usuário interno deu para a ação.
@@ -64,7 +64,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Marcar como já registrada
      * Objetivo: Avisar que o serviço já gravou o registro dentro da própria transação.
@@ -78,7 +78,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Descrição atual
      * Objetivo: Ler o que os serviços informaram nesta requisição.
@@ -95,7 +95,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Atualizar a descrição
      * Objetivo: Aplicar uma mudança sobre a descrição atual (ou sobre uma vazia).
@@ -114,7 +114,7 @@ public final class ContextoDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Descrição de uma ação
      * Objetivo: Agrupar o que o serviço informou.

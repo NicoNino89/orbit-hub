@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.Specification;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:30
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Testes da trilha de auditoria
  * Objetivo: Garantir a cópia do nome do autor, o momento do registro e as regras da consulta.
@@ -51,7 +51,7 @@ class TrilhaDeAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Preparação
      * Objetivo: Montar a trilha com repositórios simulados e relógio fixo.
@@ -68,7 +68,7 @@ class TrilhaDeAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Nome do autor copiado
      * Objetivo: Conferir que o nome da conta é gravado junto com o registro.
@@ -89,7 +89,7 @@ class TrilhaDeAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Autor sem conta ou ação do sistema
      * Objetivo: Gravar mesmo quando a conta não existe e não buscar conta em ação do sistema.
@@ -109,7 +109,7 @@ class TrilhaDeAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Regras da consulta
      * Objetivo: Recusar período invertido e limitar o tamanho da página.
@@ -139,7 +139,7 @@ class TrilhaDeAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ações e pessoas conhecidas
      * Objetivo: Conferir que as listas de ações e de pessoas para os filtros vêm do repositório.

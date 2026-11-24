@@ -1,6 +1,6 @@
 -- Autor: Nicholas Bruno Pimentel
 -- Data: 24/11/2026
--- Hora: 10:00
+-- Hora: 10:09
 -- Cartão Jira: KAN-80
 -- Título: Trilha de auditoria imutável
 -- Objetivo: Registrar toda ação da equipe interna: quem, o quê, quando, sobre qual objeto e com qual resultado.
@@ -31,7 +31,7 @@ CREATE INDEX ix_auditoria_objeto ON registro_auditoria (objeto_tipo, objeto_id, 
 
 -- Autor: Nicholas Bruno Pimentel
 -- Data: 24/11/2026
--- Hora: 10:00
+-- Hora: 10:09
 -- Cartão Jira: KAN-80
 -- Título: Recusa de alteração na trilha
 -- Objetivo: Impedir que um registro de auditoria seja alterado ou apagado.

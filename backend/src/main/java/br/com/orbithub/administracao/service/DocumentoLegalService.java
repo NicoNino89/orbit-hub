@@ -129,7 +129,7 @@ public class DocumentoLegalService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:25
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Publicar nova versão
      * Objetivo: Gravar a próxima versão de um tipo com a data de vigência informada.

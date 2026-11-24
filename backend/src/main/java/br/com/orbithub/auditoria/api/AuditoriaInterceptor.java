@@ -22,7 +22,7 @@ import org.springframework.web.servlet.HandlerMapping;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:15
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Registro automático das ações da equipe
  * Objetivo: Gravar na trilha toda requisição de usuário interno às rotas do backoffice, com o resultado.
@@ -42,7 +42,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação do interceptor
      * Objetivo: Receber a trilha onde as ações são gravadas.
@@ -56,7 +56,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Gravar a ação ao fim da requisição
      * Objetivo: Montar e gravar o registro da requisição que acabou.
@@ -90,7 +90,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Montar o registro
      * Objetivo: Juntar a descrição do serviço com os dados da requisição.
@@ -118,7 +118,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Rota da requisição
      * Objetivo: Devolver o padrão da rota atendida (por exemplo, /api/v1/admin/documentos-legais/{tipo}/versoes).
@@ -132,7 +132,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Objeto do caminho
      * Objetivo: Usar a primeira variável do caminho como identificador do objeto.
@@ -150,7 +150,7 @@ class AuditoriaInterceptor implements HandlerInterceptor {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:15
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Conta autenticada
      * Objetivo: Ler o id da conta do token da requisição.

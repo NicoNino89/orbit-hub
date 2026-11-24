@@ -1,7 +1,7 @@
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:10
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Data local para instante
  * Objetivo: Converter um dia escolhido no calendário (horário de Brasília) para o instante que a API espera.
@@ -17,7 +17,7 @@ export function inicioDoDia(dia: string, diasAMais = 0): string {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:10
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Formato de data e hora do backoffice
  * Objetivo: Exibir instantes no horário de Brasília, em português.

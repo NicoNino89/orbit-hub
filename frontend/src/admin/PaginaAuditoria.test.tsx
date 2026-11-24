@@ -12,7 +12,7 @@ import { inicioDoDia } from './datas'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:05
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Sessão de teste
  * Objetivo: Montar a resposta de renovação de sessão com os papéis pedidos.
@@ -44,7 +44,7 @@ const REGISTROS = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:05
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Abrir a tela logado
  * Objetivo: Renderizar as rotas num endereço com a API simulada.
@@ -71,7 +71,7 @@ describe('Trilha de auditoria (KAN-80)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 11:05
+   * Hora: 10:09
    * Cartão Jira: KAN-80
    * Título: Lista os registros
    * Objetivo: Conferir que a tela mostra autor, ação, resultado e justificativa, sem ações de edição.
@@ -93,7 +93,7 @@ describe('Trilha de auditoria (KAN-80)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 11:05
+   * Hora: 10:09
    * Cartão Jira: KAN-80
    * Título: Filtros por pessoa, ação e período
    * Objetivo: Conferir que os filtros escolhidos vão para a consulta, com as datas em horário de Brasília.
@@ -120,7 +120,7 @@ describe('Trilha de auditoria (KAN-80)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 11:05
+   * Hora: 10:09
    * Cartão Jira: KAN-80
    * Título: Só para a equipe
    * Objetivo: Conferir que quem não é da equipe não vê o backoffice nem chama a API da trilha.
@@ -135,7 +135,7 @@ describe('Trilha de auditoria (KAN-80)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 11:05
+   * Hora: 10:09
    * Cartão Jira: KAN-80
    * Título: Link do backoffice
    * Objetivo: Conferir que a conta da equipe vê o link do backoffice no cabeçalho.
@@ -149,7 +149,7 @@ describe('Trilha de auditoria (KAN-80)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 11:05
+   * Hora: 10:09
    * Cartão Jira: KAN-80
    * Título: Conversão das datas
    * Objetivo: Conferir a conversão do dia de Brasília para o instante em UTC.

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:10
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Acesso justificado da equipe a dados confidenciais
  * Objetivo: Só deixar um usuário interno ver dados de Nível 2 de uma startup dentro de um caso aberto
@@ -43,7 +43,7 @@ public class AcessoJustificadoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:10
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação do serviço
      * Objetivo: Indexar as regras de caso aberto por tipo de caso.
@@ -59,7 +59,7 @@ public class AcessoJustificadoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:10
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Exigir e registrar o acesso
      * Objetivo: Conferir caso e justificativa e gravar o acesso antes de liberar os dados.
@@ -91,7 +91,7 @@ public class AcessoJustificadoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:10
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acessos internos a uma startup
      * Objetivo: Listar os acessos da equipe aos dados confidenciais da startup, para o histórico de acessos.
@@ -109,7 +109,7 @@ public class AcessoJustificadoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:10
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso interno exibido à startup
      * Objetivo: Representar um acesso da equipe no histórico de acessos da startup.
@@ -121,7 +121,7 @@ public class AcessoJustificadoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:10
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Regra de caso aberto
      * Objetivo: Contrato que cada módulo com casos implementa (moderação, disputas, LGPD).
@@ -132,7 +132,7 @@ public class AcessoJustificadoService {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:10
+         * Hora: 10:09
          * Cartão Jira: KAN-80
          * Título: Tipo de caso
          * Objetivo: Nome do tipo de caso (por exemplo, "denuncia", "disputa", "titular").
@@ -143,7 +143,7 @@ public class AcessoJustificadoService {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:10
+         * Hora: 10:09
          * Cartão Jira: KAN-80
          * Título: Caso aberto sobre a startup
          * Objetivo: Dizer se o caso existe, está aberto e envolve a startup.
