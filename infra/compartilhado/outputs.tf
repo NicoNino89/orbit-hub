@@ -26,3 +26,11 @@ output "postgres_admin_senha" {
   value     = random_password.postgres_admin.result
   sensitive = true
 }
+
+output "container_apps_ambiente_id" {
+  value = azapi_resource.container_apps.id
+}
+
+output "container_apps_dominio" {
+  value = azapi_resource.container_apps.output.properties.defaultDomain
+}

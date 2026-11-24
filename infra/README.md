@@ -7,7 +7,7 @@ Infraestrutura como código do Orbit Hub, com **Terraform** e o provider **`azur
 ```
 infra/
 ├── bootstrap/          # preparação única da assinatura (estado remoto, OIDC) e scripts de apoio
-├── compartilhado/      # orçamento, Log Analytics, PostgreSQL B1ms e Key Vault do servidor
+├── compartilhado/      # orçamento, Log Analytics, PostgreSQL B1ms, Key Vault do servidor e ambiente do Container Apps
 ├── modules/ambiente/   # tudo o que um ambiente precisa
 └── envs/
     ├── homologacao/    # usa o módulo com escala a zero e sem teste de disponibilidade
@@ -19,8 +19,9 @@ infra/
 | Orçamento (Cost Management) | compartilhado | US$ 100 por ano, avisos em 50%, 80% e 100% e previsão de estouro |
 | Log Analytics | compartilhado | Retenção de 30 dias, teto diário de 0,2 GB |
 | PostgreSQL Flexible Server | compartilhado | **Um** servidor B1ms (PostgreSQL 17), 32 GB, desligado toda noite pelo workflow *PostgreSQL ligar e desligar* |
+| Ambiente do Container Apps | compartilhado | **Um** ambiente (`cae-orbithub`, modo WorkloadProfiles só com o perfil Consumption) para homologação e produção: a assinatura permite um por região ([ADR 0007](../docs/adr/0007-ambiente-container-apps-compartilhado.md)) |
 | Banco, usuário e schema | ambiente | `orbithub_hml` e `orbithub_prd`, cada um com usuário próprio que não acessa o outro banco |
-| Container Apps (API) | ambiente | Plano de consumo, de 0 a 1 réplica, 0,5 vCPU e 1 GiB |
+| Container Apps (API) | ambiente | No ambiente compartilhado, plano de consumo, de 0 a 1 réplica, 0,5 vCPU e 1 GiB |
 | Container Apps (web) | ambiente | Mesmo ambiente da API, de 0 a 1 réplica, 0,25 vCPU e 0,5 GiB ([ADR 0003](../docs/adr/0003-front-end-no-container-apps.md)) |
 | Blob Storage | ambiente | LRS, sem chave de acesso (só identidade gerenciada) e lixeira de 7 dias |
 | Key Vault | ambiente | Standard, autorização por RBAC. Guarda a senha do banco, a connection string do Application Insights e o token de leitura do GHCR |
