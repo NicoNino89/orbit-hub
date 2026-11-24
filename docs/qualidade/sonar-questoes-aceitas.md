@@ -21,5 +21,5 @@ Revisão de 23/11/2026, feita sobre as 22 questões da primeira análise da `mai
 
 ## Configuração da análise
 
-- Os testes do back-end eram contados como código de produção, com 0% de cobertura, porque o SonarCloud deixou de considerar `sonar.sources` e `sonar.tests`. Agora `sonar.test.inclusions` marca os testes, e a cobertura passa a medir só o código de produção.
+- Os testes do back-end eram contados como código de produção, com 0% de cobertura, porque o SonarCloud deixou de considerar `sonar.sources`, `sonar.tests` e `sonar.test.inclusions`. Agora todos os testes saem da análise por `sonar.exclusions` (como já era com os do front-end), e a cobertura mede só o código de produção. O Sonar deixa de revisar a qualidade do código de teste; o oxlint e o compilador continuam olhando para ele.
 - Os `tsconfig*.json` saíram da análise: têm comentários, e o analisador de JSON não os lê.

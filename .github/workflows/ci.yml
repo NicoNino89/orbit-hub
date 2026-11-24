@@ -68,7 +68,6 @@ jobs:
           path: |
             backend/target/site/jacoco/
             backend/target/classes/
-            backend/target/test-classes/
             backend/target/surefire-reports/
             backend/target/failsafe-reports/
           retention-days: 7
