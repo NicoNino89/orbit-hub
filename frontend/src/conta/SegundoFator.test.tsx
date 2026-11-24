@@ -14,7 +14,7 @@ const SESSAO_DA_EQUIPE: SessaoApi = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Abrir o login com a API simulada
  * Objetivo: Renderizar a tela de login com o desafio de segundo fator na resposta do login.
@@ -35,7 +35,7 @@ function abrir(etapa: 'CONFIGURAR' | 'CODIGO', confirmacao: () => RespostaSimula
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Preencher a senha
  * Objetivo: Fazer o primeiro passo do login.
@@ -58,7 +58,7 @@ describe('Segundo fator da equipe (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Primeiro acesso configura o aplicativo
    * Objetivo: Conferir que a senha leva à configuração, que a chave aparece e que o código abre a sessão.
@@ -84,7 +84,7 @@ describe('Segundo fator da equipe (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Código errado e bloqueio
    * Objetivo: Conferir que o código errado mostra a mensagem e que o bloqueio desabilita o envio.

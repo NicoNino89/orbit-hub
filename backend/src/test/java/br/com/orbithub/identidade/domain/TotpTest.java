@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:35
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes do TOTP
  * Objetivo: Garantir que os códigos batem com os vetores oficiais da RFC 6238 (os mesmos que os aplicativos
@@ -25,7 +25,7 @@ class TotpTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Vetores da RFC 6238
      * Objetivo: Conferir o código em instantes da tabela da RFC.
@@ -43,7 +43,7 @@ class TotpTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Janela de tolerância
      * Objetivo: Aceitar o código do passo anterior e do seguinte, e recusar os mais distantes e os malformados.
@@ -67,7 +67,7 @@ class TotpTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Segredo e Base32
      * Objetivo: Conferir o tamanho do segredo gerado, a ida e volta do Base32 e a recusa de caracteres inválidos.
@@ -87,7 +87,7 @@ class TotpTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Endereço para o aplicativo
      * Objetivo: Conferir o endereço otpauth:// com emissor, conta e parâmetros.

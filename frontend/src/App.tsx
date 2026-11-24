@@ -20,7 +20,7 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:15
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.

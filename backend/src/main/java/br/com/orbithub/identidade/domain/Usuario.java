@@ -101,7 +101,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação de uma conta
      * Objetivo: Criar uma conta nova, ainda aguardando a confirmação do e-mail.
@@ -339,7 +339,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Ativar papel
      * Objetivo: Acrescentar um papel público à conta.
@@ -410,7 +410,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Conta da equipe interna
      * Objetivo: Criar a conta de um membro da equipe, convidado pelo administrador.
@@ -426,7 +426,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Exigir papéis internos
      * Objetivo: Recusar conjunto vazio ou com papel público numa conta interna.
@@ -441,7 +441,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Aceitar o convite
      * Objetivo: Ativar a conta interna com a senha escolhida pelo próprio membro.
@@ -459,7 +459,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Trocar papéis internos
      * Objetivo: Definir o novo conjunto de papéis de um membro da equipe.
@@ -481,7 +481,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desligar da equipe
      * Objetivo: Encerrar a conta de um membro que saiu da equipe.
@@ -505,7 +505,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Iniciar a configuração do segundo fator
      * Objetivo: Guardar o segredo novo (cifrado) até o membro confirmar com o primeiro código.
@@ -519,7 +519,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Concluir a configuração do segundo fator
      * Objetivo: Passar o segredo pendente a valer, depois do primeiro código correto.
@@ -538,7 +538,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Registrar código usado
      * Objetivo: Aceitar um código só se o passo de tempo dele for posterior ao último usado.
@@ -555,7 +555,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Redefinir o segundo fator
      * Objetivo: Apagar o segundo fator de um membro que perdeu o aplicativo autenticador.
@@ -571,7 +571,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Conta interna
      * Objetivo: Dizer se a conta é da equipe interna.
@@ -584,7 +584,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Segundo fator configurado
      * Objetivo: Dizer se o membro já tem o segundo fator valendo.
@@ -597,7 +597,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso ao segredo do segundo fator
      * Objetivo: Expor o segredo cifrado em uso.
@@ -610,7 +610,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso ao segredo pendente
      * Objetivo: Expor o segredo cifrado ainda em configuração.
@@ -623,7 +623,7 @@ public class Usuario {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso à data de desligamento
      * Objetivo: Expor quando o membro foi desligado.

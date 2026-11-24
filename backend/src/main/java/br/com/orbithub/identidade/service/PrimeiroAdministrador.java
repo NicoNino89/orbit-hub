@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:25
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Criação do primeiro administrador na implantação
  * Objetivo: Criar o primeiro administrador da plataforma por procedimento técnico, já que só um administrador
@@ -38,7 +38,7 @@ class PrimeiroAdministrador implements ApplicationRunner {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:25
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do procedimento
      * Objetivo: Receber o serviço da equipe, a configuração, a trilha e o tipo de envio de e-mail.
@@ -55,7 +55,7 @@ class PrimeiroAdministrador implements ApplicationRunner {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:25
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Executar na subida
      * Objetivo: Garantir o primeiro administrador quando configurado.

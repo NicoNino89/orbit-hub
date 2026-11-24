@@ -8,7 +8,7 @@ import { CLASSE_BOTAO_PRIMARIO } from '../ui/estilos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Aceite do convite da equipe
  * Objetivo: Deixar o membro convidado escolher a própria senha e avisar do segundo fator no primeiro acesso.
@@ -28,7 +28,7 @@ export function PaginaConviteEquipe() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:05
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Enviar a senha
    * Objetivo: Conferir a repetição e aceitar o convite.

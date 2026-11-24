@@ -8,7 +8,7 @@ import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:00
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Etapa do segundo fator
  * Objetivo: Depois da senha de uma conta da equipe, pedir o código do aplicativo autenticador e, no primeiro
@@ -29,7 +29,7 @@ export function EtapaSegundoFator({ desafio, aoVoltar }: { desafio: DesafioApi; 
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:00
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Gerar a chave do aplicativo
    * Objetivo: Pedir à API o segredo para cadastrar no aplicativo autenticador.
@@ -47,7 +47,7 @@ export function EtapaSegundoFator({ desafio, aoVoltar }: { desafio: DesafioApi; 
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:00
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Enviar o código
    * Objetivo: Confirmar o código e abrir a sessão.

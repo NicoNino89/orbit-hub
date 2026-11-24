@@ -53,7 +53,7 @@ public class TokenAcessoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:05
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Gerar access token
      * Objetivo: Assinar um access token para a conta, ligado à sessão informada.

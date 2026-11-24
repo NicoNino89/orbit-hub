@@ -1,6 +1,6 @@
 -- Autor: Nicholas Bruno Pimentel
 -- Data: 24/11/2026
--- Hora: 10:20
+-- Hora: 10:39
 -- Cartão Jira: KAN-75
 -- Título: Equipe interna: contas separadas, dois fatores, desligamento e revisão de acessos
 -- Objetivo: Marcar as contas da equipe interna, guardar o segundo fator (TOTP), registrar o desligamento e as

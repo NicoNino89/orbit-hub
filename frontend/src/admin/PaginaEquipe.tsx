@@ -22,7 +22,7 @@ const FORMATO_DATA = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeZ
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Mensagem de erro
  * Objetivo: Extrair a mensagem para a pessoa a partir de um erro qualquer.
@@ -35,7 +35,7 @@ function mensagem(e: unknown) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Tela da equipe interna
  * Objetivo: Deixar o administrador convidar, trocar papéis, desligar e redefinir o segundo fator da equipe, e
@@ -66,7 +66,7 @@ export function PaginaEquipe() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:10
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Recarregar com aviso
    * Objetivo: Mostrar o resultado de uma ação e recarregar a lista.
@@ -105,7 +105,7 @@ export function PaginaEquipe() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Cartão da revisão de acessos
  * Objetivo: Mostrar quando foi a última revisão e quando vence a próxima, e registrar uma nova.
@@ -158,7 +158,7 @@ function CartaoRevisao({ situacao, aoConfirmar, aoFalhar }: {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Escolha de papéis internos
  * Objetivo: Marcar os papéis da equipe de um membro.
@@ -186,7 +186,7 @@ function EscolhaDePapeis({ valor, aoMudar, legenda }: {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Formulário de convite
  * Objetivo: Convidar um membro novo com nome, e-mail e papéis.
@@ -235,7 +235,7 @@ function FormularioConvite({ aoConvidar, aoFalhar }: { aoConvidar: (m: Membro) =
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Membro na lista
  * Objetivo: Mostrar um membro e as ações possíveis conforme a situação dele.

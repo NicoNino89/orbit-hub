@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Aceite do convite da equipe
  * Objetivo: Deixar o membro convidado escolher a própria senha a partir do link do e-mail.
@@ -32,7 +32,7 @@ class ConviteEquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do controller
      * Objetivo: Receber o serviço da equipe.
@@ -45,7 +45,7 @@ class ConviteEquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Aceitar convite
      * Objetivo: Ativar a conta interna com a senha escolhida.
@@ -61,7 +61,7 @@ class ConviteEquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido de aceite
      * Objetivo: Receber o token do convite e a senha escolhida.
@@ -73,7 +73,7 @@ class ConviteEquipeController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:20
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Texto sem os dados
          * Objetivo: Evitar que token e senha apareçam em logs.

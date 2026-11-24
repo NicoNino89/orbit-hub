@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:15
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Casos abertos de um membro da equipe
  * Objetivo: Contrato que cada fila (verificação, curadoria, moderação, atendimento, privacidade) implementa para
@@ -18,7 +18,7 @@ public interface CasosDoMembro {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Nome da fila
      * Objetivo: Identificar a fila nos registros (por exemplo, "curadoria").
@@ -29,7 +29,7 @@ public interface CasosDoMembro {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Devolver os casos
      * Objetivo: Tirar do membro os casos abertos e devolvê-los à fila.

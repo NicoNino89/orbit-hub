@@ -234,7 +234,7 @@ public class PerfilService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Ativar papel
      * Objetivo: Acrescentar investidor ou empreendedor à conta e devolver o onboarding do papel.

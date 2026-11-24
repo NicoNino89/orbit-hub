@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:45
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Configuração da equipe interna
  * Objetivo: Reunir os prazos do convite, do segundo fator e da revisão de acessos, e os dados do primeiro
@@ -22,7 +22,7 @@ public record EquipeProperties(Duration convite, Duration desafioSegundoFator, i
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Dados do primeiro administrador
      * Objetivo: Informar e-mail e nome do primeiro administrador da implantação.

@@ -28,7 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:30
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes do login
  * Objetivo: Verificar login correto, recusas genéricas, conta pendente, bloqueio temporário, logout e o desafio do
@@ -213,7 +213,7 @@ class LoginServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:30
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Conta da equipe recebe desafio
      * Objetivo: Garantir que a senha certa de uma conta interna não abre sessão: devolve o desafio do segundo

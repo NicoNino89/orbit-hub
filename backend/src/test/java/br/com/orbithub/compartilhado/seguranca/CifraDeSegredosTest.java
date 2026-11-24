@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:35
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes da cifra de segredos
  * Objetivo: Garantir ida e volta, vetor novo a cada cifra e recusa de texto adulterado ou de outra chave.
@@ -25,7 +25,7 @@ class CifraDeSegredosTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Ida e volta
      * Objetivo: Conferir que o texto decifrado é o original e que o cifrado não revela o texto.
@@ -42,7 +42,7 @@ class CifraDeSegredosTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Recusas
      * Objetivo: Recusar texto adulterado, de outra chave, sem prefixo ou nulo.

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Gestão da equipe interna
  * Objetivo: Rotas do administrador para listar, convidar, trocar papéis, desligar e redefinir o segundo fator da
@@ -53,7 +53,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do controller
      * Objetivo: Receber o serviço da equipe.
@@ -66,7 +66,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Listar a equipe
      * Objetivo: Devolver todos os membros, com papéis, situação e segundo fator.
@@ -81,7 +81,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convidar membro
      * Objetivo: Criar a conta interna e enviar o convite.
@@ -97,7 +97,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Reenviar convite
      * Objetivo: Mandar o convite de novo a quem ainda não aceitou.
@@ -113,7 +113,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Trocar papéis
      * Objetivo: Definir os papéis de um membro.
@@ -128,7 +128,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desligar membro
      * Objetivo: Revogar o acesso de quem saiu da equipe.
@@ -144,7 +144,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Redefinir segundo fator
      * Objetivo: Apagar o segundo fator de um membro que perdeu o aplicativo.
@@ -160,7 +160,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Situação da revisão de acessos
      * Objetivo: Informar a última revisão, a próxima e se está vencida.
@@ -175,7 +175,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Confirmar revisão de acessos
      * Objetivo: Registrar que os acessos da equipe foram conferidos.
@@ -191,7 +191,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido de convite
      * Objetivo: Receber nome, e-mail e papéis do novo membro.
@@ -206,7 +206,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido de papéis
      * Objetivo: Receber o novo conjunto de papéis.
@@ -218,7 +218,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido de desligamento
      * Objetivo: Receber o motivo do desligamento.
@@ -231,7 +231,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido de revisão
      * Objetivo: Receber a observação da revisão.
@@ -243,7 +243,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Resultado do desligamento
      * Objetivo: Informar quantos casos voltaram para a fila.
@@ -255,7 +255,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Membro na resposta
      * Objetivo: Expor um membro da equipe para a tela.
@@ -268,7 +268,7 @@ class EquipeController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:20
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Conversão do membro
          * Objetivo: Montar a resposta a partir da conta.
@@ -285,7 +285,7 @@ class EquipeController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Revisão na resposta
      * Objetivo: Expor a revisão registrada.
@@ -296,7 +296,7 @@ class EquipeController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:20
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Conversão da revisão
          * Objetivo: Montar a resposta a partir da entidade.

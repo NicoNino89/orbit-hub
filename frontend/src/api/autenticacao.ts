@@ -20,7 +20,7 @@ export interface SessaoApi {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Desafio do segundo fator
  * Objetivo: Tipar a resposta do login quando a conta é da equipe e falta o código do aplicativo.
@@ -35,7 +35,7 @@ export interface DesafioApi {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Dados para o aplicativo autenticador
  * Objetivo: Tipar o segredo e o endereço otpauth:// devolvidos na configuração.
@@ -49,7 +49,7 @@ export interface ConfiguracaoSegundoFator {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Entrar
  * Objetivo: Enviar e-mail e senha e receber a sessão ou, nas contas da equipe, o desafio do segundo fator.
@@ -62,7 +62,7 @@ export function entrar(email: string, senha: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: É desafio
  * Objetivo: Distinguir a resposta de desafio da sessão aberta.
@@ -75,7 +75,7 @@ export function ehDesafio(resposta: SessaoApi | DesafioApi): resposta is Desafio
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Configurar o aplicativo
  * Objetivo: Pedir o segredo para cadastrar no aplicativo autenticador.
@@ -89,7 +89,7 @@ export function configurarSegundoFator(desafio: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Confirmar o código
  * Objetivo: Enviar o código do aplicativo e receber a sessão.

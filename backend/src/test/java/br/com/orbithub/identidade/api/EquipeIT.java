@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:45
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes de integração da equipe interna
  * Objetivo: Percorrer, pela API e com PostgreSQL real, o ciclo de um membro: convite, senha, segundo fator,
@@ -70,7 +70,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Ciclo completo do membro
      * Objetivo: Conferir convite, aceite, configuração do segundo fator, entrada, permissão por papel, recusa de
@@ -155,7 +155,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Códigos errados bloqueiam
      * Objetivo: Conferir que códigos errados seguidos bloqueiam a entrada, como as senhas erradas.
@@ -186,7 +186,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Troca de papéis e desligamento valem na hora
      * Objetivo: Conferir que trocar papéis e desligar derrubam a sessão do membro imediatamente, que o desligado
@@ -241,7 +241,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convite com e-mail de conta pública e revisão de acessos
      * Objetivo: Conferir que o e-mail de uma conta pública é recusado no convite e que a revisão de acessos é
@@ -276,7 +276,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Administrador de teste
      * Objetivo: Criar um administrador ativo direto no banco.
@@ -289,7 +289,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Membro de teste com senha
      * Objetivo: Criar um membro ativo com a senha de teste, sem segundo fator configurado.
@@ -305,7 +305,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Entrar com a senha
      * Objetivo: Fazer o primeiro passo do login de um membro e devolver o desafio.
@@ -324,7 +324,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Token do último convite
      * Objetivo: Ler o token do link do último e-mail de convite enviado.
@@ -341,7 +341,7 @@ class EquipeIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Token de uma conta
      * Objetivo: Abrir uma sessão e devolver o cabeçalho Authorization.

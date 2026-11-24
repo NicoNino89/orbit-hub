@@ -225,7 +225,7 @@ function SecaoPerfil({ conta, aoMudar }: { conta: Conta; aoMudar: (c: Conta) => 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Seção de papéis
  * Objetivo: Mostrar os papéis da conta e ativar ou desativar.

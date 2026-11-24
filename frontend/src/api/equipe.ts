@@ -4,7 +4,7 @@ import type { PapelInterno } from './contas'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Membro da equipe
  * Objetivo: Tipar um membro como a API devolve.
@@ -24,7 +24,7 @@ export interface Membro {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Situação da revisão de acessos
  * Objetivo: Tipar a última revisão, a próxima e se está vencida.
@@ -41,7 +41,7 @@ export interface SituacaoRevisao {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Listar a equipe
  * Objetivo: Buscar todos os membros.
@@ -54,7 +54,7 @@ export function listarEquipe() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Convidar membro
  * Objetivo: Criar o membro e enviar o convite.
@@ -67,7 +67,7 @@ export function convidarMembro(nome: string, email: string, papeis: PapelInterno
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Reenviar convite
  * Objetivo: Mandar o convite de novo.
@@ -80,7 +80,7 @@ export function reenviarConvite(id: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Trocar papéis
  * Objetivo: Definir os papéis de um membro.
@@ -93,7 +93,7 @@ export function alterarPapeis(id: string, papeis: PapelInterno[]) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Desligar membro
  * Objetivo: Revogar o acesso de um membro.
@@ -107,7 +107,7 @@ export function desligarMembro(id: string, justificativa: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Redefinir segundo fator
  * Objetivo: Apagar o segundo fator de um membro.
@@ -120,7 +120,7 @@ export function redefinirSegundoFator(id: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Situação da revisão
  * Objetivo: Buscar a situação da revisão de acessos.
@@ -133,7 +133,7 @@ export function buscarRevisao() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Confirmar revisão
  * Objetivo: Registrar a revisão de acessos.
@@ -146,7 +146,7 @@ export function confirmarRevisao(observacao: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:05
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Aceitar convite
  * Objetivo: Definir a senha a partir do link do convite.

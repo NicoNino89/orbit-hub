@@ -3,7 +3,7 @@ import { requisitar } from './cliente'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:50
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Papéis da plataforma
  * Objetivo: Tipar os papéis públicos (investidor, empreendedor) e os da equipe interna.
@@ -18,7 +18,7 @@ export type Papel = PapelPublico | PapelInterno
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:50
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Nome de cada papel
  * Objetivo: Exibir os papéis em português, num lugar só.
@@ -40,7 +40,7 @@ export const NOMES_DOS_PAPEIS: Record<Papel, string> = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:50
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Papel público
  * Objetivo: Dizer se o papel é de investidor ou empreendedor.

@@ -43,7 +43,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do controller
      * Objetivo: Receber os serviços de sessão, login e segundo fator e o montador do cookie.
@@ -60,7 +60,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Entrar
      * Objetivo: Conferir e-mail e senha, abrir a sessão e gravar o refresh token no cookie; nas contas da
@@ -81,7 +81,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Configurar o aplicativo autenticador
      * Objetivo: Gerar o segredo do segundo fator no primeiro acesso de um membro da equipe.
@@ -96,7 +96,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Confirmar o código do segundo fator
      * Objetivo: Conferir o código do aplicativo e abrir a sessão do membro da equipe.
@@ -111,7 +111,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Resposta com sessão
      * Objetivo: Montar a resposta de sessão aberta, com o cookie do refresh token.
@@ -126,7 +126,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desafio na resposta do login
      * Objetivo: Dizer à tela que falta o segundo fator e em qual etapa.
@@ -137,7 +137,7 @@ class AutenticacaoController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:00
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Conversão do desafio
          * Objetivo: Montar a resposta a partir do desafio emitido.
@@ -151,7 +151,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido com desafio
      * Objetivo: Receber o desafio para configurar o aplicativo.
@@ -162,7 +162,7 @@ class AutenticacaoController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:00
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Texto sem o desafio
          * Objetivo: Evitar que o desafio apareça em logs.
@@ -177,7 +177,7 @@ class AutenticacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:00
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Pedido com código
      * Objetivo: Receber o desafio e o código de 6 dígitos.
@@ -189,7 +189,7 @@ class AutenticacaoController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 11:00
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Texto sem os dados
          * Objetivo: Evitar que o desafio e o código apareçam em logs.

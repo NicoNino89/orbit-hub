@@ -16,7 +16,7 @@ public sealed interface PerfilDePapel permits PerfilDePapel.Investidor, PerfilDe
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Fábrica de perfis
      * Objetivo: Criar o perfil correspondente ao papel.

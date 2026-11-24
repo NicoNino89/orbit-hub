@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:30
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Consulta da trilha de auditoria e acesso justificado
  * Objetivo: Permitir ao administrador consultar a trilha com filtros e à equipe registrar o acesso

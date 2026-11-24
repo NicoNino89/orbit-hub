@@ -34,7 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:40
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes das regras da gestão da equipe
  * Objetivo: Garantir as regras que a tela não consegue garantir sozinha: e-mail próprio, nunca ficar sem
@@ -58,7 +58,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Preparação
      * Objetivo: Montar o serviço com um administrador e uma curadora ativos e uma fila que devolve 2 casos.
@@ -98,7 +98,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convite com e-mail próprio
      * Objetivo: Conferir que o convite cria a conta interna pendente, manda o link e recusa e-mail já usado.
@@ -125,7 +125,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Nunca sem administrador
      * Objetivo: Conferir que o último administrador ativo não perde o papel nem é desligado.
@@ -149,7 +149,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desligamento
      * Objetivo: Conferir que o desligamento exige motivo, não vale para si mesmo, derruba as sessões e devolve
@@ -175,7 +175,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Só contas da equipe
      * Objetivo: Conferir que as rotas da equipe não enxergam contas públicas.
@@ -196,7 +196,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Revisão de acessos
      * Objetivo: Conferir que sem revisão ela já vence, que a confirmação fotografa só os ativos e que a próxima
@@ -225,7 +225,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Primeiro administrador
      * Objetivo: Conferir que o procedimento cria o administrador só quando não há nenhum ativo e recusa e-mail
@@ -256,7 +256,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convite reenviado só para pendentes
      * Objetivo: Conferir que quem já aceitou não recebe convite de novo.
@@ -275,7 +275,7 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Membro ativo de teste
      * Objetivo: Criar um membro que já aceitou o convite e registrá-lo no repositório simulado.

@@ -3,7 +3,7 @@ import type { Papel, PapelInterno } from '../api/contas'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:15
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Papéis da equipe interna
  * Objetivo: Dizer quais papéis dão acesso ao backoffice.
@@ -17,7 +17,7 @@ export const PAPEIS_INTERNOS: PapelInterno[] = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:15
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Itens do menu do backoffice
  * Objetivo: Listar as telas do backoffice e quem pode ver cada uma.

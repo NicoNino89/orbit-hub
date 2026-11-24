@@ -8,7 +8,7 @@ import { simularApi, type RespostaSimulada } from '../test/apiSimulada'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Abrir o convite
  * Objetivo: Renderizar a tela do convite com a resposta simulada do aceite.
@@ -26,7 +26,7 @@ describe('Convite da equipe (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Aceite com senha
    * Objetivo: Conferir que as senhas precisam ser iguais e que o aceite avisa do segundo fator.
@@ -51,7 +51,7 @@ describe('Convite da equipe (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Convite vencido
    * Objetivo: Conferir a orientação quando o link não vale mais ou falta o token.

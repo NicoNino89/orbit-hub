@@ -12,7 +12,7 @@ import { simularApi } from '../test/apiSimulada'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Sessão de teste
  * Objetivo: Montar a renovação de sessão com os papéis pedidos.
@@ -37,7 +37,7 @@ const MEMBROS: Membro[] = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Abrir a tela logado
  * Objetivo: Renderizar as rotas num endereço do backoffice com a API simulada.
@@ -72,7 +72,7 @@ describe('Equipe interna (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Lista e ações por situação
    * Objetivo: Conferir a lista, as ações por situação e que a própria conta não tem "desligar".
@@ -95,7 +95,7 @@ describe('Equipe interna (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Convidar com papéis
    * Objetivo: Conferir que o convite exige papel e envia nome, e-mail e papéis escolhidos.
@@ -121,7 +121,7 @@ describe('Equipe interna (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Desligar pede motivo e confirmação
    * Objetivo: Conferir que o desligamento só sai com motivo e mostra quantos casos voltaram para a fila.
@@ -145,7 +145,7 @@ describe('Equipe interna (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Trocar papéis e confirmar revisão
    * Objetivo: Conferir a troca de papéis e o registro da revisão de acessos.
@@ -170,7 +170,7 @@ describe('Equipe interna (KAN-75)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:20
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Menu por papel
    * Objetivo: Conferir que o encarregado de dados vê a auditoria, mas não a gestão da equipe.

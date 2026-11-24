@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Segundo fator das contas da equipe
  * Objetivo: Exigir, depois da senha, o código do aplicativo autenticador de toda conta interna, e conduzir a
@@ -50,7 +50,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do serviço
      * Objetivo: Receber contas, desafios, bloqueios, sessões, cifra, configuração, trilha e relógio.
@@ -74,7 +74,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Emitir desafio
      * Objetivo: Criar o desafio que a conta interna resolve com o código, depois de acertar a senha.
@@ -90,7 +90,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Configurar o aplicativo
      * Objetivo: Gerar um segredo novo e devolver o que o membro cadastra no aplicativo autenticador.
@@ -112,7 +112,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Confirmar o código
      * Objetivo: Conferir o código do aplicativo e abrir a sessão do membro.
@@ -162,7 +162,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Conta do desafio
      * Objetivo: Encontrar a conta interna ativa a que o desafio pertence.
@@ -183,7 +183,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desafio inválido
      * Objetivo: Montar a recusa de desafio vencido ou desconhecido.
@@ -197,7 +197,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Registrar na trilha
      * Objetivo: Gravar na trilha de auditoria uma ação do membro fora do backoffice.
@@ -211,7 +211,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Segredo em blocos
      * Objetivo: Mostrar o segredo em blocos de 4 letras, mais fácil de digitar no celular.
@@ -224,7 +224,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Etapa do segundo fator
      * Objetivo: Dizer o que falta para a conta interna entrar.
@@ -238,7 +238,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desafio emitido
      * Objetivo: Levar o token do desafio, a etapa e o prazo para a tela.
@@ -249,7 +249,7 @@ public class SegundoFatorService {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:50
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Texto sem o token
          * Objetivo: Evitar que o token apareça em logs.
@@ -264,7 +264,7 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:50
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Dados para o aplicativo
      * Objetivo: Levar o segredo (para digitar) e o endereço otpauth:// (para o QR Code ou o link).
@@ -275,7 +275,7 @@ public class SegundoFatorService {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:50
+         * Hora: 10:39
          * Cartão Jira: KAN-75
          * Título: Texto sem o segredo
          * Objetivo: Evitar que o segredo apareça em logs.

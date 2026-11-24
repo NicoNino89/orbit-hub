@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:35
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Testes das regras da conta da equipe
  * Objetivo: Garantir a separação entre conta interna e pública, o convite, a troca de papéis, o desligamento e
@@ -24,7 +24,7 @@ class ContaDaEquipeTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Papéis internos e públicos não se misturam
      * Objetivo: Conferir que a conta com papel interno nasce interna e que misturar papéis é recusado.
@@ -51,7 +51,7 @@ class ContaDaEquipeTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convite e troca de papéis
      * Objetivo: Conferir que o convite ativa a conta uma vez e que a troca devolve os papéis anteriores.
@@ -77,7 +77,7 @@ class ContaDaEquipeTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desligamento
      * Objetivo: Conferir que o desligamento impede a sessão, guarda a data, apaga o segundo fator e é idempotente.
@@ -104,7 +104,7 @@ class ContaDaEquipeTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:35
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Ciclo do segundo fator
      * Objetivo: Conferir configuração pendente, conclusão, bloqueio de reuso de código e redefinição.

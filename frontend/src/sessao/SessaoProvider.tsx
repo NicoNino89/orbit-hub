@@ -10,7 +10,7 @@ const LIMIAR_RENOVACAO_MS = 5 * 60_000
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Provedor da sessão
  * Objetivo: Guardar a sessão da pessoa logada, restaurá-la ao recarregar a página e oferecer entrar, sair

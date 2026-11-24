@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Revisão periódica dos acessos da equipe
  * Objetivo: Registrar que o administrador conferiu quem continua na equipe e com quais papéis.
@@ -48,7 +48,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Construtor exigido pelo JPA
      * Objetivo: Permitir que o Hibernate instancie a revisão ao ler do banco.
@@ -60,7 +60,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Registrar revisão
      * Objetivo: Criar a revisão com a fotografia dos membros confirmados.
@@ -79,7 +79,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso ao identificador
      * Objetivo: Expor o identificador da revisão.
@@ -92,7 +92,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso ao revisor
      * Objetivo: Expor quem fez a revisão.
@@ -105,7 +105,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso à data
      * Objetivo: Expor quando a revisão foi feita.
@@ -118,7 +118,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso à observação
      * Objetivo: Expor a observação do revisor.
@@ -131,7 +131,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Acesso aos membros confirmados
      * Objetivo: Expor a fotografia dos membros da revisão.
@@ -144,7 +144,7 @@ public class RevisaoDeAcesso {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Membro confirmado na revisão
      * Objetivo: Guardar id, nome e papéis de um membro no momento da revisão.

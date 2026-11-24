@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:15
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Gestão da equipe interna
  * Objetivo: Convidar, trocar papéis, desligar e redefinir o segundo fator dos membros da equipe, e conduzir a
@@ -67,7 +67,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do serviço
      * Objetivo: Receber contas, revisões, senhas, links, sessões, e-mail, configurações, filas e relógio.
@@ -91,7 +91,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Listar a equipe
      * Objetivo: Listar todos os membros, com papéis, situação e segundo fator.
@@ -105,7 +105,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Convidar membro
      * Objetivo: Criar a conta interna e enviar o convite para o membro escolher a senha.
@@ -130,7 +130,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Reenviar convite
      * Objetivo: Mandar um convite novo para quem ainda não aceitou.
@@ -149,7 +149,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Aceitar convite
      * Objetivo: Ativar a conta interna com a senha escolhida pelo membro.
@@ -172,7 +172,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Trocar papéis
      * Objetivo: Definir os papéis de um membro.
@@ -202,7 +202,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Desligar membro
      * Objetivo: Revogar o acesso de quem saiu da equipe e devolver os casos abertos à fila.
@@ -237,7 +237,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Redefinir segundo fator
      * Objetivo: Apagar o segundo fator de quem perdeu o aplicativo, para configurar de novo no próximo login.
@@ -258,7 +258,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Situação da revisão de acessos
      * Objetivo: Informar a última revisão, a data da próxima e se está vencida.
@@ -279,7 +279,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Confirmar revisão de acessos
      * Objetivo: Registrar que o administrador conferiu quem continua na equipe e com quais papéis.
@@ -303,7 +303,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Existe administrador ativo
      * Objetivo: Dizer se já há algum administrador ativo na equipe.
@@ -317,7 +317,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Membro da equipe
      * Objetivo: Buscar uma conta interna pelo id.
@@ -331,7 +331,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Último administrador
      * Objetivo: Dizer se só resta um administrador ativo.
@@ -344,7 +344,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Exigir papéis internos
      * Objetivo: Recusar conjunto vazio ou com papel público.
@@ -360,7 +360,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Enviar convite
      * Objetivo: Gerar o link do convite e mandar o e-mail ao membro.
@@ -381,7 +381,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:25
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Link de convite
      * Objetivo: Gerar um link de convite novo para o membro.
@@ -395,7 +395,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:25
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Garantir o primeiro administrador
      * Objetivo: Na implantação, criar (ou reconvidar) o primeiro administrador quando ainda não há nenhum ativo.
@@ -425,7 +425,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Senha inutilizável
      * Objetivo: Gerar o hash de uma senha aleatória que ninguém conhece, até o convite ser aceito.
@@ -440,7 +440,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Papéis em texto
      * Objetivo: Escrever os papéis em ordem alfabética, separados por vírgula.
@@ -453,7 +453,7 @@ public class EquipeService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:15
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Situação da revisão
      * Objetivo: Levar à tela a última revisão, a próxima e se está vencida.

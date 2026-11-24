@@ -25,7 +25,7 @@ function destinoSeguro(voltar: string | null) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:00
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Tela de login
  * Objetivo: Entrar com e-mail e senha e voltar à página de origem.
@@ -55,7 +55,7 @@ export function PaginaEntrar() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 12:00
+   * Hora: 10:39
    * Cartão Jira: KAN-75
    * Título: Enviar login
    * Objetivo: Chamar a API e tratar o erro.

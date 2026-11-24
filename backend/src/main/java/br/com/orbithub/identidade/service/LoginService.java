@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:55
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Login e logout
  * Objetivo: Conferir e-mail e senha, abrir a sessão (ou pedir o segundo fator, nas contas da equipe),
@@ -46,7 +46,7 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:55
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, codificador de senhas, sessões, segundo fator, parâmetros e relógio.
@@ -68,7 +68,7 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:55
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Entrar
      * Objetivo: Abrir a sessão para e-mail e senha corretos de uma conta ativa, ou devolver o desafio do
@@ -119,7 +119,7 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:55
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Resultado do login
      * Objetivo: Levar a sessão aberta ou o desafio do segundo fator.

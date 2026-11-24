@@ -178,7 +178,7 @@ public class TokenDeConta {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Finalidades do token
      * Objetivo: Enumerar para que um token de conta pode servir.

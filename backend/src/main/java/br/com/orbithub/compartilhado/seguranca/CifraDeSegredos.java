@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:45
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Cifra de segredos guardados no banco
  * Objetivo: Cifrar e decifrar segredos que a aplicação precisa ler de volta (o segredo do segundo fator), para
@@ -40,7 +40,7 @@ public class CifraDeSegredos {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Criação da cifra
      * Objetivo: Derivar a chave AES a partir da chave secreta da aplicação.
@@ -60,7 +60,7 @@ public class CifraDeSegredos {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Cifrar
      * Objetivo: Cifrar um texto para guardar no banco.
@@ -83,7 +83,7 @@ public class CifraDeSegredos {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Decifrar
      * Objetivo: Recuperar o texto guardado.

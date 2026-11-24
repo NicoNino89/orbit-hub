@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:10
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Repositório das revisões de acesso
  * Objetivo: Gravar as revisões e achar a mais recente.
@@ -19,7 +19,7 @@ public interface RevisaoDeAcessoRepository extends JpaRepository<RevisaoDeAcesso
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:10
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Última revisão
      * Objetivo: Buscar a revisão mais recente.

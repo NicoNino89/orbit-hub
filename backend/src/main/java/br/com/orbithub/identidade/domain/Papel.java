@@ -3,7 +3,7 @@ package br.com.orbithub.identidade.domain;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:20
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Papéis de uma conta
  * Objetivo: Enumerar os papéis com que um usuário atua na plataforma.
@@ -53,7 +53,7 @@ public enum Papel {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Papel da equipe interna
      * Objetivo: Dizer se o papel é da equipe interna (backoffice).

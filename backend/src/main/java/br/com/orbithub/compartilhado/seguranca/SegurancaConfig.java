@@ -75,7 +75,7 @@ public class SegurancaConfig {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:25
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Cadeia de filtros de segurança
      * Objetivo: Definir rotas públicas, exigir token no resto e ligar o resource server de JWT.

@@ -16,7 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:40
+ * Hora: 10:39
  * Cartão Jira: KAN-75
  * Título: Código de uso único baseado em tempo (TOTP)
  * Objetivo: Gerar segredos e conferir os códigos de 6 dígitos dos aplicativos autenticadores (Google
@@ -38,7 +38,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Classe utilitária
      * Objetivo: Impedir instâncias.
@@ -50,7 +50,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Gerar segredo
      * Objetivo: Criar um segredo novo, em Base32 (o formato que os aplicativos leem).
@@ -65,7 +65,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Passo de tempo
      * Objetivo: Calcular o número do intervalo de 30 segundos de um instante.
@@ -78,7 +78,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Código de um passo
      * Objetivo: Calcular o código de 6 dígitos de um segredo num passo de tempo.
@@ -102,7 +102,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Conferir código
      * Objetivo: Dizer em qual passo (atual, anterior ou seguinte) o código informado vale.
@@ -130,7 +130,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Endereço para o aplicativo
      * Objetivo: Montar o endereço otpauth:// que o aplicativo autenticador lê (por QR Code ou link).
@@ -147,7 +147,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Codificar em Base32
      * Objetivo: Converter bytes no alfabeto Base32 da RFC 4648.
@@ -174,7 +174,7 @@ public final class Totp {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:39
      * Cartão Jira: KAN-75
      * Título: Decodificar Base32
      * Objetivo: Converter o texto Base32 de volta em bytes.
