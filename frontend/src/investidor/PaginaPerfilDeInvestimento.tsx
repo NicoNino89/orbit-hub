@@ -9,6 +9,7 @@ import {
 import { useSessao } from '../sessao/contexto'
 import { useAtuacao } from '../sessao/atuacao'
 import { AlertaErro, Campo } from '../ui/Campo'
+import { ResumoDoPerfil } from './ResumoDoPerfil'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 
 type Opcao = { codigo: string; rotulo: string; grupo?: string | null }
@@ -39,8 +40,8 @@ const VAZIO: DadosDoPerfil = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:04
- * Cartão Jira: KAN-19
+ * Hora: 17:06
+ * Cartão Jira: KAN-20
  * Título: Perfil de investimento
  * Objetivo: Informar o tipo de investidor, o ticket, a liderança, o follow-on, a participação na gestão e os
  *           instrumentos aceitos, da pessoa ou da organização em nome da qual ela atua.
@@ -48,7 +49,8 @@ const VAZIO: DadosDoPerfil = {
  *           o formulário bloqueado, com a explicação. Na pessoa física, o tipo é investidor-anjo ou outro. A tese
  *           (segmentos, estágios da rodada, maturidade do negócio e localização, KAN-18) faz parte do mesmo formulário.
  *           No modo onboarding, a pessoa pode pular por agora; salvar ou pular leva à área do investidor. As
- *           preferências complementares (KAN-19) ficam numa seção opcional, recolhida no onboarding.
+ *           preferências complementares (KAN-19) ficam numa seção opcional, recolhida no onboarding. Fora do
+ *           onboarding, o resumo do perfil salvo aparece acima do formulário (KAN-20).
  */
 export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?: boolean }) {
   const navegar = useNavigate()
@@ -182,6 +184,13 @@ export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?
       )}
       {erro && <AlertaErro>{erro}</AlertaErro>}
       {aviso && <p role="status" className="rounded-md bg-ok-soft px-3 py-2 text-sm text-ok">{aviso}</p>}
+      {!onboarding && situacao.perfil && (
+        <section aria-label="Perfil atual" className="flex flex-col gap-2">
+          <h2 className="font-semibold">Perfil atual</h2>
+          <ResumoDoPerfil perfil={completar(situacao.perfil)} />
+          {!bloqueado && <p className="text-xs text-muted">Altere abaixo; o catálogo usa o perfil salvo na próxima vez que for aberto.</p>}
+        </section>
+      )}
 
       <form onSubmit={(e) => void salvar(e)} aria-label="Perfil de investimento" className="flex flex-col gap-4">
         <fieldset disabled={bloqueado} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">

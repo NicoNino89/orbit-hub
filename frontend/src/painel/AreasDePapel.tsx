@@ -3,6 +3,8 @@ import { Link, Outlet } from 'react-router'
 import { requisitar } from '../api/cliente'
 import type { Papel } from '../api/contas'
 import { PAPEIS_NA_ORGANIZACAO, type PapelNaOrganizacao } from '../api/organizacoes'
+import { lerPerfil, type DadosDoPerfil } from '../api/perfilDeInvestimento'
+import { ResumoDoPerfil } from '../investidor/ResumoDoPerfil'
 import { useAtuacao } from '../sessao/atuacao'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
@@ -62,17 +64,26 @@ function useArea<T>(caminho: string, versao = 0) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
+ * Hora: 17:06
+ * Cartão Jira: KAN-20
  * Título: Área do investidor
  * Objetivo: Mostrar a situação da conta como investidor.
  * Decisões: A tese de investimento chega na S3 (KAN-18). Mostra em nome de quem a pessoa atua e leva às
- *           organizações (KAN-60) e ao perfil de investimento (KAN-61). Sem tese, convida para o onboarding (KAN-18).
+ *           organizações (KAN-60) e ao perfil de investimento (KAN-61). Sem tese, convida para o onboarding (KAN-18);
+ *           com tese, mostra o resumo do perfil (KAN-20).
  */
 export function AreaInvestidor() {
   const { estado } = useSessao()
   const { versao } = useAtuacao(estado.status === 'autenticado' ? estado.usuario.id : null)
   const { dados, erro } = useArea<SituacaoInvestidor>('/api/v1/investidores/eu', versao)
+  const [perfil, setPerfil] = useState<DadosDoPerfil | null>(null)
+  const concluido = dados?.onboarding === 'CONCLUIDO'
+  useEffect(() => {
+    if (!concluido) return
+    let ativo = true
+    lerPerfil().then((s) => { if (ativo) setPerfil(s.perfil) }).catch(() => { if (ativo) setPerfil(null) })
+    return () => { ativo = false }
+  }, [concluido, versao])
   return (
     <section className="flex flex-col gap-3">
       <h1 className="font-display text-3xl font-semibold tracking-tight">Área do investidor</h1>
@@ -85,9 +96,12 @@ export function AreaInvestidor() {
               : 'Atuando como pessoa física.'}
           </p>
           {dados.onboarding === 'CONCLUIDO' ? (
-            <p className="text-muted">
-              A tese de investimento está cadastrada. <Link to="/investidor/perfil" className={CLASSE_LINK}>Ver ou editar o perfil</Link>
-            </p>
+            <>
+              <p className="text-muted">
+                A tese de investimento está cadastrada. <Link to="/investidor/perfil" className={CLASSE_LINK}>Editar o perfil</Link>
+              </p>
+              {perfil && <ResumoDoPerfil perfil={perfil} />}
+            </>
           ) : (
             <p className="rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">
               {dados.onboarding === 'PULADO' ? 'Você deixou a tese para depois.' : 'Você ainda não definiu a tese de investimento.'}{' '}
