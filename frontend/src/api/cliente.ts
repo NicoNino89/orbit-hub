@@ -45,6 +45,7 @@ export class ErroApi extends Error {
 
 /** Fonte do access token atual; registrada pela sessão (KAN-13). */
 let fornecedorDeToken: () => string | null = () => null
+let fornecedorDeOrganizacao: () => string | null = () => null
 /** Renova a sessão quando o access token vence; devolve se conseguiu (KAN-13). */
 let renovador: (() => Promise<boolean>) | null = null
 let renovacaoEmAndamento: Promise<boolean> | null = null
@@ -93,6 +94,19 @@ export function definirFornecedorDeToken(fornecedor: () => string | null) {
   fornecedorDeToken = fornecedor
 }
 
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 14:05
+ * Cartão Jira: KAN-60
+ * Título: Registrar a organização da atuação
+ * Objetivo: Permitir que a sessão informe em nome de qual organização o investidor está agindo.
+ * Decisões: Vai no cabeçalho X-Orbit-Organizacao; o servidor confere o vínculo a cada requisição.
+ */
+export function definirFornecedorDeOrganizacao(fornecedor: () => string | null) {
+  fornecedorDeOrganizacao = fornecedor
+}
+
 export interface OpcoesRequisicao {
   metodo?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   corpo?: unknown
@@ -130,19 +144,21 @@ export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 14:05
+ * Cartão Jira: KAN-60
  * Título: Executar a requisição
  * Objetivo: Fazer uma chamada à API, sem nova tentativa.
  * Decisões: Separado de requisitar para a nova tentativa após renovar a sessão reaproveitar o mesmo código.
  *           Com formulário, o navegador monta o Content-Type (multipart com o separador); com comoArquivo,
- *           devolve o Blob (KAN-16).
+ *           devolve o Blob (KAN-16). Com sessão, manda a organização da atuação, se houver (KAN-60).
  */
 async function executar<T>(caminho: string, opcoes: OpcoesRequisicao): Promise<T> {
   const cabecalhos: Record<string, string> = { Accept: opcoes.comoArquivo ? '*/*' : 'application/json' }
   if (opcoes.corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
   const token = opcoes.anonima ? null : fornecedorDeToken()
   if (token) cabecalhos.Authorization = `Bearer ${token}`
+  const organizacao = token ? fornecedorDeOrganizacao() : null
+  if (organizacao) cabecalhos['X-Orbit-Organizacao'] = organizacao
 
   const resposta = await fetch(`${API_URL}${caminho}`, {
     method: opcoes.metodo ?? 'GET',

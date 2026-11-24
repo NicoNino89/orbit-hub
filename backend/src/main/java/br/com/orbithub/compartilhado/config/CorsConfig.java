@@ -41,12 +41,13 @@ class CorsConfig implements WebMvcConfigurer {
 
     /**
      * Autor: Nicholas Bruno Pimentel
-     * Data: 18/11/2026
-     * Hora: 21:16
-     * Cartão Jira: KAN-53
+     * Data: 24/11/2026
+     * Hora: 14:05
+     * Cartão Jira: KAN-60
      * Título: Registro do CORS nas rotas da API
      * Objetivo: Aplicar a política às rotas /api/**.
-     * Decisões: Métodos e cabeçalhos listados um a um (Authorization e Content-Type); credenciais
+     * Decisões: Métodos e cabeçalhos listados um a um (Authorization, Content-Type e X-Orbit-Organizacao, que diz
+     *           em nome de qual organização o investidor atua, KAN-60); credenciais
      *           ligadas para o cookie HttpOnly; preflight em cache por 1 hora para reduzir requisições.
      */
     @Override
@@ -54,7 +55,7 @@ class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins(origens)
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("Authorization", "Content-Type")
+                .allowedHeaders("Authorization", "Content-Type", "X-Orbit-Organizacao")
                 .allowCredentials(true)
                 .maxAge(3600);
     }

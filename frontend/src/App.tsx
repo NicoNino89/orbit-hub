@@ -15,6 +15,9 @@ import { PaginaEntrar } from './conta/PaginaEntrar'
 import { PaginaNovoEmail } from './conta/PaginaNovoEmail'
 import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
 import { Inicio } from './Inicio'
+import { PaginaConviteOrganizacao } from './investidor/PaginaConviteOrganizacao'
+import { PaginaOrganizacao } from './investidor/PaginaOrganizacao'
+import { PaginaOrganizacoes } from './investidor/PaginaOrganizacoes'
 import { PaginaNotificacoes } from './notificacoes/PaginaNotificacoes'
 import { AreaLogada, Painel } from './painel/AreaLogada'
 import { AreaEmpreendedor, AreaInvestidor, RotaDePapel } from './painel/AreasDePapel'
@@ -25,8 +28,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:34
- * Cartão Jira: KAN-146
+ * Hora: 14:05
+ * Cartão Jira: KAN-60
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
@@ -35,7 +38,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
  *           backoffice fica em /admin, atrás da RotaInterna, e cada tela confere o papel exigido (KAN-80). O
  *           aceite do convite da equipe é público, protegido pelo token do link (KAN-75). A fila de segunda
  *           aprovação é de toda a equipe (KAN-81); parâmetros, listas e rotinas são do administrador (KAN-78, KAN-79, KAN-104).
- *           A central de notificações é de qualquer conta logada (KAN-146).
+ *           A central de notificações é de qualquer conta logada (KAN-146). As organizações ficam na área do
+ *           investidor; o aceite do convite só exige login, para explicar a quem ainda não é investidor (KAN-60).
  */
 export function Rotas() {
   return (
@@ -57,8 +61,11 @@ export function Rotas() {
             <Route path="/painel" element={<Painel />} />
             <Route path="/conta" element={<PaginaConta />} />
             <Route path="/notificacoes" element={<PaginaNotificacoes />} />
+            <Route path="/organizacoes/convite" element={<PaginaConviteOrganizacao />} />
             <Route element={<RotaDePapel papel="INVESTIDOR" />}>
               <Route path="/investidor" element={<AreaInvestidor />} />
+              <Route path="/investidor/organizacoes" element={<PaginaOrganizacoes />} />
+              <Route path="/investidor/organizacoes/:id" element={<PaginaOrganizacao />} />
             </Route>
             <Route element={<RotaDePapel papel="EMPREENDEDOR" />}>
               <Route path="/empreendedor" element={<AreaEmpreendedor />} />

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import * as autenticacao from '../api/autenticacao'
-import { definirFornecedorDeToken, definirRenovador } from '../api/cliente'
+import { definirFornecedorDeOrganizacao, definirFornecedorDeToken, definirRenovador } from '../api/cliente'
+import { esquecerAtuacao, lerAtuacao } from './atuacao'
 import { ehPapelPublico, type Papel } from '../api/contas'
 import { CHAVE_PAPEL_ATIVO, CHAVE_SESSAO_ATIVA, ContextoSessao, type EstadoSessao, type Sessao } from './contexto'
 
@@ -49,15 +50,17 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 01:10
-   * Cartão Jira: KAN-13
+   * Hora: 14:05
+   * Cartão Jira: KAN-60
    * Título: Encerrar localmente
    * Objetivo: Apagar o token e a marca de sessão e voltar ao estado anônimo.
-   * Decisões: "expirou" diferencia o fim por inatividade (mostra aviso) do logout voluntário.
+   * Decisões: "expirou" diferencia o fim por inatividade (mostra aviso) do logout voluntário. Esquece a organização
+   *           escolhida para a atuação (KAN-60).
    */
   const encerrarLocal = useCallback((expirou: boolean) => {
     token.current = null
     localStorage.removeItem(CHAVE_SESSAO_ATIVA)
+    esquecerAtuacao()
     setFimDaSessao(null)
     setEstado({ status: 'anonimo', expirou })
   }, [])
@@ -158,6 +161,22 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
 
   const papeis: Papel[] = estado.status === 'autenticado' ? estado.usuario.papeis.filter(ehPapelPublico) : []
   const papelAtivo = papelEscolhido && papeis.includes(papelEscolhido) ? papelEscolhido : (papeis[0] ?? null)
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 14:05
+   * Cartão Jira: KAN-60
+   * Título: Organização da atuação no cliente HTTP
+   * Objetivo: Mandar a organização escolhida só quando a pessoa está atuando como investidora.
+   * Decisões: Lido a cada requisição, para a troca no seletor valer na hora.
+   */
+  const usuarioId = estado.status === 'autenticado' ? estado.usuario.id : null
+  useEffect(() => {
+    definirFornecedorDeOrganizacao(() =>
+      usuarioId && papelAtivo === 'INVESTIDOR' ? (lerAtuacao(usuarioId)?.organizacao ?? null) : null)
+    return () => definirFornecedorDeOrganizacao(() => null)
+  }, [usuarioId, papelAtivo])
 
   const sessao = useMemo<Sessao>(() => ({
     estado,
