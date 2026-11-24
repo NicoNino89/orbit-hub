@@ -41,6 +41,8 @@ services:
       ORBIT_ARMAZENAMENTO_TIPO: local
       # vazio no ambiente local: a API gera uma chave aleatória a cada início (as sessões caem ao reiniciar)
       ORBIT_JWT_CHAVE: ${ORBIT_JWT_CHAVE:-}
+      # inatividade da sessão (KAN-15); para testar a expiração sem esperar, use PT2M no .env
+      ORBIT_SESSAO_INATIVIDADE: ${ORBIT_SESSAO_INATIVIDADE:-PT30M}
       ORBIT_WEB_URL: http://localhost:5173
       # e-mails vão para o Mailpit (nada sai para a internet)
       ORBIT_EMAIL_TIPO: smtp
