@@ -140,13 +140,12 @@ export function PaginaCadastro() {
         <fieldset className="flex flex-col gap-2" aria-describedby={erros.papeis ? 'erro-papeis' : undefined}>
           <legend className="mb-1 text-sm font-semibold">Como você vai usar o Orbit Hub?</legend>
           {PAPEIS.map(({ papel, titulo, descricao }) => (
-            <label key={papel} className={`flex cursor-pointer gap-3 rounded-md border p-3 ${
+            <label key={papel} className={`grid cursor-pointer grid-cols-[auto_1fr] gap-x-3 rounded-md border p-3 ${
               papeis.includes(papel) ? 'border-primary bg-primary-soft' : 'border-line'}`}>
-              <input type="checkbox" checked={papeis.includes(papel)} onChange={() => alternarPapel(papel)} />
-              <span>
-                <span className="block font-semibold">{titulo}</span>
-                <span className="block text-sm text-muted">{descricao}</span>
-              </span>
+              <input type="checkbox" className="row-span-2 mt-1" checked={papeis.includes(papel)}
+                onChange={() => alternarPapel(papel)} />
+              <span className="font-semibold">{titulo}</span>
+              <span className="text-sm text-muted">{descricao}</span>
             </label>
           ))}
           <p className="text-xs text-muted">Pode marcar os dois. Dá para ativar o outro papel depois, pelo perfil.</p>
