@@ -3,6 +3,7 @@ package br.com.orbithub.identidade.api;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.PoliticaDeSenha;
 import br.com.orbithub.identidade.service.CadastroService;
+import br.com.orbithub.identidade.service.PerfilService;
 import br.com.orbithub.identidade.service.RecuperacaoSenhaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,6 +39,7 @@ class ContaController {
 
     private final CadastroService cadastro;
     private final RecuperacaoSenhaService recuperacao;
+    private final PerfilService perfil;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -45,12 +47,29 @@ class ContaController {
      * Hora: 01:30
      * Cartão Jira: KAN-14
      * Título: Criação do controller
-     * Objetivo: Receber os serviços de cadastro e de recuperação de senha.
+     * Objetivo: Receber os serviços de cadastro, de recuperação de senha e de perfil (KAN-16).
      * Decisões: Injeção pelo construtor.
      */
-    ContaController(CadastroService cadastro, RecuperacaoSenhaService recuperacao) {
+    ContaController(CadastroService cadastro, RecuperacaoSenhaService recuperacao, PerfilService perfil) {
         this.cadastro = cadastro;
         this.recuperacao = recuperacao;
+        this.perfil = perfil;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Confirmar novo e-mail
+     * Objetivo: Aplicar a troca de e-mail pelo link enviado ao novo endereço.
+     * Decisões: Rota pública: o link pode ser aberto em outro aparelho, sem sessão.
+     */
+    @PostMapping("/email/confirmacao")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Confirma a troca de e-mail pelo token do link")
+    void confirmarNovoEmail(@Valid @RequestBody ConfirmacaoRequest pedido) {
+        perfil.confirmarTrocaDeEmail(pedido.token());
     }
 
     /**

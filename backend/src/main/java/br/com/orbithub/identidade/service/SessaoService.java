@@ -165,6 +165,26 @@ public class SessaoService implements VerificadorDeSessao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 01:40
+     * Cartão Jira: KAN-16
+     * Título: Encerrar as outras sessões
+     * Objetivo: Revogar todas as sessões do usuário, menos a informada.
+     * Decisões: Na troca de senha pelo perfil, a pessoa continua logada no aparelho em que trocou e os demais
+     *           aparelhos são desconectados.
+     */
+    @Transactional
+    public int encerrarOutras(UUID usuarioId, UUID sessaoMantida, String motivo) {
+        Instant agora = relogio.instant();
+        var outras = tokens.findByUsuarioIdAndStatus(usuarioId, StatusRefreshToken.ATIVO).stream()
+                .filter(t -> !t.getFamiliaId().equals(sessaoMantida))
+                .toList();
+        outras.forEach(t -> t.revogar(agora, motivo));
+        return outras.size();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 00:20
      * Cartão Jira: KAN-57
      * Título: Sessão ativa

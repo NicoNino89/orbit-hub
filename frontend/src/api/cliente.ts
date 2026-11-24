@@ -99,6 +99,10 @@ export interface OpcoesRequisicao {
   sinal?: AbortSignal
   /** Não envia o access token (rotas públicas e de autenticação). */
   anonima?: boolean
+  /** Envia um formulário com arquivo (multipart) no lugar de JSON (KAN-16). */
+  formulario?: FormData
+  /** Lê a resposta como arquivo (Blob), por exemplo uma imagem protegida por login (KAN-16). */
+  comoArquivo?: boolean
 }
 
 /**
@@ -131,9 +135,11 @@ export async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = 
  * Título: Executar a requisição
  * Objetivo: Fazer uma chamada à API, sem nova tentativa.
  * Decisões: Separado de requisitar para a nova tentativa após renovar a sessão reaproveitar o mesmo código.
+ *           Com formulário, o navegador monta o Content-Type (multipart com o separador); com comoArquivo,
+ *           devolve o Blob (KAN-16).
  */
 async function executar<T>(caminho: string, opcoes: OpcoesRequisicao): Promise<T> {
-  const cabecalhos: Record<string, string> = { Accept: 'application/json' }
+  const cabecalhos: Record<string, string> = { Accept: opcoes.comoArquivo ? '*/*' : 'application/json' }
   if (opcoes.corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
   const token = opcoes.anonima ? null : fornecedorDeToken()
   if (token) cabecalhos.Authorization = `Bearer ${token}`
@@ -141,7 +147,7 @@ async function executar<T>(caminho: string, opcoes: OpcoesRequisicao): Promise<T
   const resposta = await fetch(`${API_URL}${caminho}`, {
     method: opcoes.metodo ?? 'GET',
     headers: cabecalhos,
-    body: opcoes.corpo === undefined ? undefined : JSON.stringify(opcoes.corpo),
+    body: opcoes.formulario ?? (opcoes.corpo === undefined ? undefined : JSON.stringify(opcoes.corpo)),
     credentials: 'include',
     signal: opcoes.sinal,
   })
@@ -149,6 +155,7 @@ async function executar<T>(caminho: string, opcoes: OpcoesRequisicao): Promise<T
     throw await converterErro(resposta)
   }
   if (resposta.status === 204) return undefined as T
+  if (opcoes.comoArquivo) return (await resposta.blob()) as T
   return (await resposta.json()) as T
 }
 

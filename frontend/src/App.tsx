@@ -2,7 +2,9 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
 import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
+import { PaginaConta } from './conta/PaginaConta'
 import { PaginaEntrar } from './conta/PaginaEntrar'
+import { PaginaNovoEmail } from './conta/PaginaNovoEmail'
 import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
 import { Inicio } from './Inicio'
 import { AreaLogada, Painel } from './painel/AreaLogada'
@@ -32,11 +34,13 @@ export function Rotas() {
         <Route path="/entrar" element={<PaginaEntrar />} />
         <Route path="/esqueci-senha" element={<PaginaEsqueciSenha />} />
         <Route path="/redefinir-senha" element={<PaginaRedefinirSenha />} />
+        <Route path="/confirmar-novo-email" element={<PaginaNovoEmail />} />
         <Route path="/termos" element={<PaginaTermos />} />
         <Route path="/termos/:endereco" element={<PaginaTermos />} />
         <Route element={<RotaProtegida />}>
           <Route element={<AreaLogada />}>
             <Route path="/painel" element={<Painel />} />
+            <Route path="/conta" element={<PaginaConta />} />
           </Route>
         </Route>
         <Route path="*" element={<Inicio />} />

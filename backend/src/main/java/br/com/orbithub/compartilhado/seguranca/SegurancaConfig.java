@@ -43,10 +43,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableConfigurationProperties(SegurancaProperties.class)
 public class SegurancaConfig {
 
-    /** Envios abertos sem login: cadastro e confirmação (KAN-12) e recuperação de senha (KAN-14). */
+    /** Envios abertos sem login: cadastro e confirmação (KAN-12), recuperação de senha (KAN-14) e novo e-mail (KAN-16). */
     static final String[] ROTAS_PUBLICAS_ENVIO = {
         "/api/v1/contas", "/api/v1/contas/confirmacao", "/api/v1/contas/confirmacao/reenvio",
-        "/api/v1/contas/senha/esqueci", "/api/v1/contas/senha/redefinir"
+        "/api/v1/contas/senha/esqueci", "/api/v1/contas/senha/redefinir", "/api/v1/contas/email/confirmacao"
     };
 
     /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92). */

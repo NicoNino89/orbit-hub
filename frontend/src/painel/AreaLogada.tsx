@@ -41,7 +41,7 @@ export function AreaLogada() {
             ) : (
               papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES[papelAtivo]}</span>
             )}
-            <span className="text-muted">{estado.usuario.nome}</span>
+            <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
             <button type="button" onClick={() => void sair()} className="rounded-md border border-line px-3 py-1 font-semibold">
               Sair
             </button>
