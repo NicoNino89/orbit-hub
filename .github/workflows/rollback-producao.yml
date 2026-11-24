@@ -2,7 +2,7 @@
 #
 # Autor: Nicholas Bruno Pimentel
 # Data: 24/11/2026
-# Hora: 12:49
+# Hora: 13:02
 # Cartão Jira: KAN-54
 # Título: Rollback em produção
 # Objetivo: Voltar a API e a web de produção para a revisão anterior do Azure Container Apps (ou para uma revisão
@@ -10,7 +10,8 @@
 # Decisões: Reativa a revisão desativada, manda 100% do tráfego para ela e desativa a que saiu. Não desfaz
 #           migrações: elas são sempre compatíveis com a versão anterior (regra em docs/operacao/producao.md), e o
 #           Flyway da versão antiga ignora as migrações mais novas que já estão no banco. Em homologação, o mesmo
-#           script serve para o ensaio (ambiente = homologacao).
+#           script serve para o ensaio (ambiente = homologacao). Os nomes de revisão digitados são validados e
+#           só chegam aos scripts por variável de ambiente (Sonar S7630).
 name: Rollback em produção
 
 on:
@@ -62,6 +63,11 @@ jobs:
           REVISAO_API: ${{ inputs.revisao_api }}
           REVISAO_WEB: ${{ inputs.revisao_web }}
         run: |
+          for revisao in "$REVISAO_API" "$REVISAO_WEB"; do
+            if [[ -n "$revisao" && ! "$revisao" =~ ^[a-z0-9-]+$ ]]; then
+              echo "::error::Nome de revisão inválido: só letras minúsculas, números e hífen"; exit 1
+            fi
+          done
           sigla=$([[ "$AMBIENTE" == producao ]] && echo prd || echo hml)
           grupo="rg-orbithub-$sigla"; api="ca-orbithub-$sigla-api"; web="ca-orbithub-$sigla-web"
           api_no_ar=$(bash .github/scripts/revisoes.sh no-ar "$grupo" "$api")
@@ -71,14 +77,16 @@ jobs:
           if [[ -z "$api_alvo" || -z "$web_alvo" ]]; then
             echo "::error::Não há revisão anterior para voltar (API: ${api_alvo:-nenhuma}, web: ${web_alvo:-nenhuma})"; exit 1
           fi
+          web_url="https://$(az containerapp show -g "$grupo" -n "$web" --query properties.configuration.ingress.fqdn -o tsv)"
           {
-            echo "grupo=$grupo"; echo "api=$api"; echo "web_app=$web"
-            echo "api_no_ar=$api_no_ar"; echo "web_no_ar=$web_no_ar"
-            echo "api_alvo=$api_alvo"; echo "web_alvo=$web_alvo"
-            echo "versao=$(bash .github/scripts/revisoes.sh versao "$grupo" "$api" "$api_alvo")"
-            echo "api_url=https://$(az containerapp show -g "$grupo" -n "$api" --query properties.configuration.ingress.fqdn -o tsv)"
-            echo "web=https://$(az containerapp show -g "$grupo" -n "$web" --query properties.configuration.ingress.fqdn -o tsv)"
-          } >> "$GITHUB_OUTPUT"
+            echo "GRUPO=$grupo"; echo "API=$api"; echo "WEB=$web"
+            echo "API_NO_AR=$api_no_ar"; echo "WEB_NO_AR=$web_no_ar"
+            echo "API_ALVO=$api_alvo"; echo "WEB_ALVO=$web_alvo"
+            echo "VERSAO=$(bash .github/scripts/revisoes.sh versao "$grupo" "$api" "$api_alvo")"
+            echo "API_URL=https://$(az containerapp show -g "$grupo" -n "$api" --query properties.configuration.ingress.fqdn -o tsv)"
+            echo "WEB_URL=$web_url"
+          } >> "$GITHUB_ENV"
+          echo "web=$web_url" >> "$GITHUB_OUTPUT"
           echo "API: $api_no_ar → $api_alvo · web: $web_no_ar → $web_alvo"
 
       - name: Ligar o PostgreSQL, se estiver parado
@@ -86,27 +94,27 @@ jobs:
 
       - name: Mandar o tráfego para as revisões de destino
         run: |
-          bash .github/scripts/revisoes.sh fixar "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.api }}" "${{ steps.alvo.outputs.api_alvo }}"
-          bash .github/scripts/revisoes.sh fixar "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.web_app }}" "${{ steps.alvo.outputs.web_alvo }}"
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$API" "$API_ALVO"
+          bash .github/scripts/revisoes.sh fixar "$GRUPO" "$WEB" "$WEB_ALVO"
 
       - name: Smoke test da versão que voltou
         env:
-          API_URL: ${{ steps.alvo.outputs.api_url }}
-          WEB_URL: ${{ steps.alvo.outputs.web }}
-          VERSAO: ${{ steps.alvo.outputs.versao }}
           AMBIENTE: ${{ inputs.ambiente }}
         run: bash .github/scripts/smoke-test.sh
 
       - name: Desativar as revisões que saíram
         run: |
-          bash .github/scripts/revisoes.sh desativar-outras "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.api }}" "${{ steps.alvo.outputs.api_alvo }}"
-          bash .github/scripts/revisoes.sh desativar-outras "${{ steps.alvo.outputs.grupo }}" "${{ steps.alvo.outputs.web_app }}" "${{ steps.alvo.outputs.web_alvo }}"
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$API" "$API_ALVO"
+          bash .github/scripts/revisoes.sh desativar-outras "$GRUPO" "$WEB" "$WEB_ALVO"
 
       - name: Resumo
         if: always()
+        env:
+          AMBIENTE: ${{ inputs.ambiente }}
+          SITUACAO: ${{ job.status }}
         run: |
           {
-            echo "### Rollback (${{ inputs.ambiente }}) · ${{ job.status }}"
-            echo "- API: ${{ steps.alvo.outputs.api_no_ar }} → ${{ steps.alvo.outputs.api_alvo }} (versão ${{ steps.alvo.outputs.versao }})"
-            echo "- Web: ${{ steps.alvo.outputs.web_no_ar }} → ${{ steps.alvo.outputs.web_alvo }}"
+            echo "### Rollback ($AMBIENTE) · $SITUACAO"
+            echo "- API: ${API_NO_AR:-?} → ${API_ALVO:-?} (versão ${VERSAO:-?})"
+            echo "- Web: ${WEB_NO_AR:-?} → ${WEB_ALVO:-?}"
           } >> "$GITHUB_STEP_SUMMARY"

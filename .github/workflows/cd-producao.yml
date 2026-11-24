@@ -2,7 +2,7 @@
 #
 # Autor: Nicholas Bruno Pimentel
 # Data: 24/11/2026
-# Hora: 12:49
+# Hora: 13:02
 # Cartão Jira: KAN-54
 # Título: Publicação em produção
 # Objetivo: Publicar uma versão numerada (tag de imagem, tag git e release) da main em produção, só depois da
@@ -14,7 +14,8 @@
 #           testada no CI, sem rebuild); cada app ganha a revisão "v<versão>" com 100% do tráfego; o Flyway aplica
 #           as migrações quando a API nova sobe. Passou no smoke test: as revisões antigas são desativadas (sem custo,
 #           prontas para o rollback) e saem a tag e o release. Falhou: o tráfego volta para as revisões anteriores.
-#           Rollback manual: workflow "Rollback em produção". Procedimento em docs/operacao/producao.md.
+#           Rollback manual: workflow "Rollback em produção". Procedimento em docs/operacao/producao.md. Nenhum
+#           valor digitado no disparo entra direto num script: tudo passa por variável de ambiente (Sonar S7630).
 name: Publicação em produção
 
 on:
@@ -125,9 +126,12 @@ jobs:
           [[ $status -eq 0 || $status -eq 2 ]]
 
       - name: Resumo
+        env:
+          VERSAO: ${{ inputs.versao }}
+          CURTO: ${{ steps.versao.outputs.curto }}
         run: |
           {
-            echo "### Produção · v${{ inputs.versao }} (${{ steps.versao.outputs.curto }})"
+            echo "### Produção · v$VERSAO ($CURTO)"
             echo "Conferências ok. A publicação espera a aprovação no environment **producao**."
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -241,11 +245,16 @@ jobs:
 
       - name: Resumo
         if: success()
+        env:
+          API_URL: ${{ steps.enderecos.outputs.api }}
+          WEB_URL: ${{ steps.enderecos.outputs.web }}
+          API_ANTERIOR: ${{ steps.enderecos.outputs.api_anterior }}
+          WEB_ANTERIOR: ${{ steps.enderecos.outputs.web_anterior }}
         run: |
           {
             echo "### Produção · v$VERSAO ($CURTO)"
-            echo "- Web: ${{ steps.enderecos.outputs.web }}"
-            echo "- API: ${{ steps.enderecos.outputs.api }}/swagger-ui.html"
+            echo "- Web: $WEB_URL"
+            echo "- API: $API_URL/swagger-ui.html"
             echo "- Revisões no ar: $API--$SUFIXO e $WEB--$SUFIXO"
-            echo "- Anteriores (desativadas, prontas para o rollback): ${{ steps.enderecos.outputs.api_anterior }} e ${{ steps.enderecos.outputs.web_anterior }}"
+            echo "- Anteriores (desativadas, prontas para o rollback): $API_ANTERIOR e $WEB_ANTERIOR"
           } >> "$GITHUB_STEP_SUMMARY"
