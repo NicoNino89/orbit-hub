@@ -32,13 +32,13 @@ export function SeloDeVerificacao({ selo }: { selo: Selo }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:19
- * Cartão Jira: KAN-62
+ * Hora: 17:33
+ * Cartão Jira: KAN-83
  * Título: Verificação de identidade
  * Objetivo: Enviar os documentos exigidos, acompanhar o pedido e ver o selo, da pessoa ou da organização da atuação.
  * Decisões: Cada documento sobe sozinho, ao escolher o arquivo; "Enviar para análise" só aparece com todos os exigidos.
  *           Quem não pode enviar (membro de organização) vê a situação, sem os botões. Os documentos são dados pessoais:
- *           a tela explica o uso e a guarda.
+ *           a tela explica o uso e a guarda. No complemento, mostra o prazo de resposta (KAN-83).
  */
 export function PaginaVerificacao() {
   const { estado } = useSessao()
@@ -109,6 +109,9 @@ export function PaginaVerificacao() {
         <div className="rounded-lg border border-line bg-surface p-4 text-sm">
           <p className="font-semibold">{NOMES_DA_SITUACAO[pedido.situacao]}</p>
           {pedido.observacao && <p className="mt-1">{pedido.observacao}</p>}
+          {pedido.situacao === 'PENDENTE_COMPLEMENTO' && pedido.prazoComplementoAte && (
+            <p className="text-warn">Envie o complemento até {FORMATO_DATA_HORA.format(new Date(pedido.prazoComplementoAte))}, ou o pedido é encerrado.</p>
+          )}
           {pedido.validoAte && pedido.situacao === 'VERIFICADO' && (
             <p className="text-muted">Válida até {FORMATO_DATA_HORA.format(new Date(pedido.validoAte))}.</p>
           )}

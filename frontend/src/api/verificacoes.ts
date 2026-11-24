@@ -45,7 +45,7 @@ export interface SituacaoDaVerificacao {
   selo: Selo
   podeEnviar: boolean
   exigidos: { codigo: string; rotulo: string }[]
-  pedido: { id: string; situacao: SituacaoDoPedido; enviadoEm: string | null; motivo: string | null; observacao: string | null; validoAte: string | null } | null
+  pedido: { id: string; situacao: SituacaoDoPedido; enviadoEm: string | null; motivo: string | null; observacao: string | null; validoAte: string | null; prazoComplementoAte?: string | null } | null
   documentos: { id: string; tipo: string; nome: string; formato: string; tamanho: number; enviadoEm: string }[]
 }
 

@@ -475,7 +475,7 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R6 – Rodadas vencidas | Diária | Passa rodadas vencidas para "aguardando resultado" e cobra o registro | `rodada.prazo_registro_resultado_dias` |
 | R7 – Confirmação de participação | Diária | Cobra confirmações e marca as não confirmadas no prazo | `rodada.prazo_confirmacao_dias` |
 | R8 – Qualidade das startups | Diária | Marca indicadores desatualizados e trata startups inativas | `startup.*` |
-| R9 – Revalidação de verificação | Diária | Avisa e expira verificações vencidas | `verificacao.validade_meses` |
+| R9 – Revalidação de verificação | Diária, às 6h | Encerra pedidos sem complemento no prazo, avisa antes do vencimento, vence verificações e apaga os documentos depois da guarda (KAN-83) | `verificacao.validade_meses`, `verificacao.aviso_revalidacao_dias`, `verificacao.prazo_complemento_dias`, `verificacao.retencao_documentos_meses` |
 | R10 – Edições do catálogo | Diária | Publica e arquiva edições conforme a vigência | — |
 | R11 – Contas inativas | Semanal | Avisa e desativa contas inativas; alerta organizações sem administrador | `conta.inatividade_meses` |
 | R12 – Limpeza e retenção | Diária | Remove cadastros não confirmados e aplica a retenção de dados | `retencao.*`, `cadastro.*` |
@@ -501,6 +501,9 @@ A central de notificações (KAN-146) é o único caminho de aviso para as pesso
 | `cadastro.prazo_confirmacao_dias` | 7 | Não |
 | `verificacao.sla_dias_uteis` | 2 | Não |
 | `verificacao.validade_meses` | 12 | Não |
+| `verificacao.documento_max_mb` | 5 | Não |
+| `verificacao.aviso_revalidacao_dias` | 30 | Não |
+| `verificacao.retencao_documentos_meses` | 6 (provisório) | Sim |
 | `curadoria.sla_dias_uteis` | 3 | Não |
 | `catalogo.novas_dias` | 30 | Não |
 | `catalogo.frequencia_edicoes` | Mensal | Não |

@@ -168,27 +168,27 @@ class VerificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:19
-     * Cartão Jira: KAN-62
+     * Hora: 17:33
+     * Cartão Jira: KAN-83
      * Título: Pedido na resposta
      * Objetivo: Expor a situação e o resultado do pedido.
-     * Decisões: Sem dados de quem analisou.
+     * Decisões: Sem dados de quem analisou. Com o prazo do complemento (KAN-83).
      */
     record PedidoResponse(UUID id, SituacaoDoPedido situacao, Instant enviadoEm, String motivo, String observacao,
-                          Instant validoAte) {
+                          Instant validoAte, Instant prazoComplementoAte) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 17:19
-         * Cartão Jira: KAN-62
+         * Hora: 17:33
+         * Cartão Jira: KAN-83
          * Título: Conversão
          * Objetivo: Montar a resposta a partir do pedido.
          * Decisões: Copia os campos públicos.
          */
         static PedidoResponse de(PedidoDeVerificacao p) {
             return new PedidoResponse(p.getId(), p.getSituacao(), p.getEnviadoEm(), p.getMotivo(), p.getObservacao(),
-                    p.getValidoAte());
+                    p.getValidoAte(), p.getPrazoComplementoAte());
         }
     }
 

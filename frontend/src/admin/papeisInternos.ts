@@ -17,16 +17,17 @@ export const PAPEIS_INTERNOS: PapelInterno[] = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:17
- * Cartão Jira: KAN-104
+ * Hora: 17:33
+ * Cartão Jira: KAN-83
  * Título: Itens do menu do backoffice
  * Objetivo: Listar as telas do backoffice e quem pode ver cada uma.
- * Decisões: O menu só mostra o que o papel permite; o servidor confere de novo em cada rota. A trilha de
+ * Decisões: O menu só mostra o que o papel permite; o servidor confere de novo em cada rota. A trilha de A fila de verificação entrou com o KAN-83.
  *           auditoria é do administrador e do encarregado de dados (KAN-80); a fila de segunda aprovação é de toda a
  *           equipe, e quem decide cada proposta é conferido no servidor (KAN-81).
  */
 export const MENU_BACKOFFICE: { caminho: string; rotulo: string; papeis: Papel[] }[] = [
   { caminho: '/admin/aprovacoes', rotulo: 'Segunda aprovação', papeis: PAPEIS_INTERNOS },
+  { caminho: '/admin/verificacao', rotulo: 'Verificação', papeis: ['ADMIN', 'ANALISTA_VERIFICACAO'] },
   { caminho: '/admin/equipe', rotulo: 'Equipe', papeis: ['ADMIN'] },
   { caminho: '/admin/parametros', rotulo: 'Parâmetros', papeis: ['ADMIN'] },
   { caminho: '/admin/listas', rotulo: 'Listas', papeis: ['ADMIN'] },

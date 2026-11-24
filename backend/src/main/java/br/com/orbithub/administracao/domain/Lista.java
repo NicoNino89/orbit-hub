@@ -3,11 +3,12 @@ package br.com.orbithub.administracao.domain;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:04
- * Cartão Jira: KAN-19
+ * Hora: 17:33
+ * Cartão Jira: KAN-83
  * Título: Listas gerenciáveis
  * Objetivo: Enumerar as listas que o administrador mantém pelo painel (P15).
- * Decisões: O conjunto de listas é fixo no código (cada uma tem uma regra que a usa); os itens de cada lista são As listas das preferências complementares do investidor entraram com o KAN-19.
+ * Decisões: O conjunto de listas é fixo no código (cada uma tem uma regra que a usa); os itens de cada lista são As listas das preferências complementares do investidor entraram com o KAN-19; a dos motivos
+ * de decisão da verificação, com o KAN-83 (o grupo é a decisão a que o motivo pertence).
  *           dados, editáveis. "comGrupo" diz se os itens da lista se dividem em grupos (documentos por tipo de
  *           usuário, estados por região).
  */
@@ -28,7 +29,8 @@ public enum Lista {
     HORIZONTE_INVESTIMENTO("Horizontes de investimento", false),
     PERFIL_RISCO("Perfis de risco", false),
     EXPERIENCIA_INVESTIDOR("Experiência como investidor", false),
-    INTERESSE_ESTRATEGICO("Interesses estratégicos", false);
+    INTERESSE_ESTRATEGICO("Interesses estratégicos", false),
+    MOTIVO_DECISAO_VERIFICACAO("Motivos de decisão da verificação", true);
 
     private final String titulo;
     private final boolean comGrupo;

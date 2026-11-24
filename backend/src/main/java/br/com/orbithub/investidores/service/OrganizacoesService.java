@@ -31,6 +31,7 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -403,6 +404,34 @@ public class OrganizacoesService {
             throw new RegraDeNegocioException("ultimo_administrador",
                     "A organização precisa de pelo menos um administrador. Torne outro membro administrador antes.");
         }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:33
+     * Cartão Jira: KAN-83
+     * Título: Nome da organização
+     * Objetivo: Devolver o nome de uma organização, para telas de outros módulos (por exemplo, a fila de verificação).
+     * Decisões: Vazio se não existir.
+     */
+    @Transactional(readOnly = true)
+    public Optional<String> nome(UUID organizacaoId) {
+        return organizacoes.findById(organizacaoId).map(Organizacao::getNome);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:33
+     * Cartão Jira: KAN-83
+     * Título: Administradores da organização
+     * Objetivo: Listar os administradores ativos, para avisos de outros módulos (por exemplo, o resultado da verificação).
+     * Decisões: Serviço público; sem conferir quem pergunta.
+     */
+    @Transactional(readOnly = true)
+    public List<UUID> administradoresDe(UUID organizacaoId) {
+        return administradores(organizacaoId);
     }
 
     /**
