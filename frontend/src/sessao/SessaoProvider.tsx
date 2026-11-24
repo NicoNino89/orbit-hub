@@ -4,6 +4,9 @@ import { definirFornecedorDeToken, definirRenovador } from '../api/cliente'
 import type { Papel } from '../api/contas'
 import { CHAVE_PAPEL_ATIVO, CHAVE_SESSAO_ATIVA, ContextoSessao, type EstadoSessao, type Sessao } from './contexto'
 
+/** Faltando menos que isto para o fim da sessão, o uso da tela renova a sessão (KAN-15). */
+const LIMIAR_RENOVACAO_MS = 5 * 60_000
+
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
@@ -15,7 +18,8 @@ import { CHAVE_PAPEL_ATIVO, CHAVE_SESSAO_ATIVA, ContextoSessao, type EstadoSessa
  * Decisões: O access token fica só em memória (nunca em localStorage). Ao recarregar, a sessão é
  *           restaurada pelo cookie HttpOnly, mas só se houver a marca de sessão ativa, para visitantes não
  *           dispararem um 401 a cada visita. O cliente HTTP renova sozinho quando recebe 401; se a renovação
- *           falhar, a sessão vira anônima com "expirou" (KAN-15).
+ *           falhar, a sessão vira anônima com "expirou". A tela acompanha o fim da sessão por inatividade
+ *           e o uso real da tela renova a sessão perto do fim (KAN-15).
  */
 export function SessaoProvider({ children }: { children: ReactNode }) {
   const [estado, setEstado] = useState<EstadoSessao>(() =>
@@ -23,19 +27,21 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   const [papelEscolhido, setPapelEscolhido] = useState<Papel | null>(
     () => localStorage.getItem(CHAVE_PAPEL_ATIVO) as Papel | null)
   const token = useRef<string | null>(null)
+  const [fimDaSessao, setFimDaSessao] = useState<number | null>(null)
 
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 01:10
-   * Cartão Jira: KAN-13
+   * Hora: 01:20
+   * Cartão Jira: KAN-15
    * Título: Aplicar sessão recebida
-   * Objetivo: Guardar o token em memória e o usuário no estado.
+   * Objetivo: Guardar o token em memória, o usuário no estado e o fim da sessão por inatividade.
    * Decisões: Marca a sessão ativa para a restauração depois de recarregar.
    */
   const aplicar = useCallback((sessao: autenticacao.SessaoApi) => {
     token.current = sessao.tokenAcesso
     localStorage.setItem(CHAVE_SESSAO_ATIVA, '1')
+    setFimDaSessao(Date.parse(sessao.sessaoExpiraEm))
     setEstado({ status: 'autenticado', usuario: sessao.usuario, termosPendentes: sessao.termosPendentes })
   }, [])
 
@@ -51,6 +57,7 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   const encerrarLocal = useCallback((expirou: boolean) => {
     token.current = null
     localStorage.removeItem(CHAVE_SESSAO_ATIVA)
+    setFimDaSessao(null)
     setEstado({ status: 'anonimo', expirou })
   }, [])
 
@@ -104,6 +111,49 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
     if (!localStorage.getItem(CHAVE_SESSAO_ATIVA)) return
     autenticacao.renovar().then(aplicar).catch(() => encerrarLocal(false))
   }, [aplicar, encerrarLocal])
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 01:20
+   * Cartão Jira: KAN-15
+   * Título: Expirar por inatividade
+   * Objetivo: Encerrar a sessão na tela quando chega o fim informado pela API, levando ao login.
+   * Decisões: O fim é a validade do refresh token (definida no servidor); a tela só acompanha. Com a sessão
+   *           encerrada, a rota protegida leva ao login com o endereço atual em "voltar".
+   */
+  useEffect(() => {
+    if (fimDaSessao === null) return
+    // setTimeout só aceita até 2^31-1 ms (cerca de 24,8 dias); acima disso dispararia na hora
+    const espera = Math.min(Math.max(0, fimDaSessao - Date.now()), 2_147_483_647)
+    const temporizador = setTimeout(() => encerrarLocal(true), espera)
+    return () => clearTimeout(temporizador)
+  }, [fimDaSessao, encerrarLocal])
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 01:20
+   * Cartão Jira: KAN-15
+   * Título: Uso da tela conta como atividade
+   * Objetivo: Renovar a sessão quando a pessoa está usando a tela (clicando, digitando, rolando) e a sessão
+   *           está perto do fim, para quem preenche um formulário longo não perder o que digitou.
+   * Decisões: Só renova nos últimos minutos da sessão e no máximo uma vez a cada 30 segundos; sem uso, nada é
+   *           renovado e a sessão expira de verdade.
+   */
+  useEffect(() => {
+    if (fimDaSessao === null) return
+    let ultimaTentativa = 0
+    const aoUsar = () => {
+      const agora = Date.now()
+      if (fimDaSessao - agora > LIMIAR_RENOVACAO_MS || agora - ultimaTentativa < 30_000) return
+      ultimaTentativa = agora
+      void renovar()
+    }
+    const eventos = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const
+    eventos.forEach((e) => window.addEventListener(e, aoUsar, { passive: true }))
+    return () => eventos.forEach((e) => window.removeEventListener(e, aoUsar))
+  }, [fimDaSessao, renovar])
 
   const papeis: Papel[] = estado.status === 'autenticado' ? estado.usuario.papeis.filter((p) => p !== 'ADMIN') : []
   const papelAtivo = papelEscolhido && papeis.includes(papelEscolhido) ? papelEscolhido : (papeis[0] ?? null)

@@ -13,10 +13,12 @@ import java.util.UUID;
  * Hora: 00:20
  * Cartão Jira: KAN-57
  * Título: Resposta de sessão
- * Objetivo: Devolver ao front-end o access token, a expiração e um resumo da conta.
+ * Objetivo: Devolver ao front-end o access token, a expiração dele, o fim da sessão por inatividade (KAN-15)
+ *           e um resumo da conta.
  * Decisões: O refresh token nunca vai no corpo, só no cookie HttpOnly.
  */
-public record SessaoResponse(String tokenAcesso, Instant expiraEm, UsuarioResumo usuario, boolean termosPendentes) {
+public record SessaoResponse(String tokenAcesso, Instant expiraEm, Instant sessaoExpiraEm, UsuarioResumo usuario,
+                             boolean termosPendentes) {
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -29,7 +31,7 @@ public record SessaoResponse(String tokenAcesso, Instant expiraEm, UsuarioResumo
      */
     public static SessaoResponse de(SessaoEmitida sessao) {
         var usuario = sessao.usuario();
-        return new SessaoResponse(sessao.tokenAcesso(), sessao.acessoExpiraEm(),
+        return new SessaoResponse(sessao.tokenAcesso(), sessao.acessoExpiraEm(), sessao.refreshExpiraEm(),
                 new UsuarioResumo(usuario.getId(), usuario.getNome(), usuario.getEmail(),
                         new TreeSet<>(usuario.getPapeis())), sessao.termosPendentes());
     }

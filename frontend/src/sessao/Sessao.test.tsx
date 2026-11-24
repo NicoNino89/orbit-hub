@@ -10,6 +10,7 @@ import { CHAVE_SESSAO_ATIVA } from './contexto'
 const SESSAO: SessaoApi = {
   tokenAcesso: 'token-1',
   expiraEm: '2026-11-24T05:00:00Z',
+  sessaoExpiraEm: '2999-01-01T00:00:00Z',
   usuario: { id: 'u1', nome: 'Ana Souza', email: 'ana@exemplo.com', papeis: ['EMPREENDEDOR', 'INVESTIDOR'] },
   termosPendentes: false,
 }

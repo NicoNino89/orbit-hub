@@ -11,6 +11,8 @@ export interface UsuarioResumo {
 export interface SessaoApi {
   tokenAcesso: string
   expiraEm: string
+  /** Fim da sessão se não houver uso até lá (inatividade, KAN-15). */
+  sessaoExpiraEm: string
   usuario: UsuarioResumo
   termosPendentes: boolean
 }
