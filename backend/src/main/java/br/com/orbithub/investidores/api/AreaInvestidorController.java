@@ -4,6 +4,7 @@ import br.com.orbithub.compartilhado.seguranca.Autenticado;
 import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteInvestidor;
 import br.com.orbithub.investidores.domain.PapelNaOrganizacao;
 import br.com.orbithub.investidores.service.AtuacaoService;
+import br.com.orbithub.investidores.service.OnboardingDoInvestidor;
 import br.com.orbithub.investidores.service.OrganizacoesService;
 import br.com.orbithub.investidores.service.PerfilDeInvestimentoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,9 +12,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -36,18 +40,20 @@ class AreaInvestidorController {
     private final AtuacaoService atuacao;
     private final OrganizacoesService organizacoes;
     private final PerfilDeInvestimentoService perfis;
+    private final OnboardingDoInvestidor onboarding;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:16
-     * Cartão Jira: KAN-61
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Criação do controller
-     * Objetivo: Receber os serviços de atuação, de organizações e de perfil de investimento.
+     * Objetivo: Receber os serviços de atuação, de organizações, de perfil de investimento e de onboarding.
      * Decisões: Injeção por construtor.
      */
     AreaInvestidorController(AtuacaoService atuacao, OrganizacoesService organizacoes,
-                             PerfilDeInvestimentoService perfis) {
+                             PerfilDeInvestimentoService perfis, OnboardingDoInvestidor onboarding) {
+        this.onboarding = onboarding;
         this.atuacao = atuacao;
         this.organizacoes = organizacoes;
         this.perfis = perfis;
@@ -56,12 +62,13 @@ class AreaInvestidorController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:16
-     * Cartão Jira: KAN-61
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Situação do investidor
      * Objetivo: Dizer se a tese está cadastrada, qual o próximo passo e em nome de quem a pessoa está atuando.
      * Decisões: A organização vem do cabeçalho X-Orbit-Organizacao; quem saiu dela recebe 403 e a tela volta para a
-     *           atuação pessoal. "teseCadastrada" diz se o perfil de investimento de quem atua existe (KAN-61).
+     *           atuação pessoal. "teseCadastrada" diz se o perfil de investimento de quem atua existe (KAN-61); sem
+     *           ele, o próximo passo é o onboarding (KAN-18).
      */
     @GetMapping("/eu")
     @Operation(summary = "Situação da conta como investidor (somente investidor)")
@@ -70,20 +77,38 @@ class AreaInvestidorController {
         AtuacaoService.Atuacao a = atuacao.paraVer(Autenticado.id(token), organizacao);
         Atuando atuando = !a.emNomeDaOrganizacao() ? null : new Atuando(a.organizacao(),
                 organizacoes.detalhe(a.pessoa(), a.organizacao()).organizacao().getNome(), a.papelNaOrganizacao());
-        boolean cadastrado = perfis.cadastrado(a);
-        return new SituacaoInvestidor(cadastrado, cadastrado ? "/investidor" : "/investidor/perfil", atuando);
+        OnboardingDoInvestidor.Estado estado = onboarding.estado(a);
+        boolean cadastrado = estado == OnboardingDoInvestidor.Estado.CONCLUIDO;
+        return new SituacaoInvestidor(cadastrado, cadastrado ? "/investidor" : "/investidor/onboarding", atuando, estado);
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
+     * Título: Pular o onboarding
+     * Objetivo: Registrar que a pessoa vai completar a tese depois.
+     * Decisões: 204; vale para a pessoa, em qualquer atuação.
+     */
+    @PostMapping("/onboarding/pulo")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Pula a tese de investimento por agora")
+    void pular(@AuthenticationPrincipal Jwt token) {
+        onboarding.pular(Autenticado.id(token));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Situação do investidor
      * Objetivo: Levar se há tese, o próximo passo e a atuação.
-     * Decisões: "atuandoPor" nulo = a própria pessoa.
+     * Decisões: "atuandoPor" nulo = a própria pessoa. "onboarding" diz se a tese está concluída, pulada ou pendente.
      */
-    record SituacaoInvestidor(boolean teseCadastrada, String proximoPasso, Atuando atuandoPor) {
+    record SituacaoInvestidor(boolean teseCadastrada, String proximoPasso, Atuando atuandoPor,
+                              OnboardingDoInvestidor.Estado onboarding) {
     }
 
     /**

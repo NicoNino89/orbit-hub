@@ -3,6 +3,36 @@ import { requisitar } from './cliente'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
+ * Título: Maturidade do negócio
+ * Objetivo: Tipar a escala de 7 níveis do negócio.
+ * Decisões: Escala fixa, a mesma da startup (KAN-26).
+ */
+export type Maturidade = 'IDEACAO' | 'VALIDACAO' | 'MVP' | 'OPERACAO_INICIAL' | 'TRACAO' | 'CRESCIMENTO' | 'EXPANSAO'
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
+ * Título: Nomes da maturidade
+ * Objetivo: Escrever cada nível da escala, na ordem.
+ * Decisões: A ordem do objeto é a da escala.
+ */
+export const NOMES_DA_MATURIDADE: Record<Maturidade, string> = {
+  IDEACAO: 'Ideação',
+  VALIDACAO: 'Validação',
+  MVP: 'MVP',
+  OPERACAO_INICIAL: 'Operação inicial',
+  TRACAO: 'Tração',
+  CRESCIMENTO: 'Crescimento',
+  EXPANSAO: 'Expansão',
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
  * Hora: 14:16
  * Cartão Jira: KAN-61
  * Título: Liderança e participação
@@ -45,11 +75,11 @@ export const NOMES_DA_PARTICIPACAO: Record<ParticipacaoNaGestao, string> = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Dados do perfil
- * Objetivo: Tipar o perfil de investimento.
- * Decisões: Ticket em reais.
+ * Objetivo: Tipar o perfil de investimento, com a tese (KAN-18).
+ * Decisões: Ticket em reais; segmentos, estágios e localizações são códigos das listas.
  */
 export interface DadosDoPerfil {
   tipo: string
@@ -60,6 +90,10 @@ export interface DadosDoPerfil {
   followOn: boolean
   participacaoNaGestao: ParticipacaoNaGestao
   instrumentos: string[]
+  segmentos: string[]
+  estagios: string[]
+  maturidades: Maturidade[]
+  localizacoes: string[]
 }
 
 /**
@@ -104,4 +138,17 @@ export function lerPerfil() {
  */
 export function salvarPerfil(dados: DadosDoPerfil) {
   return requisitar<SituacaoDoPerfil>('/api/v1/investidores/perfil', { metodo: 'PUT', corpo: dados })
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
+ * Título: Pular o onboarding
+ * Objetivo: Registrar que a pessoa vai completar a tese depois.
+ * Decisões: Vale para a pessoa, em qualquer atuação.
+ */
+export function pularOnboarding() {
+  return requisitar<void>('/api/v1/investidores/onboarding/pulo', { metodo: 'POST' })
 }

@@ -35,10 +35,10 @@ import org.springframework.test.web.servlet.ResultActions;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Testes de integração do perfil de investimento
- * Objetivo: Conferir, com PostgreSQL real, o perfil pessoal com as validações e o perfil da organização, com o tipo
+ * Objetivo: Conferir, com PostgreSQL real, o perfil pessoal com as validações, a tese, o onboarding e o perfil da organização, com o tipo
  *           da própria organização e a edição só pelo administrador.
  * Decisões: Vínculos da organização criados direto pelo repositório, para focar no perfil.
  */
@@ -49,7 +49,8 @@ class PerfilDeInvestimentoIT {
 
     static final String VALIDO = """
             {"tipo":"ANJO","ticketMinimo":50000,"ticketMaximo":250000.50,"lideranca":"SO_COINVESTE","followOn":true,
-             "participacaoNaGestao":"ACEITA_OBSERVADOR","instrumentos":["MUTUO_CONVERSIVEL","CONTRATO_INVESTIMENTO_ANJO"]}""";
+             "participacaoNaGestao":"ACEITA_OBSERVADOR","instrumentos":["MUTUO_CONVERSIVEL","CONTRATO_INVESTIMENTO_ANJO"],
+             "segmentos":["FINTECH","SAUDE"],"estagios":["SEED"],"maturidades":["MVP","TRACAO"],"localizacoes":["SP","MG"]}""";
 
     @Autowired
     MockMvc mvc;
@@ -72,8 +73,8 @@ class PerfilDeInvestimentoIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:16
-     * Cartão Jira: KAN-61
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Perfil pessoal
      * Objetivo: Conferir as recusas (tipo de organização, "outros" sem descrição, ticket invertido, sem instrumento,
      *           instrumento inexistente) e o perfil salvo, que marca a tese como cadastrada na área do investidor.
@@ -95,17 +96,26 @@ class PerfilDeInvestimentoIT {
                 .andExpect(jsonPath("$.codigo").value("sem_instrumento"));
         salvar(ana, null, VALIDO.replace("\"MUTUO_CONVERSIVEL\"", "\"CRIPTO\"")).andExpect(jsonPath("$.codigo").value("opcao_indisponivel"));
         salvar(ana, null, VALIDO.replace("\"lideranca\":\"SO_COINVESTE\",", "")).andExpect(jsonPath("$.codigo").value("campos_obrigatorios"));
+        salvar(ana, null, VALIDO.replace("[\"SEED\"]", "[]")).andExpect(jsonPath("$.codigo").value("tese_incompleta"));
+        salvar(ana, null, VALIDO.replace("\"localizacoes\":[\"SP\",\"MG\"]", "\"localizacoes\":null"))
+                .andExpect(jsonPath("$.codigo").value("tese_incompleta"));
+        salvar(ana, null, VALIDO.replace("\"FINTECH\"", "\"ESPACIAL\"")).andExpect(jsonPath("$.codigo").value("opcao_indisponivel"));
 
         salvar(ana, null, VALIDO.replace("\"ANJO\"", "\"OUTROS\",\"tipoOutro\":\"  Clube de investimento  \""))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.perfil.tipo").value("OUTROS"))
                 .andExpect(jsonPath("$.perfil.tipoOutro").value("Clube de investimento"))
                 .andExpect(jsonPath("$.perfil.ticketMaximo").value(250000.50))
                 .andExpect(jsonPath("$.perfil.instrumentos.length()").value(2))
+                .andExpect(jsonPath("$.perfil.segmentos.length()").value(2))
+                .andExpect(jsonPath("$.perfil.maturidades.length()").value(2))
+                .andExpect(jsonPath("$.perfil.localizacoes.length()").value(2))
                 .andExpect(jsonPath("$.atualizadoPor").value("Pessoa"));
-        salvar(ana, null, VALIDO).andExpect(status().isOk()).andExpect(jsonPath("$.perfil.tipo").value("ANJO"))
-                .andExpect(jsonPath("$.perfil.tipoOutro").doesNotExist());
+        salvar(ana, null, VALIDO.replace("\"maturidades\":[\"MVP\",\"TRACAO\"]", "\"maturidades\":[]")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.perfil.tipo").value("ANJO")).andExpect(jsonPath("$.perfil.tipoOutro").doesNotExist())
+                .andExpect(jsonPath("$.perfil.maturidades.length()").value(0));
         mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, bearer(ana)))
-                .andExpect(jsonPath("$.teseCadastrada").value(true)).andExpect(jsonPath("$.proximoPasso").value("/investidor"));
+                .andExpect(jsonPath("$.teseCadastrada").value(true)).andExpect(jsonPath("$.proximoPasso").value("/investidor"))
+                .andExpect(jsonPath("$.onboarding").value("CONCLUIDO"));
     }
 
     /**
@@ -141,6 +151,32 @@ class PerfilDeInvestimentoIT {
                 .andExpect(jsonPath("$.perfil").doesNotExist());
         mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, bearer(bia)).header("X-Orbit-Organizacao", org))
                 .andExpect(jsonPath("$.teseCadastrada").value(true));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
+     * Título: Onboarding
+     * Objetivo: Conferir o onboarding pendente, o pulo (idempotente) e o concluído depois de salvar a tese.
+     * Decisões: Pular é da pessoa.
+     */
+    @Test
+    void onboarding() throws Exception {
+        Usuario ana = conta();
+        mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, bearer(ana)))
+                .andExpect(jsonPath("$.onboarding").value("PENDENTE"))
+                .andExpect(jsonPath("$.proximoPasso").value("/investidor/onboarding"));
+        for (int i = 0; i < 2; i++) {
+            mvc.perform(post("/api/v1/investidores/onboarding/pulo").header(HttpHeaders.AUTHORIZATION, bearer(ana)))
+                    .andExpect(status().isNoContent());
+        }
+        mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, bearer(ana)))
+                .andExpect(jsonPath("$.onboarding").value("PULADO")).andExpect(jsonPath("$.teseCadastrada").value(false));
+        salvar(ana, null, VALIDO).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, bearer(ana)))
+                .andExpect(jsonPath("$.onboarding").value("CONCLUIDO"));
     }
 
     /**

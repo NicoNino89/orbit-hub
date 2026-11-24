@@ -3,6 +3,7 @@ package br.com.orbithub.investidores.service;
 import br.com.orbithub.administracao.domain.Lista;
 import br.com.orbithub.administracao.service.ListasService;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
+import br.com.orbithub.compartilhado.escalas.MaturidadeDoNegocio;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.investidores.domain.Organizacao;
@@ -15,6 +16,7 @@ import br.com.orbithub.investidores.service.AtuacaoService.Atuacao;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,14 +28,15 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Perfil de investimento
  * Objetivo: Ler e salvar o tipo de investidor, o ticket, a liderança, o follow-on, a participação na gestão e os
  *           instrumentos aceitos, da pessoa ou da organização em nome da qual ela atua.
  * Decisões: O dono vem da atuação (KAN-60). Na organização, o tipo é o da própria organização e só o administrador
  *           altera; membros e observadores veem. Na pessoa física, o tipo é investidor-anjo ou "outros" (com descrição).
- *           Instrumentos vêm da lista gerenciável e precisam estar ativos.
+ *           Instrumentos vêm da lista gerenciável e precisam estar ativos. A tese (KAN-18) exige pelo menos um
+ *           segmento, um estágio de rodada e uma localização; a maturidade do negócio é opcional.
  */
 @Service
 public class PerfilDeInvestimentoService {
@@ -123,10 +126,10 @@ public class PerfilDeInvestimentoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:16
-     * Cartão Jira: KAN-61
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Conferir os dados
-     * Objetivo: Validar tipo, ticket, liderança, participação e instrumentos, e normalizar os textos.
+     * Objetivo: Validar tipo, ticket, liderança, participação, instrumentos e tese, e normalizar os textos.
      * Decisões: Mensagens de negócio, para os formulários.
      */
     private Dados conferir(Atuacao atuacao, Dados pedido) {
@@ -161,10 +164,35 @@ public class PerfilDeInvestimentoService {
         if (pedido.instrumentos() == null || pedido.instrumentos().isEmpty()) {
             throw new RegraDeNegocioException("sem_instrumento", "Escolha pelo menos um instrumento de investimento.");
         }
-        Set<String> instrumentos = new TreeSet<>();
-        pedido.instrumentos().forEach(i -> instrumentos.add(listas.exigirAtivo(Lista.INSTRUMENTO, i).getCodigo()));
+        Set<String> instrumentos = codigos(Lista.INSTRUMENTO, pedido.instrumentos());
+        Set<String> segmentos = codigos(Lista.SEGMENTO, pedido.segmentos());
+        Set<String> estagios = codigos(Lista.ESTAGIO_RODADA, pedido.estagios());
+        Set<String> localizacoes = codigos(Lista.LOCALIZACAO, pedido.localizacoes());
+        if (segmentos.isEmpty() || estagios.isEmpty() || localizacoes.isEmpty()) {
+            throw new RegraDeNegocioException("tese_incompleta",
+                    "Escolha pelo menos um segmento, um estágio de rodada e uma localização de interesse.");
+        }
+        Set<MaturidadeDoNegocio> maturidades = pedido.maturidades() == null || pedido.maturidades().isEmpty() ? Set.of()
+                : EnumSet.copyOf(pedido.maturidades());
         return new Dados(tipo, tipoOutro, minimo, maximo, pedido.lideranca(), pedido.followOn(),
-                pedido.participacaoNaGestao(), instrumentos);
+                pedido.participacaoNaGestao(), instrumentos, segmentos, estagios, maturidades, localizacoes);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
+     * Título: Códigos de uma lista
+     * Objetivo: Conferir que cada código escolhido existe e está ativo na lista, sem repetição.
+     * Decisões: Ausência vira conjunto vazio; a obrigatoriedade é conferida por quem chama.
+     */
+    private Set<String> codigos(Lista lista, Set<String> escolhidos) {
+        Set<String> codigos = new TreeSet<>();
+        if (escolhidos != null) {
+            escolhidos.forEach(c -> codigos.add(listas.exigirAtivo(lista, c).getCodigo()));
+        }
+        return codigos;
     }
 
     /**

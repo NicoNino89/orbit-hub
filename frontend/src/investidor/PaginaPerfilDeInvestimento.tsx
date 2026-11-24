@@ -1,40 +1,51 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { FORMATO_DATA_HORA } from '../admin/datas'
 import { opcoesDaLista } from '../api/organizacoes'
 import {
-  type DadosDoPerfil, type Lideranca, lerPerfil, NOMES_DA_LIDERANCA, NOMES_DA_PARTICIPACAO, type ParticipacaoNaGestao,
-  salvarPerfil, type SituacaoDoPerfil,
+  type DadosDoPerfil, type Lideranca, lerPerfil, type Maturidade, NOMES_DA_LIDERANCA, NOMES_DA_MATURIDADE, NOMES_DA_PARTICIPACAO,
+  type ParticipacaoNaGestao, pularOnboarding, salvarPerfil, type SituacaoDoPerfil,
 } from '../api/perfilDeInvestimento'
 import { useSessao } from '../sessao/contexto'
 import { useAtuacao } from '../sessao/atuacao'
 import { AlertaErro, Campo } from '../ui/Campo'
-import { CLASSE_BOTAO_PRIMARIO } from '../ui/estilos'
+import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 
-type Opcao = { codigo: string; rotulo: string }
+type Opcao = { codigo: string; rotulo: string; grupo?: string | null }
+
+const REGIOES: Record<string, string> = {
+  NORTE: 'Norte', NORDESTE: 'Nordeste', CENTRO_OESTE: 'Centro-Oeste', SUDESTE: 'Sudeste', SUL: 'Sul', EXTERIOR: 'Exterior',
+}
 
 const VAZIO: DadosDoPerfil = {
   tipo: '', tipoOutro: null, ticketMinimo: 0, ticketMaximo: 0, lideranca: 'AMBOS', followOn: false,
-  participacaoNaGestao: 'NAO_PARTICIPA', instrumentos: [],
+  participacaoNaGestao: 'NAO_PARTICIPA', instrumentos: [], segmentos: [], estagios: [], maturidades: [], localizacoes: [],
 }
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Perfil de investimento
  * Objetivo: Informar o tipo de investidor, o ticket, a liderança, o follow-on, a participação na gestão e os
  *           instrumentos aceitos, da pessoa ou da organização em nome da qual ela atua.
  * Decisões: Recarrega quando a atuação muda. Na organização, o tipo é o dela (só exibido) e quem não é administrador vê
- *           o formulário bloqueado, com a explicação. Na pessoa física, o tipo é investidor-anjo ou outro.
+ *           o formulário bloqueado, com a explicação. Na pessoa física, o tipo é investidor-anjo ou outro. A tese
+ *           (segmentos, estágios da rodada, maturidade do negócio e localização, KAN-18) faz parte do mesmo formulário.
+ *           No modo onboarding, a pessoa pode pular por agora; salvar ou pular leva à área do investidor.
  */
-export function PaginaPerfilDeInvestimento() {
+export function PaginaPerfilDeInvestimento({ onboarding = false }: { onboarding?: boolean }) {
+  const navegar = useNavigate()
   const { estado } = useSessao()
   const { atuacao, versao } = useAtuacao(estado.status === 'autenticado' ? estado.usuario.id : null)
   const [situacao, setSituacao] = useState<SituacaoDoPerfil | null>(null)
   const [dados, setDados] = useState<DadosDoPerfil>(VAZIO)
   const [tipos, setTipos] = useState<Opcao[]>([])
   const [instrumentos, setInstrumentos] = useState<Opcao[]>([])
+  const [segmentos, setSegmentos] = useState<Opcao[]>([])
+  const [estagios, setEstagios] = useState<Opcao[]>([])
+  const [localizacoes, setLocalizacoes] = useState<Opcao[]>([])
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -42,6 +53,9 @@ export function PaginaPerfilDeInvestimento() {
   useEffect(() => {
     opcoesDaLista('TIPO_INVESTIDOR').then(setTipos).catch(() => setTipos([]))
     opcoesDaLista('INSTRUMENTO').then(setInstrumentos).catch(() => setInstrumentos([]))
+    opcoesDaLista('SEGMENTO').then(setSegmentos).catch(() => setSegmentos([]))
+    opcoesDaLista('ESTAGIO_RODADA').then(setEstagios).catch(() => setEstagios([]))
+    opcoesDaLista('LOCALIZACAO').then(setLocalizacoes).catch(() => setLocalizacoes([]))
   }, [])
 
   useEffect(() => {
@@ -50,7 +64,7 @@ export function PaginaPerfilDeInvestimento() {
       .then((s) => {
         if (!ativo) return
         setSituacao(s)
-        setDados(s.perfil ?? { ...VAZIO, tipo: s.tipoFixo ?? '' })
+        setDados(s.perfil ? { ...VAZIO, ...s.perfil } : { ...VAZIO, tipo: s.tipoFixo ?? '' })
         setErro(null)
         setAviso(null)
       })
@@ -61,11 +75,11 @@ export function PaginaPerfilDeInvestimento() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 14:16
-   * Cartão Jira: KAN-61
+   * Hora: 14:25
+   * Cartão Jira: KAN-18
    * Título: Salvar
    * Objetivo: Enviar o perfil e mostrar a confirmação.
-   * Decisões: A resposta do servidor substitui o formulário.
+   * Decisões: A resposta do servidor substitui o formulário. No onboarding, segue para a área do investidor.
    */
   async function salvar(e: React.FormEvent) {
     e.preventDefault()
@@ -73,9 +87,10 @@ export function PaginaPerfilDeInvestimento() {
     try {
       const s = await salvarPerfil(dados)
       setSituacao(s)
-      if (s.perfil) setDados(s.perfil)
+      if (s.perfil) setDados({ ...VAZIO, ...s.perfil })
       setErro(null)
       setAviso('Perfil salvo.')
+      if (onboarding) void navegar('/investidor')
     } catch (falha) {
       setAviso(null)
       setErro(falha instanceof Error ? falha.message : 'Não foi possível salvar.')
@@ -91,11 +106,44 @@ export function PaginaPerfilDeInvestimento() {
     ...dados,
     instrumentos: dados.instrumentos.includes(codigo) ? dados.instrumentos.filter((i) => i !== codigo) : [...dados.instrumentos, codigo],
   })
+  const regioes = [...new Set(localizacoes.map((l) => l.grupo ?? 'EXTERIOR'))]
+  const estadosDa = (regiao: string) => localizacoes.filter((l) => (l.grupo ?? 'EXTERIOR') === regiao).map((l) => l.codigo)
+  const marcarRegiao = (regiao: string) => {
+    const daRegiao = estadosDa(regiao)
+    const todos = daRegiao.every((c) => dados.localizacoes.includes(c))
+    setDados({
+      ...dados,
+      localizacoes: todos ? dados.localizacoes.filter((c) => !daRegiao.includes(c)) : [...new Set([...dados.localizacoes, ...daRegiao])],
+    })
+  }
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 14:25
+   * Cartão Jira: KAN-18
+   * Título: Pular por agora
+   * Objetivo: Registrar que a pessoa vai completar a tese depois e seguir para a área do investidor.
+   * Decisões: Erro aparece no alerta.
+   */
+  async function pular() {
+    try {
+      await pularOnboarding()
+      void navegar('/investidor')
+    } catch (falha) {
+      setErro(falha instanceof Error ? falha.message : 'Não foi possível pular.')
+    }
+  }
 
   return (
     <section className="flex flex-col gap-5">
       <header className="flex flex-col gap-1">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Perfil de investimento</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">{onboarding ? 'Sua tese de investimento' : 'Perfil de investimento'}</h1>
+        {onboarding && (
+          <p className="text-sm">
+            Conte como você investe para receber um catálogo de startups alinhado aos seus interesses. Leva poucos minutos.
+          </p>
+        )}
         <p className="text-sm text-muted">
           {situacao.daOrganizacao ? `Perfil de ${atuacao?.nome ?? 'organização'}.` : 'Seu perfil como pessoa física.'}{' '}
           Usado para mostrar startups compatíveis com a forma como você investe.
@@ -180,12 +228,79 @@ export function PaginaPerfilDeInvestimento() {
             ))}
           </fieldset>
         </fieldset>
+
+        <fieldset disabled={bloqueado} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
+          <legend className="px-1 font-semibold">Tese de investimento</legend>
+          <Multipla titulo="Segmentos de interesse" opcoes={segmentos} escolhidos={dados.segmentos}
+            aoMudar={(v) => setDados({ ...dados, segmentos: v })} />
+          <Multipla titulo="Estágio da rodada" dica="Em que momento da captação você costuma entrar." opcoes={estagios}
+            escolhidos={dados.estagios} aoMudar={(v) => setDados({ ...dados, estagios: v })} />
+          <Multipla titulo="Maturidade do negócio (opcional)" dica="Em que ponto do negócio a startup está. Independe do estágio da rodada."
+            opcoes={(Object.keys(NOMES_DA_MATURIDADE) as Maturidade[]).map((m) => ({ codigo: m, rotulo: NOMES_DA_MATURIDADE[m] }))}
+            escolhidos={dados.maturidades} aoMudar={(v) => setDados({ ...dados, maturidades: v as Maturidade[] })} />
+          <fieldset className="flex flex-col gap-2 text-sm">
+            <legend className="font-semibold">Localização de interesse</legend>
+            {regioes.map((r) => (
+              <div key={r} className="flex flex-col gap-1">
+                <button type="button" onClick={() => marcarRegiao(r)} className={`${CLASSE_LINK} self-start text-xs`}>
+                  {estadosDa(r).every((c) => dados.localizacoes.includes(c)) ? 'Desmarcar' : 'Marcar'} {REGIOES[r] ?? r}
+                </button>
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {localizacoes.filter((l) => (l.grupo ?? 'EXTERIOR') === r).map((l) => (
+                    <label key={l.codigo} className="flex items-center gap-1">
+                      <input type="checkbox" checked={dados.localizacoes.includes(l.codigo)}
+                        onChange={() => setDados({ ...dados, localizacoes: dados.localizacoes.includes(l.codigo)
+                          ? dados.localizacoes.filter((c) => c !== l.codigo) : [...dados.localizacoes, l.codigo] })} />
+                      {l.rotulo}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </fieldset>
+        </fieldset>
         {!bloqueado && (
-          <button type="submit" disabled={salvando} className={`${CLASSE_BOTAO_PRIMARIO} self-start`}>
-            {salvando ? 'Salvando…' : 'Salvar perfil'}
-          </button>
+          <div className="flex flex-wrap items-center gap-4">
+            <button type="submit" disabled={salvando} className={CLASSE_BOTAO_PRIMARIO}>
+              {salvando ? 'Salvando…' : onboarding ? 'Salvar e continuar' : 'Salvar perfil'}
+            </button>
+            {onboarding && <button type="button" onClick={() => void pular()} className={CLASSE_LINK}>Pular por agora</button>}
+          </div>
         )}
       </form>
     </section>
+  )
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
+ * Título: Escolha múltipla
+ * Objetivo: Mostrar um grupo de caixas de seleção com título e dica.
+ * Decisões: Devolve a lista nova de códigos a cada clique.
+ */
+function Multipla({ titulo, dica, opcoes, escolhidos, aoMudar }: {
+  titulo: string
+  dica?: string
+  opcoes: Opcao[]
+  escolhidos: string[]
+  aoMudar: (novos: string[]) => void
+}) {
+  return (
+    <fieldset className="flex flex-col gap-1 text-sm">
+      <legend className="font-semibold">{titulo}</legend>
+      {dica && <p className="text-xs text-muted">{dica}</p>}
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        {opcoes.map((o) => (
+          <label key={o.codigo} className="flex items-center gap-1">
+            <input type="checkbox" checked={escolhidos.includes(o.codigo)}
+              onChange={() => aoMudar(escolhidos.includes(o.codigo) ? escolhidos.filter((c) => c !== o.codigo) : [...escolhidos, o.codigo])} />
+            {o.rotulo}
+          </label>
+        ))}
+      </div>
+    </fieldset>
   )
 }

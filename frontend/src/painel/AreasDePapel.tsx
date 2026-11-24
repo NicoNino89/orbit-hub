@@ -62,12 +62,12 @@ function useArea<T>(caminho: string, versao = 0) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Área do investidor
  * Objetivo: Mostrar a situação da conta como investidor.
  * Decisões: A tese de investimento chega na S3 (KAN-18). Mostra em nome de quem a pessoa atua e leva às
- *           organizações (KAN-60) e ao perfil de investimento (KAN-61).
+ *           organizações (KAN-60) e ao perfil de investimento (KAN-61). Sem tese, convida para o onboarding (KAN-18).
  */
 export function AreaInvestidor() {
   const { estado } = useSessao()
@@ -84,10 +84,16 @@ export function AreaInvestidor() {
               ? <>Atuando em nome de <strong>{dados.atuandoPor.nome}</strong> ({PAPEIS_NA_ORGANIZACAO[dados.atuandoPor.papel].nome.toLowerCase()}).</>
               : 'Atuando como pessoa física.'}
           </p>
-          <p className="text-muted">
-            {dados.teseCadastrada ? 'O perfil de investimento está cadastrado.' : 'Você ainda não cadastrou o perfil de investimento.'}{' '}
-            <Link to="/investidor/perfil" className={CLASSE_LINK}>{dados.teseCadastrada ? 'Ver ou editar o perfil' : 'Cadastrar agora'}</Link>
-          </p>
+          {dados.onboarding === 'CONCLUIDO' ? (
+            <p className="text-muted">
+              A tese de investimento está cadastrada. <Link to="/investidor/perfil" className={CLASSE_LINK}>Ver ou editar o perfil</Link>
+            </p>
+          ) : (
+            <p className="rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">
+              {dados.onboarding === 'PULADO' ? 'Você deixou a tese para depois.' : 'Você ainda não definiu a tese de investimento.'}{' '}
+              <Link to="/investidor/onboarding" className={CLASSE_LINK}>Definir a tese</Link>
+            </p>
+          )}
         </>
       )}
       <Link to="/investidor/organizacoes" className={CLASSE_LINK}>Organizações (fundos, redes de anjos e outras entidades)</Link>
@@ -98,16 +104,17 @@ export function AreaInvestidor() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:05
- * Cartão Jira: KAN-60
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Situação do investidor
  * Objetivo: Tipar a resposta da área do investidor.
- * Decisões: atuandoPor nulo = pessoa física.
+ * Decisões: atuandoPor nulo = pessoa física; onboarding diz se a tese está concluída, pulada ou pendente (KAN-18).
  */
 interface SituacaoInvestidor {
   teseCadastrada: boolean
   proximoPasso: string
   atuandoPor: { organizacao: string; nome: string; papel: PapelNaOrganizacao } | null
+  onboarding: 'PENDENTE' | 'CONCLUIDO' | 'PULADO'
 }
 
 /**

@@ -70,7 +70,7 @@ class PermissoesIT {
      * Cartão Jira: KAN-61
      * Título: Papéis separados
      * Objetivo: Garantir que cada papel acessa só a própria área e que a recusa fica registrada.
-     * Decisões: Duas contas, uma de cada papel. Sem perfil, o próximo passo do investidor é o perfil (KAN-61).
+     * Decisões: Duas contas, uma de cada papel. Sem tese, o próximo passo do investidor é o onboarding (KAN-18).
      */
     @Test
     void investidorEEmpreendedorNaoAcessamAAreaDoOutro() throws Exception {
@@ -80,7 +80,7 @@ class PermissoesIT {
         String tokenEmpreendedor = bearer(empreendedor);
 
         mvc.perform(get("/api/v1/investidores/eu").header(HttpHeaders.AUTHORIZATION, tokenInvestidora))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.proximoPasso").value("/investidor/perfil"));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.proximoPasso").value("/investidor/onboarding"));
         mvc.perform(get("/api/v1/empreendimentos/meus").header(HttpHeaders.AUTHORIZATION, tokenEmpreendedor))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.startups").isEmpty());
 

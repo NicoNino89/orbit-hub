@@ -65,12 +65,12 @@ export function AreaLogada() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:09
- * Cartão Jira: KAN-80
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Painel inicial
  * Objetivo: Dar as boas-vindas e indicar o próximo passo do papel ativo.
- * Decisões: Os onboardings (tese do investidor, KAN-18; cadastro da startup, KAN-21) chegam na S3 e na S4;
- *           até lá o cartão explica o que vem. Conta só da equipe é levada ao backoffice (KAN-80).
+ * Decisões: O investidor é levado ao onboarding da tese (KAN-18); o cadastro da startup (KAN-21) chega na S4.
+ *           Conta só da equipe é levada ao backoffice (KAN-80).
  */
 export function Painel() {
   const { estado, papelAtivo } = useSessao()
@@ -84,8 +84,8 @@ export function Painel() {
         <h2 className="mb-1 font-semibold">Próximo passo</h2>
         {papelAtivo === 'INVESTIDOR' && (
           <p className="text-muted">
-            Defina sua tese de investimento para receber startups compatíveis. Disponível em breve.{" "}
-            <Link to="/investidor" className="font-semibold text-primary">Abrir a área do investidor</Link>
+            Defina sua tese de investimento para receber startups compatíveis.{" "}
+            <Link to="/investidor/onboarding" className="font-semibold text-primary">Definir a tese agora</Link>
           </p>
         )}
         {papelAtivo === 'EMPREENDEDOR' && (

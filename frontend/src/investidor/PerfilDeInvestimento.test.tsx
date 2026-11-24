@@ -18,6 +18,11 @@ const LISTAS = {
     { codigo: 'ANJO', rotulo: 'Investidor-anjo', grupo: null }, { codigo: 'FUNDO_VC', rotulo: 'Fundo de Venture Capital', grupo: null },
     { codigo: 'OUTROS', rotulo: 'Outros', grupo: null },
   ] }),
+  'GET /api/v1/listas/SEGMENTO': () => ({ corpo: [{ codigo: 'FINTECH', rotulo: 'Fintech', grupo: null }] }),
+  'GET /api/v1/listas/ESTAGIO_RODADA': () => ({ corpo: [{ codigo: 'SEED', rotulo: 'Seed', grupo: null }] }),
+  'GET /api/v1/listas/LOCALIZACAO': () => ({ corpo: [
+    { codigo: 'SP', rotulo: 'São Paulo', grupo: 'SUDESTE' }, { codigo: 'MG', rotulo: 'Minas Gerais', grupo: 'SUDESTE' },
+  ] }),
   'GET /api/v1/listas/INSTRUMENTO': () => ({ corpo: [
     { codigo: 'MUTUO_CONVERSIVEL', rotulo: 'Mútuo conversível', grupo: null },
     { codigo: 'PARTICIPACAO_SOCIETARIA', rotulo: 'Participação societária', grupo: null },
@@ -27,13 +32,13 @@ const LISTAS = {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:16
- * Cartão Jira: KAN-61
+ * Hora: 14:25
+ * Cartão Jira: KAN-18
  * Título: Abrir o perfil
- * Objetivo: Renderizar a tela do perfil com as listas e as rotas informadas.
+ * Objetivo: Renderizar a tela do perfil com as listas e as rotas informadas. Endereço opcional (perfil ou onboarding).
  * Decisões: Papel ativo de investidor.
  */
-function abrir(rotas: Parameters<typeof simularApi>[0]) {
+function abrir(rotas: Parameters<typeof simularApi>[0], endereco = '/investidor/perfil') {
   localStorage.setItem(CHAVE_SESSAO_ATIVA, '1')
   localStorage.setItem(CHAVE_PAPEL_ATIVO, 'INVESTIDOR')
   const api = simularApi({
@@ -42,11 +47,11 @@ function abrir(rotas: Parameters<typeof simularApi>[0]) {
     ...LISTAS,
     ...rotas,
   })
-  render(<MemoryRouter initialEntries={['/investidor/perfil']}><Rotas /></MemoryRouter>)
+  render(<MemoryRouter initialEntries={[endereco]}><Rotas /></MemoryRouter>)
   return api
 }
 
-describe('Perfil de investimento (KAN-61)', () => {
+describe('Perfil e tese de investimento (KAN-61, KAN-18)', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     localStorage.clear()
@@ -55,10 +60,10 @@ describe('Perfil de investimento (KAN-61)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 14:16
-   * Cartão Jira: KAN-61
+   * Hora: 14:25
+   * Cartão Jira: KAN-18
    * Título: Perfil pessoal
-   * Objetivo: Conferir os tipos de pessoa física, a descrição de "outros" e o envio dos campos.
+   * Objetivo: Conferir os tipos de pessoa física, a descrição de "outros", a tese (com o atalho da região) e o envio dos campos.
    * Decisões: O servidor devolve o perfil salvo.
    */
   it('salva o perfil pessoal', async () => {
@@ -83,11 +88,17 @@ describe('Perfil de investimento (KAN-61)', () => {
     await userEvent.click(within(form).getByLabelText('Aceito ser observador do conselho'))
     await userEvent.click(within(form).getByLabelText(/follow-on/))
     await userEvent.click(within(form).getByLabelText('Mútuo conversível'))
+    await userEvent.click(await within(form).findByLabelText('Fintech'))
+    await userEvent.click(within(form).getByLabelText('Seed'))
+    await userEvent.click(within(form).getByLabelText('Tração'))
+    await userEvent.click(within(form).getByRole('button', { name: 'Marcar Sudeste' }))
+    await userEvent.click(within(form).getByLabelText('Minas Gerais'))
     await userEvent.click(screen.getByRole('button', { name: 'Salvar perfil' }))
     expect(await screen.findByText('Perfil salvo.')).toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'PUT /api/v1/investidores/perfil')?.corpo).toEqual({
       tipo: 'OUTROS', tipoOutro: 'Clube de investimento', ticketMinimo: 50000, ticketMaximo: 250000, lideranca: 'SO_COINVESTE',
       followOn: true, participacaoNaGestao: 'ACEITA_OBSERVADOR', instrumentos: ['MUTUO_CONVERSIVEL'],
+      segmentos: ['FINTECH'], estagios: ['SEED'], maturidades: ['TRACAO'], localizacoes: ['SP'],
     })
     expect(screen.getByText(/Última alteração por Ana Investidora/)).toBeInTheDocument()
   })
@@ -117,5 +128,30 @@ describe('Perfil de investimento (KAN-61)', () => {
     expect(screen.getByLabelText('Ticket mínimo (R$)')).toBeDisabled()
     expect(screen.queryByRole('button', { name: 'Salvar perfil' })).not.toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'GET /api/v1/investidores/perfil')?.cabecalhos['X-Orbit-Organizacao']).toBe('o1')
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 14:25
+   * Cartão Jira: KAN-18
+   * Título: Pular o onboarding
+   * Objetivo: Conferir o título do onboarding, o pulo registrado e a ida para a área do investidor.
+   * Decisões: Área do investidor simulada com o onboarding pulado.
+   */
+  it('pula o onboarding e segue para a área do investidor', async () => {
+    const { chamadas } = abrir({
+      'GET /api/v1/investidores/perfil': () => ({
+        corpo: { daOrganizacao: false, podeEditar: true, tipoFixo: null, perfil: null, atualizadoPor: null, atualizadoEm: null },
+      }),
+      'POST /api/v1/investidores/onboarding/pulo': () => ({ status: 204 }),
+      'GET /api/v1/investidores/eu': () => ({
+        corpo: { teseCadastrada: false, proximoPasso: '/investidor/onboarding', atuandoPor: null, onboarding: 'PULADO' },
+      }),
+    }, '/investidor/onboarding')
+    expect(await screen.findByRole('heading', { name: 'Sua tese de investimento' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Pular por agora' }))
+    expect(await screen.findByText(/Você deixou a tese para depois/)).toBeInTheDocument()
+    expect(chamadas.some((c) => c.chave === 'POST /api/v1/investidores/onboarding/pulo')).toBe(true)
   })
 })

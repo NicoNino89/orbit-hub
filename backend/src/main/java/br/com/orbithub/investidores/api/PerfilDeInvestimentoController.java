@@ -1,5 +1,6 @@
 package br.com.orbithub.investidores.api;
 
+import br.com.orbithub.compartilhado.escalas.MaturidadeDoNegocio;
 import br.com.orbithub.compartilhado.seguranca.Autenticado;
 import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteInvestidor;
 import br.com.orbithub.investidores.domain.PerfilDeInvestimento;
@@ -91,29 +92,30 @@ class PerfilDeInvestimentoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:16
-     * Cartão Jira: KAN-61
+     * Hora: 14:25
+     * Cartão Jira: KAN-18
      * Título: Pedido do perfil
-     * Objetivo: Receber os campos do perfil.
+     * Objetivo: Receber os campos do perfil, inclusive a tese.
      * Decisões: As regras de conteúdo ficam no serviço; aqui só a presença do follow-on.
      */
     record PerfilRequest(String tipo, String tipoOutro, BigDecimal ticketMinimo, BigDecimal ticketMaximo,
                          Lideranca lideranca,
                          @NotNull(message = "Informe se reserva capital para follow-on.") Boolean followOn,
-                         ParticipacaoNaGestao participacaoNaGestao, Set<String> instrumentos) {
+                         ParticipacaoNaGestao participacaoNaGestao, Set<String> instrumentos, Set<String> segmentos,
+                         Set<String> estagios, Set<MaturidadeDoNegocio> maturidades, Set<String> localizacoes) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 14:16
-         * Cartão Jira: KAN-61
+         * Hora: 14:25
+         * Cartão Jira: KAN-18
          * Título: Para o serviço
          * Objetivo: Converter o pedido nos dados do perfil.
          * Decisões: Copia os campos.
          */
         PerfilDeInvestimento.Dados dados() {
             return new PerfilDeInvestimento.Dados(tipo, tipoOutro, ticketMinimo, ticketMaximo, lideranca, followOn,
-                    participacaoNaGestao, instrumentos);
+                    participacaoNaGestao, instrumentos, segmentos, estagios, maturidades, localizacoes);
         }
     }
 
