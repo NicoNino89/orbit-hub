@@ -19,6 +19,7 @@ import { PaginaConviteOrganizacao } from './investidor/PaginaConviteOrganizacao'
 import { PaginaOrganizacao } from './investidor/PaginaOrganizacao'
 import { PaginaOrganizacoes } from './investidor/PaginaOrganizacoes'
 import { PaginaPerfilDeInvestimento } from './investidor/PaginaPerfilDeInvestimento'
+import { PaginaVerificacao } from './investidor/PaginaVerificacao'
 import { PaginaNotificacoes } from './notificacoes/PaginaNotificacoes'
 import { AreaLogada, Painel } from './painel/AreaLogada'
 import { AreaEmpreendedor, AreaInvestidor, RotaDePapel } from './painel/AreasDePapel'
@@ -29,8 +30,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
+ * Hora: 17:19
+ * Cartão Jira: KAN-62
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
@@ -42,7 +43,7 @@ import { PaginaTermos } from './termos/PaginaTermos'
  *           A central de notificações é de qualquer conta logada (KAN-146). As organizações ficam na área do
  *           investidor; o aceite do convite só exige login, para explicar a quem ainda não é investidor (KAN-60). O
  *           perfil de investimento também fica na área do investidor (KAN-61), e o onboarding da tese usa a mesma
- *           tela (KAN-18).
+ *           tela (KAN-18). A verificação de identidade do investidor também (KAN-62).
  */
 export function Rotas() {
   return (
@@ -69,6 +70,7 @@ export function Rotas() {
               <Route path="/investidor" element={<AreaInvestidor />} />
               <Route path="/investidor/onboarding" element={<PaginaPerfilDeInvestimento onboarding />} />
               <Route path="/investidor/perfil" element={<PaginaPerfilDeInvestimento />} />
+              <Route path="/investidor/verificacao" element={<PaginaVerificacao />} />
               <Route path="/investidor/organizacoes" element={<PaginaOrganizacoes />} />
               <Route path="/investidor/organizacoes/:id" element={<PaginaOrganizacao />} />
             </Route>

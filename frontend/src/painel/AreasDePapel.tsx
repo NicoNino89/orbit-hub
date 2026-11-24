@@ -4,6 +4,8 @@ import { requisitar } from '../api/cliente'
 import type { Papel } from '../api/contas'
 import { PAPEIS_NA_ORGANIZACAO, type PapelNaOrganizacao } from '../api/organizacoes'
 import { lerPerfil, type DadosDoPerfil } from '../api/perfilDeInvestimento'
+import { minhaVerificacao, type Selo } from '../api/verificacoes'
+import { SeloDeVerificacao } from '../investidor/PaginaVerificacao'
 import { ResumoDoPerfil } from '../investidor/ResumoDoPerfil'
 import { useAtuacao } from '../sessao/atuacao'
 import { useSessao } from '../sessao/contexto'
@@ -64,19 +66,25 @@ function useArea<T>(caminho: string, versao = 0) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:06
- * Cartão Jira: KAN-20
+ * Hora: 17:19
+ * Cartão Jira: KAN-62
  * Título: Área do investidor
  * Objetivo: Mostrar a situação da conta como investidor.
  * Decisões: A tese de investimento chega na S3 (KAN-18). Mostra em nome de quem a pessoa atua e leva às
  *           organizações (KAN-60) e ao perfil de investimento (KAN-61). Sem tese, convida para o onboarding (KAN-18);
- *           com tese, mostra o resumo do perfil (KAN-20).
+ *           com tese, mostra o resumo do perfil (KAN-20). Mostra o selo de verificação e leva à verificação (KAN-62).
  */
 export function AreaInvestidor() {
   const { estado } = useSessao()
   const { versao } = useAtuacao(estado.status === 'autenticado' ? estado.usuario.id : null)
   const { dados, erro } = useArea<SituacaoInvestidor>('/api/v1/investidores/eu', versao)
   const [perfil, setPerfil] = useState<DadosDoPerfil | null>(null)
+  const [selo, setSelo] = useState<Selo | null>(null)
+  useEffect(() => {
+    let ativo = true
+    minhaVerificacao().then((s) => { if (ativo) setSelo(s.selo) }).catch(() => { if (ativo) setSelo(null) })
+    return () => { ativo = false }
+  }, [versao])
   const concluido = dados?.onboarding === 'CONCLUIDO'
   useEffect(() => {
     if (!concluido) return
@@ -110,6 +118,10 @@ export function AreaInvestidor() {
           )}
         </>
       )}
+      <p className="flex items-center gap-2 text-sm">
+        {selo && <SeloDeVerificacao selo={selo} />}
+        <Link to="/investidor/verificacao" className={CLASSE_LINK}>{selo === 'VERIFICADO' ? 'Ver a verificação' : 'Verificar identidade'}</Link>
+      </p>
       <Link to="/investidor/organizacoes" className={CLASSE_LINK}>Organizações (fundos, redes de anjos e outras entidades)</Link>
     </section>
   )

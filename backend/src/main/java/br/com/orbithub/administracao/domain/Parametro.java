@@ -394,11 +394,12 @@ public class Parametro {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 11:08
-     * Cartão Jira: KAN-78
+     * Hora: 17:19
+     * Cartão Jira: KAN-62
      * Título: Unidade do valor
      * Objetivo: Enumerar as unidades, com o texto para a tela.
-     * Decisões: Prazos úteis seguem o horário de atendimento dos times (seção 1.5).
+     * Decisões: Prazos úteis seguem o horário de atendimento dos times (seção 1.5). MEGABYTES entrou com o
+     *           tamanho máximo dos documentos de verificação (KAN-62).
      */
     public enum Unidade {
         MINUTOS("minutos"),
@@ -408,6 +409,7 @@ public class Parametro {
         DIAS_UTEIS("dias úteis"),
         MESES("meses"),
         QUANTIDADE("vezes"),
+        MEGABYTES("MB"),
         PERCENTUAL("%"),
         TEXTO("");
 
