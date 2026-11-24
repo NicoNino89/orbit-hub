@@ -1,0 +1,158 @@
+-- Autor: Nicholas Bruno Pimentel
+-- Data: 24/11/2026
+-- Hora: 11:14
+-- Cartão Jira: KAN-79
+-- Título: Listas gerenciáveis
+-- Objetivo: Guardar as listas usadas nos formulários e nas regras (segmentos, localizações, tipos de investidor,
+--           instrumentos, estágios, modelos de negócio, motivos, categorias, documentos de verificação e checklist de
+--           curadoria), editáveis pelo administrador, com histórico.
+-- Decisões: Cada item tem um código estável (o que o sistema grava) e um rótulo (o que a pessoa vê); renomear muda só
+--           o rótulo. Não existe exclusão: item que não deve mais aparecer é desativado, e os registros antigos que o
+--           usam continuam legíveis. "grupo" separa itens dentro de uma lista (documentos por tipo de usuário,
+--           localizações por região). Os itens iniciais seguem docs/requisitos/tipos-de-investidor-e-rodadas.md
+--           (seções 1, 2.1, 2.2, 4, 5.4 e 5.5) e processos-e-operacao.md (P8, P12).
+
+CREATE TABLE lista_item (
+    id            UUID         PRIMARY KEY,
+    lista         VARCHAR(40)  NOT NULL,
+    codigo        VARCHAR(60)  NOT NULL,
+    rotulo        VARCHAR(160) NOT NULL,
+    grupo         VARCHAR(60),
+    ordem         INTEGER      NOT NULL,
+    ativo         BOOLEAN      NOT NULL DEFAULT TRUE,
+    criado_em     TIMESTAMPTZ  NOT NULL,
+    atualizado_em TIMESTAMPTZ  NOT NULL,
+    versao        BIGINT       NOT NULL DEFAULT 0,
+    CONSTRAINT uk_lista_item_codigo UNIQUE (lista, codigo),
+    CONSTRAINT ck_lista_item_codigo CHECK (codigo ~ '^[A-Z0-9_]+$')
+);
+
+CREATE INDEX ix_lista_item_lista ON lista_item (lista, ativo, ordem);
+
+CREATE TABLE lista_item_historico (
+    id              UUID         PRIMARY KEY,
+    item_id         UUID         NOT NULL REFERENCES lista_item (id),
+    acao            VARCHAR(20)  NOT NULL,
+    rotulo_anterior VARCHAR(160),
+    rotulo_novo     VARCHAR(160),
+    autor_id        UUID         NOT NULL REFERENCES usuario (id),
+    ocorrido_em     TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX ix_lista_item_historico_item ON lista_item_historico (item_id, ocorrido_em DESC);
+
+-- Itens iniciais: (lista, código, rótulo, grupo, ordem).
+INSERT INTO lista_item (id, lista, codigo, rotulo, grupo, ordem, criado_em, atualizado_em)
+SELECT gen_random_uuid(), v.lista, v.codigo, v.rotulo, v.grupo, v.ordem, now(), now()
+FROM (VALUES
+    ('SEGMENTO', 'AGRONEGOCIO', 'Agronegócio e agtech', NULL, 1),
+    ('SEGMENTO', 'FINTECH', 'Serviços financeiros (fintech)', NULL, 2),
+    ('SEGMENTO', 'SAUDE', 'Saúde (healthtech)', NULL, 3),
+    ('SEGMENTO', 'EDUCACAO', 'Educação (edtech)', NULL, 4),
+    ('SEGMENTO', 'VAREJO', 'Varejo e e-commerce', NULL, 5),
+    ('SEGMENTO', 'LOGISTICA', 'Logística e mobilidade', NULL, 6),
+    ('SEGMENTO', 'ENERGIA_CLIMA', 'Energia e clima (cleantech)', NULL, 7),
+    ('SEGMENTO', 'IMOBILIARIO', 'Imobiliário e construção (proptech)', NULL, 8),
+    ('SEGMENTO', 'GESTAO_PESSOAS', 'Gestão de pessoas (HR tech)', NULL, 9),
+    ('SEGMENTO', 'JURIDICO', 'Jurídico (legaltech)', NULL, 10),
+    ('SEGMENTO', 'SEGUROS', 'Seguros (insurtech)', NULL, 11),
+    ('SEGMENTO', 'INDUSTRIA', 'Indústria 4.0', NULL, 12),
+    ('SEGMENTO', 'ALIMENTACAO', 'Alimentação (foodtech)', NULL, 13),
+    ('SEGMENTO', 'MIDIA_ENTRETENIMENTO', 'Mídia, entretenimento e games', NULL, 14),
+    ('SEGMENTO', 'SOFTWARE_EMPRESAS', 'Software para empresas', NULL, 15),
+    ('SEGMENTO', 'BIOTECNOLOGIA', 'Biotecnologia', NULL, 16),
+    ('SEGMENTO', 'SETOR_PUBLICO', 'Setor público (govtech)', NULL, 17),
+    ('SEGMENTO', 'OUTROS', 'Outros', NULL, 99),
+    ('LOCALIZACAO', 'AC', 'Acre', 'NORTE', 1), ('LOCALIZACAO', 'AP', 'Amapá', 'NORTE', 2),
+    ('LOCALIZACAO', 'AM', 'Amazonas', 'NORTE', 3), ('LOCALIZACAO', 'PA', 'Pará', 'NORTE', 4),
+    ('LOCALIZACAO', 'RO', 'Rondônia', 'NORTE', 5), ('LOCALIZACAO', 'RR', 'Roraima', 'NORTE', 6),
+    ('LOCALIZACAO', 'TO', 'Tocantins', 'NORTE', 7),
+    ('LOCALIZACAO', 'AL', 'Alagoas', 'NORDESTE', 8), ('LOCALIZACAO', 'BA', 'Bahia', 'NORDESTE', 9),
+    ('LOCALIZACAO', 'CE', 'Ceará', 'NORDESTE', 10), ('LOCALIZACAO', 'MA', 'Maranhão', 'NORDESTE', 11),
+    ('LOCALIZACAO', 'PB', 'Paraíba', 'NORDESTE', 12), ('LOCALIZACAO', 'PE', 'Pernambuco', 'NORDESTE', 13),
+    ('LOCALIZACAO', 'PI', 'Piauí', 'NORDESTE', 14), ('LOCALIZACAO', 'RN', 'Rio Grande do Norte', 'NORDESTE', 15),
+    ('LOCALIZACAO', 'SE', 'Sergipe', 'NORDESTE', 16),
+    ('LOCALIZACAO', 'DF', 'Distrito Federal', 'CENTRO_OESTE', 17), ('LOCALIZACAO', 'GO', 'Goiás', 'CENTRO_OESTE', 18),
+    ('LOCALIZACAO', 'MT', 'Mato Grosso', 'CENTRO_OESTE', 19), ('LOCALIZACAO', 'MS', 'Mato Grosso do Sul', 'CENTRO_OESTE', 20),
+    ('LOCALIZACAO', 'ES', 'Espírito Santo', 'SUDESTE', 21), ('LOCALIZACAO', 'MG', 'Minas Gerais', 'SUDESTE', 22),
+    ('LOCALIZACAO', 'RJ', 'Rio de Janeiro', 'SUDESTE', 23), ('LOCALIZACAO', 'SP', 'São Paulo', 'SUDESTE', 24),
+    ('LOCALIZACAO', 'PR', 'Paraná', 'SUL', 25), ('LOCALIZACAO', 'RS', 'Rio Grande do Sul', 'SUL', 26),
+    ('LOCALIZACAO', 'SC', 'Santa Catarina', 'SUL', 27),
+    ('LOCALIZACAO', 'EXTERIOR', 'Fora do Brasil', 'EXTERIOR', 99),
+    ('TIPO_INVESTIDOR', 'ANJO', 'Investidor-anjo', NULL, 1),
+    ('TIPO_INVESTIDOR', 'REDE_DE_ANJOS', 'Rede ou grupo de anjos', NULL, 2),
+    ('TIPO_INVESTIDOR', 'SINDICATO', 'Sindicato de investimento', NULL, 3),
+    ('TIPO_INVESTIDOR', 'FUNDO_VC', 'Fundo de Venture Capital', NULL, 4),
+    ('TIPO_INVESTIDOR', 'CVC', 'Corporate Venture Capital (CVC)', NULL, 5),
+    ('TIPO_INVESTIDOR', 'FAMILY_OFFICE', 'Family office', NULL, 6),
+    ('TIPO_INVESTIDOR', 'ACELERADORA', 'Aceleradora', NULL, 7),
+    ('TIPO_INVESTIDOR', 'OUTROS', 'Outros', NULL, 99),
+    ('INSTRUMENTO', 'PARTICIPACAO_SOCIETARIA', 'Participação societária', NULL, 1),
+    ('INSTRUMENTO', 'MUTUO_CONVERSIVEL', 'Mútuo conversível', NULL, 2),
+    ('INSTRUMENTO', 'CONTRATO_INVESTIMENTO_ANJO', 'Contrato de investimento-anjo (LC 155/2016)', NULL, 3),
+    ('INSTRUMENTO', 'OPCAO_DE_COMPRA', 'Opção de compra ou subscrição', NULL, 4),
+    ('INSTRUMENTO', 'DEBENTURE_CONVERSIVEL', 'Debênture conversível', NULL, 5),
+    ('ESTAGIO_RODADA', 'PRE_SEED', 'Pré-seed', NULL, 1),
+    ('ESTAGIO_RODADA', 'SEED', 'Seed', NULL, 2),
+    ('ESTAGIO_RODADA', 'SERIE_A', 'Série A', NULL, 3),
+    ('ESTAGIO_RODADA', 'SERIE_B_OU_POSTERIOR', 'Série B ou posterior', NULL, 4),
+    ('MODELO_NEGOCIO', 'SAAS', 'Software como serviço (SaaS)', NULL, 1),
+    ('MODELO_NEGOCIO', 'MARKETPLACE', 'Marketplace', NULL, 2),
+    ('MODELO_NEGOCIO', 'ECOMMERCE', 'E-commerce ou venda direta ao consumidor', NULL, 3),
+    ('MODELO_NEGOCIO', 'ASSINATURA', 'Assinatura', NULL, 4),
+    ('MODELO_NEGOCIO', 'TAXA_POR_TRANSACAO', 'Taxa por transação', NULL, 5),
+    ('MODELO_NEGOCIO', 'LICENCIAMENTO', 'Licenciamento', NULL, 6),
+    ('MODELO_NEGOCIO', 'HARDWARE', 'Venda de hardware ou equipamentos', NULL, 7),
+    ('MODELO_NEGOCIO', 'SERVICOS', 'Serviços recorrentes', NULL, 8),
+    ('MODELO_NEGOCIO', 'PUBLICIDADE', 'Publicidade', NULL, 9),
+    ('MODELO_NEGOCIO', 'OUTROS', 'Outros', NULL, 99),
+    ('MOTIVO_ENCERRAMENTO', 'FORA_DA_TESE', 'Fora da tese de investimento', NULL, 1),
+    ('MOTIVO_ENCERRAMENTO', 'TERMOS_INCOMPATIVEIS', 'Valuation ou termos incompatíveis', NULL, 2),
+    ('MOTIVO_ENCERRAMENTO', 'MOMENTO_INADEQUADO', 'Momento não adequado', NULL, 3),
+    ('MOTIVO_ENCERRAMENTO', 'RODADA_FECHADA', 'Rodada já fechada', NULL, 4),
+    ('MOTIVO_ENCERRAMENTO', 'SEM_RETORNO', 'Falta de retorno da outra parte', NULL, 5),
+    ('MOTIVO_ENCERRAMENTO', 'OUTRA_OPORTUNIDADE', 'Decidiu por outra oportunidade', NULL, 6),
+    ('MOTIVO_ENCERRAMENTO', 'OUTRO', 'Outro motivo', NULL, 99),
+    ('MOTIVO_RECUSA', 'SEM_CAPTACAO_ABERTA', 'Sem captação aberta no momento', NULL, 1),
+    ('MOTIVO_RECUSA', 'PERFIL_NAO_BUSCADO', 'Perfil de investidor não buscado agora', NULL, 2),
+    ('MOTIVO_RECUSA', 'TICKET_INCOMPATIVEL', 'Ticket incompatível com a rodada', NULL, 3),
+    ('MOTIVO_RECUSA', 'SO_VERIFICADOS', 'Aceitamos apenas investidores verificados', NULL, 4),
+    ('MOTIVO_RECUSA', 'CONFLITO_DE_INTERESSE', 'Conflito com investidor ou parceiro atual', NULL, 5),
+    ('MOTIVO_RECUSA', 'OUTRO', 'Outro motivo', NULL, 99),
+    ('CATEGORIA_DENUNCIA', 'INFORMACAO_FALSA', 'Informação falsa ou enganosa', NULL, 1),
+    ('CATEGORIA_DENUNCIA', 'FRAUDE', 'Fraude ou golpe', NULL, 2),
+    ('CATEGORIA_DENUNCIA', 'OFERTA_IRREGULAR', 'Oferta pública irregular de valores mobiliários', NULL, 3),
+    ('CATEGORIA_DENUNCIA', 'VAZAMENTO_CONFIDENCIAL', 'Vazamento de informação confidencial', NULL, 4),
+    ('CATEGORIA_DENUNCIA', 'PERFIL_FALSO', 'Perfil falso ou uso da identidade de outra pessoa', NULL, 5),
+    ('CATEGORIA_DENUNCIA', 'ASSEDIO', 'Assédio ou conduta abusiva', NULL, 6),
+    ('CATEGORIA_DENUNCIA', 'CONTEUDO_IMPROPRIO', 'Conteúdo impróprio', NULL, 7),
+    ('CATEGORIA_DENUNCIA', 'SPAM', 'Spam ou propaganda indevida', NULL, 8),
+    ('CATEGORIA_DENUNCIA', 'OUTRO', 'Outro', NULL, 99),
+    ('CATEGORIA_CHAMADO', 'ACESSO', 'Acesso e conta', NULL, 1),
+    ('CATEGORIA_CHAMADO', 'CADASTRO_VERIFICACAO', 'Cadastro e verificação', NULL, 2),
+    ('CATEGORIA_CHAMADO', 'CATALOGO_PUBLICACAO', 'Catálogo e publicação', NULL, 3),
+    ('CATEGORIA_CHAMADO', 'CONEXOES', 'Conexões e Match', NULL, 4),
+    ('CATEGORIA_CHAMADO', 'NIVEL2', 'Informações confidenciais (Nível 2)', NULL, 5),
+    ('CATEGORIA_CHAMADO', 'REUNIOES', 'Reuniões', NULL, 6),
+    ('CATEGORIA_CHAMADO', 'PRIVACIDADE', 'Privacidade e dados pessoais', NULL, 7),
+    ('CATEGORIA_CHAMADO', 'TITULARIDADE', 'Titularidade de startup ou organização', NULL, 8),
+    ('CATEGORIA_CHAMADO', 'DISPUTA', 'Disputa entre usuários', NULL, 9),
+    ('CATEGORIA_CHAMADO', 'SUGESTAO', 'Sugestão', NULL, 10),
+    ('CATEGORIA_CHAMADO', 'OUTRO', 'Outro assunto', NULL, 99),
+    ('DOCUMENTO_VERIFICACAO', 'PF_DOCUMENTO_COM_FOTO', 'Documento de identidade com foto (RG, CNH ou passaporte)', 'INVESTIDOR_PESSOA_FISICA', 1),
+    ('DOCUMENTO_VERIFICACAO', 'PF_CPF', 'CPF', 'INVESTIDOR_PESSOA_FISICA', 2),
+    ('DOCUMENTO_VERIFICACAO', 'ORG_CNPJ', 'Comprovante de inscrição no CNPJ', 'ORGANIZACAO_INVESTIDORA', 3),
+    ('DOCUMENTO_VERIFICACAO', 'ORG_CONTRATO_SOCIAL', 'Contrato ou estatuto social', 'ORGANIZACAO_INVESTIDORA', 4),
+    ('DOCUMENTO_VERIFICACAO', 'ORG_AUTORIZACAO_CVM', 'Autorização da CVM como gestora (fundos)', 'ORGANIZACAO_INVESTIDORA', 5),
+    ('DOCUMENTO_VERIFICACAO', 'ORG_REPRESENTANTE', 'Documento do representante legal', 'ORGANIZACAO_INVESTIDORA', 6),
+    ('DOCUMENTO_VERIFICACAO', 'STARTUP_CNPJ', 'Comprovante de inscrição no CNPJ, quando houver', 'STARTUP', 7),
+    ('DOCUMENTO_VERIFICACAO', 'FUNDADOR_DOCUMENTO_COM_FOTO', 'Documento de identidade com foto (RG, CNH ou passaporte)', 'FUNDADOR', 8),
+    ('DOCUMENTO_VERIFICACAO', 'FUNDADOR_CPF', 'CPF', 'FUNDADOR', 9),
+    ('CHECKLIST_CURADORIA', 'CAMPOS_OBRIGATORIOS', 'Campos obrigatórios preenchidos', NULL, 1),
+    ('CHECKLIST_CURADORIA', 'FUNDADORES_VERIFICADOS', 'Identidade dos fundadores verificada', NULL, 2),
+    ('CHECKLIST_CURADORIA', 'CNPJ_CONFERIDO', 'CNPJ conferido, quando houver', NULL, 3),
+    ('CHECKLIST_CURADORIA', 'CONTEUDO_ADEQUADO', 'Conteúdo adequado à Política de Moderação', NULL, 4),
+    ('CHECKLIST_CURADORIA', 'SEM_OFERTA_PUBLICA', 'Sem oferta pública de valores mobiliários (Resolução CVM 88)', NULL, 5),
+    ('CHECKLIST_CURADORIA', 'SEM_PROMESSA_DE_RETORNO', 'Sem promessa de retorno financeiro', NULL, 6),
+    ('CHECKLIST_CURADORIA', 'INDICADORES_COM_DATA', 'Indicadores de tração com data e fonte', NULL, 7)
+) AS v(lista, codigo, rotulo, grupo, ordem);
