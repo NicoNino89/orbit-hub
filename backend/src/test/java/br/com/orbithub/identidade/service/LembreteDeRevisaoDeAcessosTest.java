@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 13:26
+ * Hora: 13:28
  * Cartão Jira: KAN-146
  * Título: Testes do lembrete de revisão de acessos (R16)
  * Objetivo: Conferir que a rotina só lembra quando a revisão está vencida, e que o lembrete vai para os
@@ -36,7 +36,7 @@ class LembreteDeRevisaoDeAcessosTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 13:26
+     * Hora: 13:28
      * Cartão Jira: KAN-146
      * Título: Em dia e vencida
      * Objetivo: Em dia, nenhum item e nenhum aviso; vencida, um lembrete aos administradores.
