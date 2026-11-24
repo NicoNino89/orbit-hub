@@ -66,17 +66,18 @@ class FilaDeVerificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Fila
      * Objetivo: Listar os pedidos em análise por ordem de chegada.
      * Decisões: Com prazo e atraso.
      */
     @GetMapping
     @Operation(summary = "Fila de verificação")
-    List<ItemResponse> fila() {
-        return fila.fila().stream().map(i -> new ItemResponse(i.pedido().getId(), i.pedido().getSujeitoTipo(), i.sujeito(),
-                i.pedido().getEnviadoEm(), i.prazo(), i.atrasado(), i.responsavel())).toList();
+    List<ItemResponse> fila(@AuthenticationPrincipal Jwt token) {
+        return fila.fila(Autenticado.id(token)).stream().map(i -> new ItemResponse(i.pedido().getId(), i.pedido().getSujeitoTipo(),
+                i.sujeito(), i.pedido().getEnviadoEm(), i.prazo(), i.atrasado(), i.responsavel(), i.conflitoComigo(),
+                i.semAnalistaLivre())).toList();
     }
 
     /**
@@ -151,6 +152,33 @@ class FilaDeVerificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: Declarar impedimento
+     * Objetivo: Registrar que quem pede não pode atuar neste pedido, com o motivo.
+     * Decisões: Se era o responsável, o pedido volta à fila.
+     */
+    @PostMapping("/{id}/impedimento")
+    @Operation(summary = "Declara impedimento num pedido de verificação")
+    PedidoResponse impedimento(@PathVariable UUID id, @Valid @RequestBody ImpedimentoRequest pedido, @AuthenticationPrincipal Jwt token) {
+        return PedidoResponse.de(fila.declararImpedimento(id, Autenticado.id(token), pedido.motivo()));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: Pedido de impedimento
+     * Objetivo: Receber o motivo do impedimento.
+     * Decisões: Obrigatório.
+     */
+    record ImpedimentoRequest(@NotBlank(message = "Diga o motivo.") String motivo) {
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 17:33
      * Cartão Jira: KAN-83
      * Título: Pedido de decisão
@@ -164,14 +192,14 @@ class FilaDeVerificacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Item da fila na resposta
      * Objetivo: Expor um pedido da fila.
-     * Decisões: Responsável pelo nome.
+     * Decisões: Responsável pelo nome. Com o conflito de quem vê e a falta de analista livre.
      */
     record ItemResponse(UUID id, SujeitoDaVerificacao sujeitoTipo, String sujeito, Instant enviadoEm, Instant prazo,
-                        boolean atrasado, String responsavel) {
+                        boolean atrasado, String responsavel, boolean conflitoComigo, boolean semAnalistaLivre) {
     }
 
     /**

@@ -409,6 +409,20 @@ public class OrganizacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: CNPJ da organização
+     * Objetivo: Devolver o CNPJ de uma organização, para a checagem de conflito de interesse.
+     * Decisões: Vazio se não existir.
+     */
+    @Transactional(readOnly = true)
+    public Optional<String> cnpj(UUID organizacaoId) {
+        return organizacoes.findById(organizacaoId).map(Organizacao::getCnpj);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 17:33
      * Cartão Jira: KAN-83
      * Título: Nome da organização

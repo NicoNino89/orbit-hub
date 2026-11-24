@@ -7,6 +7,7 @@ import { PaginaListas } from './admin/PaginaListas'
 import { PaginaParametros } from './admin/PaginaParametros'
 import { PaginaRotinas } from './admin/PaginaRotinas'
 import { PaginaFilaDeVerificacao, PaginaPedidoDeVerificacao } from './admin/PaginaVerificacaoAdmin'
+import { PaginaVinculos } from './admin/PaginaVinculos'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
 import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
@@ -31,8 +32,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:33
- * Cartão Jira: KAN-83
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
@@ -45,7 +46,7 @@ import { PaginaTermos } from './termos/PaginaTermos'
  *           investidor; o aceite do convite só exige login, para explicar a quem ainda não é investidor (KAN-60). O
  *           perfil de investimento também fica na área do investidor (KAN-61), e o onboarding da tese usa a mesma
  *           tela (KAN-18). A verificação de identidade do investidor também (KAN-62). A fila de verificação é do
- *           analista de verificação e do administrador (KAN-83).
+ *           analista de verificação e do administrador (KAN-83). "Meus vínculos" é de toda a equipe (KAN-87).
  */
 export function Rotas() {
   return (
@@ -83,6 +84,7 @@ export function Rotas() {
               <Route path="/admin" element={<AreaAdmin />}>
                 <Route index element={<InicioAdmin />} />
                 <Route path="aprovacoes" element={<PaginaAprovacoes />} />
+                <Route path="vinculos" element={<PaginaVinculos />} />
                 <Route element={<RotaInterna papeis={['ADMIN']} />}>
                   <Route path="equipe" element={<PaginaEquipe />} />
                   <Route path="parametros" element={<PaginaParametros />} />

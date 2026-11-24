@@ -504,4 +504,18 @@ public class PedidoDeVerificacao {
     public Instant getDocumentosApagadosEm() {
         return documentosApagadosEm;
     }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: Liberar
+     * Objetivo: Devolver o pedido à fila, sem responsável (por exemplo, quando o responsável se declara impedido).
+     * Decisões: Mantém a situação.
+     */
+    public void liberar() {
+        this.responsavelId = null;
+        this.assumidoEm = null;
+    }
 }

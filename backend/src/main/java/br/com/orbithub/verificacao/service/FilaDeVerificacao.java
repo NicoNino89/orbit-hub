@@ -2,6 +2,7 @@ package br.com.orbithub.verificacao.service;
 
 import br.com.orbithub.administracao.domain.ItemDeLista;
 import br.com.orbithub.administracao.domain.Lista;
+import br.com.orbithub.administracao.service.ConflitosDeInteresse;
 import br.com.orbithub.administracao.service.ListasService;
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
 import br.com.orbithub.compartilhado.armazenamento.ArmazenamentoArquivos;
@@ -9,10 +10,13 @@ import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.tempo.DiasUteis;
+import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
+import br.com.orbithub.investidores.service.OrganizacoesService;
 import br.com.orbithub.verificacao.domain.DocumentoDeVerificacao;
 import br.com.orbithub.verificacao.domain.PedidoDeVerificacao;
 import br.com.orbithub.verificacao.domain.SituacaoDoPedido;
+import br.com.orbithub.verificacao.domain.SujeitoDaVerificacao;
 import br.com.orbithub.verificacao.repository.DocumentoDeVerificacaoRepository;
 import br.com.orbithub.verificacao.repository.PedidoDeVerificacaoRepository;
 import java.time.Clock;
@@ -23,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -31,8 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:33
- * Cartão Jira: KAN-83
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Fila de verificação
  * Objetivo: Organizar os pedidos em análise por ordem de chegada, com o prazo do time, e deixar o analista assumir,
  *           ler os documentos e decidir: verificado, pendente de complemento ou recusado, sempre com motivo da lista.
@@ -40,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
  *           COMPLEMENTO, RECUSA ou FRAUDE); FRAUDE recusa e encaminha à administração até existir a moderação (KAN-71).
  *           Complemento exige dizer o que falta. Toda leitura de documento e toda decisão vão para a trilha de auditoria.
  *           A distribuição automática (KAN-76) e o recurso (história de recursos) chegam depois; aqui o analista assume.
+ *           Quem tem conflito de interesse (KAN-87) não assume nem decide; se nenhum analista estiver livre, o pedido
+ *           fica marcado para o administrador.
  */
 @Service
 public class FilaDeVerificacao {
@@ -47,6 +54,7 @@ public class FilaDeVerificacao {
     static final String SLA = "verificacao.sla_dias_uteis";
     static final String VALIDADE = "verificacao.validade_meses";
     static final String PRAZO_COMPLEMENTO = "verificacao.prazo_complemento_dias";
+    static final String CASO = "VERIFICACAO";
     static final ZoneId BRASILIA = ZoneId.of("America/Sao_Paulo");
     static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     static final Map<SituacaoDoPedido, List<String>> GRUPOS = Map.of(
@@ -61,20 +69,25 @@ public class FilaDeVerificacao {
     private final LeituraDeParametros parametros;
     private final ConsultaDeContas contas;
     private final AvisosDaVerificacao avisos;
+    private final ConflitosDeInteresse conflitos;
+    private final OrganizacoesService organizacoes;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, listas, armazenamento, parâmetros, contas, avisos e relógio.
      * Decisões: Injeção por construtor.
      */
     public FilaDeVerificacao(PedidoDeVerificacaoRepository pedidos, DocumentoDeVerificacaoRepository documentos,
                              ListasService listas, ArmazenamentoArquivos arquivos, LeituraDeParametros parametros,
-                             ConsultaDeContas contas, AvisosDaVerificacao avisos, Clock relogio) {
+                             ConsultaDeContas contas, AvisosDaVerificacao avisos, ConflitosDeInteresse conflitos,
+                             OrganizacoesService organizacoes, Clock relogio) {
+        this.conflitos = conflitos;
+        this.organizacoes = organizacoes;
         this.pedidos = pedidos;
         this.documentos = documentos;
         this.listas = listas;
@@ -88,20 +101,25 @@ public class FilaDeVerificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Fila
-     * Objetivo: Listar os pedidos em análise por ordem de chegada, com o sujeito, o prazo e o responsável.
-     * Decisões: O prazo é verificacao.sla_dias_uteis a partir do envio; "atrasado" quando já passou.
+     * Objetivo: Listar os pedidos em análise por ordem de chegada, com o sujeito, o prazo, o responsável e o conflito.
+     * Decisões: O prazo é verificacao.sla_dias_uteis a partir do envio; "atrasado" quando já passou. Marca se quem vê
+     *           tem conflito e se nenhum analista ativo está livre (então o caso é do administrador).
      */
     @Transactional(readOnly = true)
-    public List<ItemDaFila> fila() {
+    public List<ItemDaFila> fila(UUID quemVe) {
         Instant agora = relogio.instant();
         long sla = parametros.inteiro(SLA);
+        List<UUID> analistas = contas.equipeAtivaComPapeis(Set.of(Papel.ANALISTA_VERIFICACAO));
         return pedidos.findBySituacaoOrderByEnviadoEmAsc(SituacaoDoPedido.EM_ANALISE).stream().map(p -> {
             Instant prazo = DiasUteis.somar(p.getEnviadoEm(), sla);
+            ConflitosDeInteresse.Envolvidos envolvidos = envolvidos(p);
+            boolean comigo = conflitos.temConflito(quemVe, CASO, p.getId(), envolvidos);
+            boolean semAnalista = analistas.stream().allMatch(a -> conflitos.temConflito(a, CASO, p.getId(), envolvidos));
             return new ItemDaFila(p, avisos.nomeDoSujeito(p), prazo, agora.isAfter(prazo),
-                    Optional.ofNullable(p.getResponsavelId()).flatMap(contas::nome).orElse(null));
+                    Optional.ofNullable(p.getResponsavelId()).flatMap(contas::nome).orElse(null), comigo, semAnalista);
         }).toList();
     }
 
@@ -127,8 +145,8 @@ public class FilaDeVerificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Assumir
      * Objetivo: Tornar o analista responsável pelo pedido em análise.
      * Decisões: Já assumido por outra pessoa: só o administrador redistribui.
@@ -142,6 +160,7 @@ public class FilaDeVerificacao {
         if (pedido.getResponsavelId() != null && !pedido.getResponsavelId().equals(analista) && !administrador) {
             throw new RegraDeNegocioException("pedido_ja_assumido", "Outra pessoa da equipe já assumiu este pedido.");
         }
+        conflitos.exigirSemConflito(analista, CASO, pedidoId, envolvidos(pedido));
         pedido.assumir(analista, relogio.instant());
         ContextoDeAuditoria.descrever("VERIFICACAO_ASSUMIDA", "pedido_verificacao", pedidoId, null);
         return pedido;
@@ -150,8 +169,8 @@ public class FilaDeVerificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Decidir
      * Objetivo: Registrar a decisão do analista com o motivo da lista e avisar quem responde pelo pedido.
      * Decisões: Verificado ganha a validade de verificacao.validade_meses; complemento ganha o prazo de
@@ -168,6 +187,7 @@ public class FilaDeVerificacao {
         if (!administrador && !analista.equals(pedido.getResponsavelId())) {
             throw new AccessDeniedException("Assuma o pedido antes de decidir.");
         }
+        conflitos.exigirSemConflito(analista, CASO, pedidoId, envolvidos(pedido));
         List<String> grupos = GRUPOS.get(resultado);
         if (grupos == null) {
             throw new RegraDeNegocioException("decisao_invalida", "Decida por verificado, pendente de complemento ou recusado.");
@@ -232,6 +252,41 @@ public class FilaDeVerificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: Declarar impedimento
+     * Objetivo: Registrar que o membro não pode atuar neste pedido e, se era o responsável, devolvê-lo à fila.
+     * Decisões: O motivo fica no caso e na trilha de auditoria.
+     */
+    @Transactional
+    public PedidoDeVerificacao declararImpedimento(UUID pedidoId, UUID membro, String motivo) {
+        PedidoDeVerificacao pedido = pedido(pedidoId);
+        conflitos.declararImpedimento(CASO, pedidoId, membro, motivo);
+        if (membro.equals(pedido.getResponsavelId())) {
+            pedido.liberar();
+        }
+        return pedido;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
+     * Título: Envolvidos no pedido
+     * Objetivo: Dizer quem está envolvido no pedido, para a checagem de conflito.
+     * Decisões: Organização: o CNPJ; pessoa física: a conta.
+     */
+    private ConflitosDeInteresse.Envolvidos envolvidos(PedidoDeVerificacao pedido) {
+        if (pedido.getSujeitoTipo() == SujeitoDaVerificacao.ORGANIZACAO) {
+            return new ConflitosDeInteresse.Envolvidos(organizacoes.cnpj(pedido.getSujeitoId()).map(Set::of).orElse(Set.of()), Set.of());
+        }
+        return new ConflitosDeInteresse.Envolvidos(Set.of(), Set.of(pedido.getSujeitoId()));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 17:33
      * Cartão Jira: KAN-83
      * Título: Pedido
@@ -245,13 +300,14 @@ public class FilaDeVerificacao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 17:33
-     * Cartão Jira: KAN-83
+     * Hora: 17:43
+     * Cartão Jira: KAN-87
      * Título: Item da fila
-     * Objetivo: Levar o pedido, o nome do sujeito, o prazo, se está atrasado e o responsável.
+     * Objetivo: Levar o pedido, o nome do sujeito, o prazo, se está atrasado, o responsável e o conflito.
      * Decisões: Responsável nulo quando ninguém assumiu.
      */
-    public record ItemDaFila(PedidoDeVerificacao pedido, String sujeito, Instant prazo, boolean atrasado, String responsavel) {
+    public record ItemDaFila(PedidoDeVerificacao pedido, String sujeito, Instant prazo, boolean atrasado, String responsavel,
+                             boolean conflitoComigo, boolean semAnalistaLivre) {
     }
 
     /**

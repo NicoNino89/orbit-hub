@@ -4,11 +4,11 @@ import type { SituacaoDoPedido } from './verificacoes'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:33
- * Cartão Jira: KAN-83
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Item da fila
  * Objetivo: Tipar um pedido na fila de verificação.
- * Decisões: Prazo e atraso calculados no servidor.
+ * Decisões: Prazo e atraso calculados no servidor; conflito de quem vê e falta de analista livre (KAN-87).
  */
 export interface ItemDaFila {
   id: string
@@ -18,6 +18,8 @@ export interface ItemDaFila {
   prazo: string
   atrasado: boolean
   responsavel: string | null
+  conflitoComigo: boolean
+  semAnalistaLivre: boolean
 }
 
 /**

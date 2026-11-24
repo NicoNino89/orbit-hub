@@ -5,6 +5,7 @@ import {
   type ItemDaFila,
 } from '../api/filaDeVerificacao'
 import { NOMES_DA_SITUACAO } from '../api/verificacoes'
+import { declararImpedimentoNaVerificacao } from '../api/vinculos'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 import { FORMATO_DATA_HORA } from './datas'
@@ -22,11 +23,12 @@ const DECISOES = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:33
- * Cartão Jira: KAN-83
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Fila de verificação
  * Objetivo: Mostrar ao time de verificação os pedidos em análise por ordem de chegada, com o prazo e o responsável.
- * Decisões: Atrasado em destaque; o pedido abre na página de análise.
+ * Decisões: Atrasado em destaque; o pedido abre na página de análise. Marca o conflito de quem vê e o pedido sem
+ *           analista livre, que fica com o administrador (KAN-87).
  */
 export function PaginaFilaDeVerificacao() {
   const [fila, setFila] = useState<ItemDaFila[] | null>(null)
@@ -59,6 +61,10 @@ export function PaginaFilaDeVerificacao() {
                   {i.responsavel ? ` · com ${i.responsavel}` : ' · sem responsável'}
                 </span>
               </span>
+              <span className="flex flex-wrap items-center gap-2">
+                {i.conflitoComigo && <span className="rounded bg-warn-soft px-2 py-0.5 text-xs font-semibold text-warn">Você tem conflito</span>}
+                {i.semAnalistaLivre && <span className="rounded bg-surface-2 px-2 py-0.5 text-xs font-semibold">Sem analista livre: administrador</span>}
+              </span>
               <span className={`text-xs font-semibold ${i.atrasado ? 'text-crit' : 'text-muted'}`}>
                 {i.atrasado ? 'Atrasado' : 'Prazo'}: {FORMATO_DATA_HORA.format(new Date(i.prazo))}
               </span>
@@ -73,12 +79,13 @@ export function PaginaFilaDeVerificacao() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:33
- * Cartão Jira: KAN-83
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Análise de um pedido
  * Objetivo: Assumir o pedido, abrir os documentos e decidir com motivo da lista e observação.
  * Decisões: Os motivos se filtram pela decisão escolhida; motivo de fraude avisa que o caso será encaminhado. O
- *           histórico do sujeito ajuda a ver tentativas anteriores.
+ *           histórico do sujeito ajuda a ver tentativas anteriores. A pessoa pode se declarar impedida, com motivo
+ *           (KAN-87).
  */
 export function PaginaPedidoDeVerificacao() {
   const { id = '' } = useParams()
@@ -89,6 +96,7 @@ export function PaginaPedidoDeVerificacao() {
   const [decisao, setDecisao] = useState<(typeof DECISOES)[number]['valor']>('VERIFICADO')
   const [motivo, setMotivo] = useState('')
   const [observacao, setObservacao] = useState('')
+  const [impedimento, setImpedimento] = useState('')
 
   useEffect(() => {
     let ativo = true
@@ -191,6 +199,20 @@ export function PaginaPedidoDeVerificacao() {
             <button type="submit" className={`${CLASSE_BOTAO_PRIMARIO} self-start`}>Registrar decisão</button>
           </form>
         </>
+      )}
+
+      {emAnalise && (
+        <form aria-label="Impedimento" className="flex flex-wrap items-end gap-3 text-sm"
+          onSubmit={(e) => { e.preventDefault(); void agir(() => declararImpedimentoNaVerificacao(pedido.id, impedimento), 'Impedimento registrado.') }}>
+          <div className="min-w-64 flex-1">
+            <label className="flex flex-col gap-1">
+              <span className="font-semibold">Não posso analisar este caso porque…</span>
+              <input value={impedimento} onChange={(e) => setImpedimento(e.target.value)} required maxLength={500}
+                className="rounded-md border border-line bg-surface px-3 py-2" />
+            </label>
+          </div>
+          <button type="submit" className={CLASSE_LINK}>Declarar impedimento</button>
+        </form>
       )}
 
       {detalhe.historico.length > 0 && (
