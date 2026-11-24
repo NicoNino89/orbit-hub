@@ -11,7 +11,7 @@ infra/
 ├── modules/ambiente/   # tudo o que um ambiente precisa
 └── envs/
     ├── homologacao/    # usa o módulo com escala a zero e sem teste de disponibilidade
-    └── producao/       # usa o módulo com teste de disponibilidade a cada 15 min
+    └── producao/       # usa o módulo com escala a zero; teste de disponibilidade desligado por ora (ADR 0006)
 ```
 
 | Recurso | Camada | Configuração econômica |
