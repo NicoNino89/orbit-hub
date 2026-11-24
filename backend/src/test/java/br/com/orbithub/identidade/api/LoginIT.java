@@ -67,6 +67,7 @@ class LoginIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenAcesso").isNotEmpty())
                 .andExpect(jsonPath("$.usuario.email").value(email))
+                .andExpect(jsonPath("$.sessaoExpiraEm").isNotEmpty())
                 .andReturn();
         String setCookie = login.getResponse().getHeader(HttpHeaders.SET_COOKIE);
         assertThat(setCookie).contains("HttpOnly", "SameSite=Strict");
