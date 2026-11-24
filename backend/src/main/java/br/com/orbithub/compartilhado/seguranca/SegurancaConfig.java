@@ -57,8 +57,9 @@ public class SegurancaConfig {
     static final String[] PAPEIS_DA_EQUIPE = Arrays.stream(Papel.values())
             .filter(Papel::interno).map(Enum::name).toArray(String[]::new);
 
-    /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92). */
-    static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais"};
+    /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92) e opções das listas (KAN-79). */
+    static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais",
+        "/api/v1/listas/**"};
 
     /** Rotas abertas sem login: saúde, métricas, contrato da API e autenticação. */
     static final String[] ROTAS_PUBLICAS = {
