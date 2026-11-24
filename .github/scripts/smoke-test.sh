@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 # Autor: Nicholas Bruno Pimentel
-# Data: 18/11/2026
-# Hora: 21:16
-# Cartão Jira: KAN-53
-# Título: Smoke test da homologação
-# Objetivo: Confirmar, depois de cada publicação, que API, versão, ambiente, Swagger, web, o repasse
-#           da web para a API e o CORS estão no ar.
+# Data: 24/11/2026
+# Hora: 12:49
+# Cartão Jira: KAN-54
+# Título: Smoke test da publicação
+# Objetivo: Confirmar, depois de cada publicação (homologação ou produção) e de cada rollback, que API, versão,
+#           ambiente, Swagger, web, o repasse da web para a API e o CORS estão no ar.
 # Decisões: Até 30 tentativas a cada 10 s, porque a API escala a zero e pode levar ~2 min para acordar;
-#           confere a versão pelo commit, para não aprovar uma publicação antiga que ficou no ar.
+#           confere a versão publicada, para não aprovar uma publicação antiga que ficou no ar. O ambiente vem
+#           de AMBIENTE (KAN-54).
 #
 # Smoke test depois da publicação (KAN-53).
 # A API escala a zero, então a primeira chamada pode levar até ~2 min para acordar o contêiner.
-# Variáveis: API_URL, WEB_URL e VERSAO (commit curto esperado em /api/v1/sobre).
+# Variáveis: API_URL, WEB_URL, VERSAO (esperada em /api/v1/sobre) e AMBIENTE (padrão: homologacao).
 set -euo pipefail
+AMBIENTE="${AMBIENTE:-homologacao}"
 
 # Autor: Nicholas Bruno Pimentel
 # Data: 18/11/2026
@@ -40,7 +42,7 @@ tentar() {
 
 tentar "API no ar (/actuator/health)" "$API_URL/actuator/health" '"status":"UP"'
 tentar "Versão publicada é $VERSAO"   "$API_URL/api/v1/sobre"     "\"versao\":\"$VERSAO\""
-tentar "Ambiente é homologação"       "$API_URL/api/v1/sobre"     '"ambiente":"homologacao"'
+tentar "Ambiente é $AMBIENTE"           "$API_URL/api/v1/sobre"     "\"ambiente\":\"$AMBIENTE\""
 tentar "Swagger publicado"            "$API_URL/v3/api-docs"      '"Orbit Hub API"'
 tentar "Web publicada"                "$WEB_URL/"                 '<title>Orbit Hub</title>'
 tentar "Web repassa /api para a API"  "$WEB_URL/api/v1/sobre"     "\"versao\":\"$VERSAO\""
@@ -51,4 +53,4 @@ if [[ "$origem_permitida" != "$WEB_URL" ]]; then
   echo "FALHOU CORS: a API não autorizou a origem $WEB_URL (recebido: ${origem_permitida:-nada})"
   exit 1
 fi
-echo "OK   CORS libera a web de homologação"
+echo "OK   CORS libera a web de $AMBIENTE"

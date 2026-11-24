@@ -17,7 +17,7 @@ resource "azurerm_container_app" "api" {
   name                         = "ca-${local.nome}-api"
   container_app_environment_id = var.container_apps_ambiente_id
   resource_group_name          = azurerm_resource_group.ambiente.name
-  revision_mode                = "Single"
+  revision_mode                = var.modo_revisao
   tags                         = local.tags
 
   identity {
@@ -182,8 +182,9 @@ resource "azurerm_container_app" "api" {
   }
 
   lifecycle {
-    # A imagem é trocada pelo pipeline de entrega (KAN-53) a cada versão
-    ignore_changes = [template[0].container[0].image]
+    # A imagem é trocada pelo pipeline de entrega (KAN-53) a cada versão. Com várias revisões (KAN-54), o tráfego
+    # também é do pipeline: publicar e voltar uma versão mudam o peso, e um apply não pode desfazer um rollback.
+    ignore_changes = [template[0].container[0].image, ingress[0].traffic_weight]
   }
 
   depends_on = [
@@ -205,7 +206,7 @@ resource "azurerm_container_app" "web" {
   name                         = local.web_nome
   container_app_environment_id = var.container_apps_ambiente_id
   resource_group_name          = azurerm_resource_group.ambiente.name
-  revision_mode                = "Single"
+  revision_mode                = var.modo_revisao
   tags                         = local.tags
 
   identity {
@@ -275,8 +276,9 @@ resource "azurerm_container_app" "web" {
   }
 
   lifecycle {
-    # A imagem é trocada pelo pipeline de entrega (KAN-53) a cada versão
-    ignore_changes = [template[0].container[0].image]
+    # A imagem é trocada pelo pipeline de entrega (KAN-53) a cada versão. Com várias revisões (KAN-54), o tráfego
+    # também é do pipeline: publicar e voltar uma versão mudam o peso, e um apply não pode desfazer um rollback.
+    ignore_changes = [template[0].container[0].image, ingress[0].traffic_weight]
   }
 
   depends_on = [azurerm_role_assignment.kv_leitura_web]

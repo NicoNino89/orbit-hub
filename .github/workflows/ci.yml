@@ -118,6 +118,36 @@ jobs:
       - name: Validar o JSON dos painéis do Grafana
         run: for f in observabilidade/grafana/dashboards/*.json; do jq -e ".uid and .panels" "$f" > /dev/null; done
 
+  migracoes:
+    # KAN-54: migração aplicada nunca é editada, apagada nem renomeada; migração destrutiva exige a revisão
+    # específica, registrada com o rótulo "migracao-destrutiva-revisada" no PR (depois de pôr o rótulo, rodar este
+    # job de novo). Na main, compara com o push anterior.
+    name: Migrações do Flyway
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Conferir as migrações
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          NOVO: ${{ github.event.pull_request.head.sha || github.sha }}
+          REVISADA: ${{ contains(github.event.pull_request.labels.*.name, 'migracao-destrutiva-revisada') }}
+        run: |
+          if [[ -z "$BASE" || "$BASE" =~ ^0+$ ]] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "Sem commit base para comparar."; exit 0
+          fi
+          status=0
+          bash .github/scripts/migracoes.sh "$BASE" "$NOVO" || status=$?
+          if [[ $status -eq 2 && "$REVISADA" != "true" && "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "::error::Migração destrutiva sem a revisão específica (rótulo migracao-destrutiva-revisada)."
+            exit 1
+          fi
+          [[ $status -eq 0 || $status -eq 2 ]]
+
   sonarcloud:
     name: SonarCloud (quality gate)
     runs-on: ubuntu-latest
