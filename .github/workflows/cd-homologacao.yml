@@ -1,13 +1,24 @@
 # Entrega contínua em homologação (KAN-53).
 # Depois que o CI da main termina verde (e publica as imagens no GHCR), publica a API e a web em homologação
 # e roda o smoke test. O Flyway aplica as migrações quando a API sobe.
+#
+# Autor: Nicholas Bruno Pimentel
+# Data: 24/11/2026
+# Hora: 08:30
+# Cartão Jira: KAN-163
+# Título: Publicação em homologação só manual, por enquanto (ADR 0008)
+# Objetivo: não ligar o PostgreSQL da Azure a cada merge na main; o desenvolvimento roda no ambiente local.
+# Decisões: o gatilho automático (workflow_run) fica comentado logo abaixo, intacto. Para voltar ao automático
+#           no fim do projeto, basta descomentar as 4 linhas. Publicar agora: aba Actions → "Entrega em
+#           homologação" → Run workflow (ou `gh workflow run cd-homologacao.yml`).
 name: Entrega em homologação
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  # Automático desligado até o fim do projeto (KAN-163, ADR 0008). Descomentar para voltar:
+  # workflow_run:
+  #   workflows: [CI]
+  #   types: [completed]
+  #   branches: [main]
   workflow_dispatch:
     inputs:
       commit:
