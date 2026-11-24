@@ -4,6 +4,8 @@ import br.com.orbithub.auditoria.domain.RegistroAuditoria.Acao;
 import br.com.orbithub.auditoria.domain.RegistroAuditoria.Resultado;
 import br.com.orbithub.auditoria.service.TrilhaDeAuditoria;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.compartilhado.seguranca.CifraDeSegredos;
 import br.com.orbithub.identidade.domain.BloqueioDeLogin;
 import br.com.orbithub.identidade.domain.TokenDeConta;
@@ -21,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:39
- * Cartão Jira: KAN-75
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Segundo fator das contas da equipe
  * Objetivo: Exigir, depois da senha, o código do aplicativo autenticador de toda conta interna, e conduzir a
  *           configuração do aplicativo no primeiro acesso.
@@ -40,7 +42,7 @@ public class SegundoFatorService {
     private final UsuarioRepository usuarios;
     private final TokenDeContaService links;
     private final BloqueioDeLoginRepository bloqueios;
-    private final LoginService.Parametros parametros;
+    private final LeituraDeParametros parametros;
     private final SessaoService sessoes;
     private final CifraDeSegredos cifra;
     private final EquipeProperties equipe;
@@ -50,14 +52,14 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber contas, desafios, bloqueios, sessões, cifra, configuração, trilha e relógio.
      * Decisões: Injeção por construtor.
      */
     public SegundoFatorService(UsuarioRepository usuarios, TokenDeContaService links,
-                               BloqueioDeLoginRepository bloqueios, LoginService.Parametros parametros,
+                               BloqueioDeLoginRepository bloqueios, LeituraDeParametros parametros,
                                SessaoService sessoes, CifraDeSegredos cifra, EquipeProperties equipe,
                                TrilhaDeAuditoria trilha, Clock relogio) {
         this.usuarios = usuarios;
@@ -112,8 +114,8 @@ public class SegundoFatorService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Confirmar o código
      * Objetivo: Conferir o código do aplicativo e abrir a sessão do membro.
      * Decisões: Na configuração, o primeiro código correto ativa o segredo. Código errado conta como falha de
@@ -138,7 +140,8 @@ public class SegundoFatorService {
         boolean valido = passo.isPresent() && (configurando || conta.usarPassoDoCodigo(passo.getAsLong()));
         if (!valido) {
             BloqueioDeLogin contagem = bloqueio != null ? bloqueio : BloqueioDeLogin.novo(chave, agora);
-            contagem.registrarFalha(agora, parametros.maxTentativas(), parametros.bloqueio());
+            contagem.registrarFalha(agora, (int) parametros.inteiro(Chaves.LOGIN_MAX_TENTATIVAS),
+                    parametros.duracao(Chaves.LOGIN_BLOQUEIO));
             bloqueios.save(contagem);
             if (contagem.bloqueado(agora)) {
                 links.consumir(desafio, Finalidade.SEGUNDO_FATOR);

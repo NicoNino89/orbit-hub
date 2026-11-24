@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
@@ -20,7 +21,6 @@ import br.com.orbithub.identidade.domain.TokenDeConta.Finalidade;
 import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.RevisaoDeAcessoRepository;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -58,8 +58,8 @@ class EquipeServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Preparação
      * Objetivo: Montar o serviço com um administrador e uma curadora ativos e uma fila que devolve 2 casos.
      * Decisões: Revisão a cada 3 meses e convite de 14 dias, os padrões do catálogo.
@@ -88,8 +88,7 @@ class EquipeServiceTest {
             }
         };
         servico = new EquipeService(usuarios, revisoes, senhas, links, sessoes, email,
-                new ContaProperties("https://web", true, Duration.ofHours(24), Duration.ofMinutes(30), Duration.ofHours(24)),
-                new EquipeProperties(Duration.ofDays(14), Duration.ofMinutes(10), 3, null),
+                new ContaProperties("https://web", true), new ParametrosFixos(),
                 List.of(curadoria), new RelogioAjustavel(AGORA));
         admin = ativo("Bia Admin", "bia@orbithub.com", Papel.ADMIN);
         curadora = ativo("Cris Curadora", "cris@orbithub.com", Papel.CURADOR);

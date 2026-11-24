@@ -1,5 +1,7 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.identidade.domain.BloqueioDeLogin;
 import br.com.orbithub.identidade.domain.StatusUsuario;
 import br.com.orbithub.identidade.domain.Usuario;
@@ -11,7 +13,6 @@ import java.time.Instant;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:39
- * Cartão Jira: KAN-75
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Login e logout
  * Objetivo: Conferir e-mail e senha, abrir a sessão (ou pedir o segundo fator, nas contas da equipe),
  *           bloquear temporariamente após falhas seguidas e encerrar a sessão no logout.
@@ -39,21 +40,21 @@ public class LoginService {
     private final PasswordEncoder senhas;
     private final SessaoService sessoes;
     private final SegundoFatorService segundoFator;
-    private final Parametros parametros;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
     private final String hashFicticio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber repositórios, codificador de senhas, sessões, segundo fator, parâmetros e relógio.
      * Decisões: O hash fictício é calculado uma vez, com o mesmo algoritmo das senhas reais.
      */
     public LoginService(UsuarioRepository usuarios, BloqueioDeLoginRepository bloqueios, PasswordEncoder senhas,
-                        SessaoService sessoes, SegundoFatorService segundoFator, Parametros parametros,
+                        SessaoService sessoes, SegundoFatorService segundoFator, LeituraDeParametros parametros,
                         Clock relogio) {
         this.usuarios = usuarios;
         this.bloqueios = bloqueios;
@@ -68,8 +69,8 @@ public class LoginService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:39
-     * Cartão Jira: KAN-75
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Entrar
      * Objetivo: Abrir a sessão para e-mail e senha corretos de uma conta ativa, ou devolver o desafio do
      *           segundo fator quando a conta é da equipe.
@@ -99,9 +100,11 @@ public class LoginService {
                 });
         if (!senhaConfere || usuario.get().getStatus() == StatusUsuario.DESATIVADO) {
             BloqueioDeLogin contagem = bloqueio.orElseGet(() -> BloqueioDeLogin.novo(chave, agora));
-            contagem.registrarFalha(agora, parametros.maxTentativas(), parametros.bloqueio());
+            contagem.registrarFalha(agora, (int) parametros.inteiro(Chaves.LOGIN_MAX_TENTATIVAS),
+                    parametros.duracao(Chaves.LOGIN_BLOQUEIO));
             bloqueios.save(contagem);
-            LOG.info("Login recusado (falha {} de {})", contagem.getFalhas(), parametros.maxTentativas());
+            LOG.info("Login recusado (falha {} de {})", contagem.getFalhas(),
+                    parametros.inteiro(Chaves.LOGIN_MAX_TENTATIVAS));
             throw contagem.bloqueado(agora) ? new LoginBloqueadoException() : new CredenciaisInvalidasException();
         }
 
@@ -139,19 +142,6 @@ public class LoginService {
      */
     public void sair(String refreshToken) {
         sessoes.encerrar(refreshToken);
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 01:10
-     * Cartão Jira: KAN-13
-     * Título: Parâmetros do login
-     * Objetivo: Número de falhas seguidas que bloqueia e a duração do bloqueio.
-     * Decisões: Padrão de 5 falhas e 15 minutos (OWASP); configuráveis e, no KAN-75, editáveis no painel.
-     */
-    @ConfigurationProperties("orbit.seguranca.login")
-    public record Parametros(int maxTentativas, Duration bloqueio) {
     }
 
     /**

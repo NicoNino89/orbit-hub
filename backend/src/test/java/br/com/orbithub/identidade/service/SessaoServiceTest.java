@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.compartilhado.seguranca.SegurancaProperties;
 import br.com.orbithub.identidade.domain.Papel;
@@ -54,8 +55,8 @@ class SessaoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Preparação
      * Objetivo: Montar o serviço com repositórios simulados e uma conta ativa.
      * Decisões: Parâmetros iguais aos padrões da aplicação (30 min, 12 h, 10 s).
@@ -68,8 +69,8 @@ class SessaoServiceTest {
         relogio = new RelogioAjustavel(INICIO);
         var propriedades = new SegurancaProperties(
                 new SegurancaProperties.Jwt("x", "orbit-hub", Duration.ofMinutes(15)),
-                new SegurancaProperties.Sessao(Duration.ofMinutes(30), Duration.ofHours(12), Duration.ofSeconds(10)));
-        servico = new SessaoService(tokens, usuarios, tokenAcesso, propriedades, relogio);
+                new SegurancaProperties.Sessao(Duration.ofSeconds(10)));
+        servico = new SessaoService(tokens, usuarios, tokenAcesso, propriedades, new ParametrosFixos(), relogio);
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "h", Set.of(Papel.INVESTIDOR), INICIO);
         ana.confirmarEmail(INICIO);

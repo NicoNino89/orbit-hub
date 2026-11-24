@@ -7,12 +7,15 @@ import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.PerfilDePapel;
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.identidade.domain.PoliticaDeSenha;
 import br.com.orbithub.identidade.domain.StatusUsuario;
 import br.com.orbithub.identidade.domain.TokenDeConta.Finalidade;
 import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -27,8 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:00
- * Cartão Jira: KAN-12
+ * Hora: 11:08
+ * Cartão Jira: KAN-78
  * Título: Cadastro de conta
  * Objetivo: Criar a conta com nome, e-mail, senha e papéis, registrar os aceites e enviar a confirmação
  *           do e-mail (P1).
@@ -47,20 +50,21 @@ public class CadastroService {
     private final TokenDeContaService links;
     private final EnvioDeEmail email;
     private final ContaProperties propriedades;
+    private final LeituraDeParametros parametros;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Criação do serviço
      * Objetivo: Receber repositório, codificador de senhas, termos, links, e-mail, parâmetros e relógio.
      * Decisões: Injeção pelo construtor.
      */
     public CadastroService(UsuarioRepository usuarios, PasswordEncoder senhas, AceiteService aceites,
                            DocumentoLegalService documentos, TokenDeContaService links, EnvioDeEmail email,
-                           ContaProperties propriedades, Clock relogio) {
+                           ContaProperties propriedades, LeituraDeParametros parametros, Clock relogio) {
         this.usuarios = usuarios;
         this.senhas = senhas;
         this.aceites = aceites;
@@ -68,6 +72,7 @@ public class CadastroService {
         this.links = links;
         this.email = email;
         this.propriedades = propriedades;
+        this.parametros = parametros;
         this.relogio = relogio;
     }
 
@@ -181,18 +186,19 @@ public class CadastroService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Enviar e-mail de confirmação
      * Objetivo: Gerar o link e mandar o e-mail de confirmação da conta.
      * Decisões: Link para a tela /confirmar-email da web, com validade de cadastro.link_confirmacao_horas.
      */
     private void enviarConfirmacao(Usuario usuario) {
-        String token = links.gerar(usuario.getId(), Finalidade.CONFIRMACAO_EMAIL, propriedades.linkConfirmacao(), null);
+        Duration validade = parametros.duracao(Chaves.CADASTRO_LINK_CONFIRMACAO);
+        String token = links.gerar(usuario.getId(), Finalidade.CONFIRMACAO_EMAIL, validade, null);
         String link = propriedades.webUrl() + "/confirmar-email?token=" + token;
         email.enviar(new EnvioDeEmail.MensagemEmail(usuario.getEmail(), "Confirme seu e-mail no Orbit Hub",
                 "Olá, " + usuario.getNome() + ".\n\nPara ativar sua conta no Orbit Hub, abra o link abaixo:\n\n"
-                        + link + "\n\nO link vale por " + propriedades.linkConfirmacao().toHours()
+                        + link + "\n\nO link vale por " + validade.toHours()
                         + " horas. Se você não criou esta conta, ignore este e-mail.",
                 "confirmacao_email"));
     }

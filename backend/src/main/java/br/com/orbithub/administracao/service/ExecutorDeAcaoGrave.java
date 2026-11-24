@@ -5,6 +5,7 @@ import br.com.orbithub.administracao.domain.PropostaDeAprovacao;
 import br.com.orbithub.identidade.domain.Papel;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -56,11 +57,12 @@ public interface ExecutorDeAcaoGrave {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:52
-     * Cartão Jira: KAN-81
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Aplicar a ação
      * Objetivo: Executar a ação aprovada, com os dados guardados na proposta.
-     * Decisões: Roda na mesma transação da aprovação: se falhar, a proposta continua pendente e nada muda.
+     * Decisões: Roda na mesma transação da aprovação: se falhar, a proposta continua pendente e nada muda. Recebe
+     *           quem aprovou, para o módulo registrar no próprio histórico (por exemplo, o de parâmetros, KAN-78).
      */
-    void executar(PropostaDeAprovacao proposta);
+    void executar(PropostaDeAprovacao proposta, UUID aprovador);
 }

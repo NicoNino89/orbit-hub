@@ -9,6 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.orbithub.compartilhado.parametros.Chaves;
+import br.com.orbithub.compartilhado.parametros.ParametrosFixos;
 import br.com.orbithub.RelogioAjustavel;
 import br.com.orbithub.identidade.domain.BloqueioDeLogin;
 import br.com.orbithub.identidade.domain.Papel;
@@ -51,8 +53,8 @@ class LoginServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:10
-     * Cartão Jira: KAN-13
+     * Hora: 11:08
+     * Cartão Jira: KAN-78
      * Título: Preparação
      * Objetivo: Montar o serviço com uma conta ativa e limite de 3 falhas por 15 minutos.
      * Decisões: Limite menor que o padrão para o teste ficar curto.
@@ -79,7 +81,7 @@ class LoginServiceTest {
         relogio = new RelogioAjustavel(AGORA);
         segundoFator = mock(SegundoFatorService.class);
         servico = new LoginService(usuarios, bloqueios, senhas, sessoes, segundoFator,
-                new LoginService.Parametros(3, Duration.ofMinutes(15)), relogio);
+                new ParametrosFixos().com(Chaves.LOGIN_MAX_TENTATIVAS, "3"), relogio);
 
         ana = Usuario.novo("Ana", "ana@exemplo.com", "hash:senha-correta-1", Set.of(Papel.INVESTIDOR), AGORA);
         ana.confirmarEmail(AGORA);
