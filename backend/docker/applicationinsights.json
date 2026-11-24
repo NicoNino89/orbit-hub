@@ -3,7 +3,13 @@
     "name": "orbit-hub-api"
   },
   "sampling": {
-    "percentage": 50
+    "percentage": 50,
+    "overrides": [
+      {
+        "telemetryType": "trace",
+        "percentage": 100
+      }
+    ]
   },
   "instrumentation": {
     "logging": {

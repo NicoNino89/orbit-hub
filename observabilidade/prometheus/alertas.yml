@@ -28,3 +28,19 @@ groups:
           gravidade: media
         annotations:
           resumo: "O p95 do tempo de resposta passou de 1 segundo por 10 minutos"
+
+      # Rotinas automáticas (KAN-104)
+      - alert: RotinaFalhou
+        expr: sum by (rotina) (increase(orbit_rotina_falhas_total{job="orbit-hub-api"}[30m])) > 0
+        labels:
+          gravidade: alta
+        annotations:
+          resumo: "A rotina {{ $labels.rotina }} falhou nos últimos 30 minutos"
+
+      - alert: RotinaAtrasada
+        expr: max by (rotina) (orbit_rotina_atrasada{job="orbit-hub-api"}) == 1
+        for: 15m
+        labels:
+          gravidade: alta
+        annotations:
+          resumo: "A rotina {{ $labels.rotina }} não roda no horário esperado"

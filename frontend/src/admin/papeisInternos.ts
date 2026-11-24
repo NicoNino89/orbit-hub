@@ -17,8 +17,8 @@ export const PAPEIS_INTERNOS: PapelInterno[] = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 12:06
- * Cartão Jira: KAN-79
+ * Hora: 12:17
+ * Cartão Jira: KAN-104
  * Título: Itens do menu do backoffice
  * Objetivo: Listar as telas do backoffice e quem pode ver cada uma.
  * Decisões: O menu só mostra o que o papel permite; o servidor confere de novo em cada rota. A trilha de
@@ -30,5 +30,6 @@ export const MENU_BACKOFFICE: { caminho: string; rotulo: string; papeis: Papel[]
   { caminho: '/admin/equipe', rotulo: 'Equipe', papeis: ['ADMIN'] },
   { caminho: '/admin/parametros', rotulo: 'Parâmetros', papeis: ['ADMIN'] },
   { caminho: '/admin/listas', rotulo: 'Listas', papeis: ['ADMIN'] },
+  { caminho: '/admin/rotinas', rotulo: 'Rotinas', papeis: ['ADMIN'] },
   { caminho: '/admin/auditoria', rotulo: 'Auditoria', papeis: ['ADMIN', 'ENCARREGADO_DADOS'] },
 ]

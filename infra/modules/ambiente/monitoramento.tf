@@ -55,6 +55,33 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "taxa_erros" {
   }
 }
 
+# Rotinas automáticas (KAN-104): falha ou atraso aparecem no log como "Rotina falhou" ou "Rotina atrasada".
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "rotinas" {
+  name                 = "alerta-${local.nome}-rotinas"
+  location             = azurerm_resource_group.ambiente.location
+  resource_group_name  = azurerm_resource_group.ambiente.name
+  scopes               = [azurerm_application_insights.api.id]
+  description          = "Uma rotina automática falhou ou não rodou no horário esperado (KAN-104)."
+  severity             = 2
+  evaluation_frequency = "PT15M"
+  window_duration      = "PT30M"
+  tags                 = local.tags
+
+  criteria {
+    query                   = <<-KQL
+      traces
+      | where message startswith "Rotina falhou" or message startswith "Rotina atrasada"
+    KQL
+    time_aggregation_method = "Count"
+    operator                = "GreaterThan"
+    threshold               = 0
+  }
+
+  action {
+    action_groups = [azurerm_monitor_action_group.time.id]
+  }
+}
+
 # Resposta lenta: p95 acima de 1 segundo
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "resposta_lenta" {
   name                 = "alerta-${local.nome}-resposta-lenta"
