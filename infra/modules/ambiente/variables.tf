@@ -95,7 +95,7 @@ variable "email_alertas" {
 }
 
 variable "teste_disponibilidade" {
-  description = "Liga o teste de disponibilidade que chama a API a cada 15 minutos. Em homologação fica desligado para a escala a zero funcionar."
+  description = "Liga o teste de disponibilidade que chama a API a cada 15 minutos. Desligado em homologação e, por ora, em produção (ADR 0006), para a escala a zero funcionar e não gastar crédito."
   type        = bool
   default     = false
 }
