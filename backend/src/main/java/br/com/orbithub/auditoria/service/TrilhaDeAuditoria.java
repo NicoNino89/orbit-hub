@@ -4,8 +4,7 @@ import br.com.orbithub.auditoria.domain.RegistroAuditoria;
 import br.com.orbithub.auditoria.domain.RegistroAuditoria.Acao;
 import br.com.orbithub.auditoria.repository.RegistroAuditoriaRepository;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
-import br.com.orbithub.identidade.domain.Usuario;
-import br.com.orbithub.identidade.repository.UsuarioRepository;
+import br.com.orbithub.identidade.service.ConsultaDeContas;
 import jakarta.persistence.criteria.Predicate;
 import java.time.Clock;
 import java.time.Instant;
@@ -36,21 +35,22 @@ public class TrilhaDeAuditoria {
     static final int TAMANHO_MAXIMO_PAGINA = 100;
 
     private final RegistroAuditoriaRepository registros;
-    private final UsuarioRepository usuarios;
+    private final ConsultaDeContas contas;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:09
-     * Cartão Jira: KAN-80
+     * Hora: 10:52
+     * Cartão Jira: KAN-81
      * Título: Criação do serviço
-     * Objetivo: Receber o repositório, as contas (para o nome do autor) e o relógio.
-     * Decisões: Relógio injetado, para os testes controlarem o tempo.
+     * Objetivo: Receber o repositório, a consulta de contas (para o nome do autor) e o relógio.
+     * Decisões: Relógio injetado, para os testes controlarem o tempo. O nome vem do serviço público do módulo de
+     *           identidade, e não do repositório dele (fronteira entre módulos, KAN-81).
      */
-    public TrilhaDeAuditoria(RegistroAuditoriaRepository registros, UsuarioRepository usuarios, Clock relogio) {
+    public TrilhaDeAuditoria(RegistroAuditoriaRepository registros, ConsultaDeContas contas, Clock relogio) {
         this.registros = registros;
-        this.usuarios = usuarios;
+        this.contas = contas;
         this.relogio = relogio;
     }
 
@@ -67,7 +67,7 @@ public class TrilhaDeAuditoria {
     public RegistroAuditoria registrar(Acao acao) {
         Acao completa = acao;
         if (acao.atorId() != null && acao.atorNome() == null) {
-            String nome = usuarios.findById(acao.atorId()).map(Usuario::getNome).orElse(null);
+            String nome = contas.nome(acao.atorId()).orElse(null);
             completa = new Acao(acao.atorId(), nome, acao.acao(), acao.objetoTipo(), acao.objetoId(),
                     acao.resultado(), acao.statusHttp(), acao.detalhe(), acao.justificativa());
         }

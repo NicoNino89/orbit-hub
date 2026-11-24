@@ -15,7 +15,7 @@ import br.com.orbithub.auditoria.repository.RegistroAuditoriaRepository;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
-import br.com.orbithub.identidade.repository.UsuarioRepository;
+import br.com.orbithub.identidade.service.ConsultaDeContas;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -45,7 +45,7 @@ class TrilhaDeAuditoriaTest {
     static final Instant AGORA = Instant.parse("2026-11-24T13:00:00Z");
 
     RegistroAuditoriaRepository registros;
-    UsuarioRepository usuarios;
+    ConsultaDeContas usuarios;
     TrilhaDeAuditoria trilha;
 
     /**
@@ -60,7 +60,7 @@ class TrilhaDeAuditoriaTest {
     @BeforeEach
     void preparar() {
         registros = mock(RegistroAuditoriaRepository.class);
-        usuarios = mock(UsuarioRepository.class);
+        usuarios = mock(ConsultaDeContas.class);
         when(registros.save(any())).thenAnswer(i -> i.getArgument(0));
         trilha = new TrilhaDeAuditoria(registros, usuarios, Clock.fixed(AGORA, ZoneOffset.UTC));
     }
@@ -77,7 +77,7 @@ class TrilhaDeAuditoriaTest {
     @Test
     void copiaONomeDoAutorEUsaORelogio() {
         Usuario bia = Usuario.novo("Bia Lima", "bia@orbithub.com", "{noop}x", Set.of(Papel.ADMIN), AGORA);
-        when(usuarios.findById(bia.getId())).thenReturn(Optional.of(bia));
+        when(usuarios.nome(bia.getId())).thenReturn(Optional.of(bia.getNome()));
 
         RegistroAuditoria registro = trilha.registrar(new Acao(bia.getId(), null, "DOCUMENTO_LEGAL_PUBLICADO",
                 "documento_legal", "1", Resultado.SUCESSO, 201, null, null));
@@ -98,12 +98,12 @@ class TrilhaDeAuditoriaTest {
     @Test
     void gravaSemNomeQuandoNaoHaConta() {
         UUID desconhecido = UUID.randomUUID();
-        when(usuarios.findById(desconhecido)).thenReturn(Optional.empty());
+        when(usuarios.nome(desconhecido)).thenReturn(Optional.empty());
         assertThat(trilha.registrar(new Acao(desconhecido, null, "X", null, null, Resultado.FALHA, 403, null, null))
                 .getAtorNome()).isNull();
 
         trilha.registrar(new Acao(null, null, "ROTINA_EXECUTADA", null, null, Resultado.SUCESSO, null, null, null));
-        verify(usuarios, never()).findById(null);
+        verify(usuarios, never()).nome(null);
     }
 
     /**

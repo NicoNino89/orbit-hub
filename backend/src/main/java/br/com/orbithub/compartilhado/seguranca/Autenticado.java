@@ -1,6 +1,10 @@
 package br.com.orbithub.compartilhado.seguranca;
 
+import br.com.orbithub.identidade.domain.Papel;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -66,5 +70,25 @@ public final class Autenticado {
      */
     public static UUID sessao(Jwt token) {
         return UUID.fromString(token.getClaimAsString("sid"));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 10:52
+     * Cartão Jira: KAN-81
+     * Título: Papéis do token
+     * Objetivo: Devolver os papéis que o token traz, já como enum.
+     * Decisões: Nome desconhecido é ignorado (token antigo de um papel que deixou de existir).
+     */
+    public static Set<Papel> papeis(Jwt token) {
+        List<String> nomes = token.getClaimAsStringList("papeis");
+        Set<Papel> papeis = EnumSet.noneOf(Papel.class);
+        if (nomes != null) {
+            for (String nome : nomes) {
+                Arrays.stream(Papel.values()).filter(p -> p.name().equals(nome)).findFirst().ifPresent(papeis::add);
+            }
+        }
+        return papeis;
     }
 }

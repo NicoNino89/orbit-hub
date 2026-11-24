@@ -54,6 +54,9 @@ orbit:
     # smtp (servidor de spring.mail: Mailpit no ambiente local) ou registro (só registra no log)
     tipo: ${ORBIT_EMAIL_TIPO:registro}
     remetente: ${ORBIT_EMAIL_REMETENTE:Orbit Hub <nao-responda@orbithub.local>}
+  aprovacao:
+    # aprovacao.prazo_horas: proposta de ação grave parada além disto alerta o administrador (KAN-81)
+    prazo: PT48H
   equipe:
     # convite.validade_dias (docs/requisitos/processos-e-operacao.md): prazo para o membro aceitar o convite
     convite: P14D
