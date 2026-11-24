@@ -23,6 +23,7 @@ public final class Chaves {
     public static final String CONVITE_VALIDADE = "convite.validade_dias";
     public static final String ACESSO_REVISAO = "acesso.revisao_meses";
     public static final String APROVACAO_PRAZO = "aprovacao.prazo_horas";
+    public static final String RETENCAO_TOKENS = "retencao.tokens_dias";
 
     /**
      * Autor: Nicholas Bruno Pimentel

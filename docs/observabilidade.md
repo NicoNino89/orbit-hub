@@ -31,13 +31,15 @@ As rotas do Actuator ficam fora das contas de tempo de resposta, para a coleta d
 | API fora do ar | Sem resposta por mais de 1 minuto | Crítica |
 | Taxa de erros alta | Mais de 5% de respostas 5xx em 5 minutos | Alta |
 | Resposta lenta | p95 acima de 1 segundo por 10 minutos | Média |
+| Rotina falhou (KAN-104) | Uma rotina automática terminou com erro (Prometheus: `orbit_rotina_falhas_total`; Azure: log "Rotina falhou") | Alta |
+| Rotina atrasada (KAN-104) | Rotina ativa sem rodar há mais de duas vezes o intervalo dela (Prometheus: `orbit_rotina_atrasada`; Azure: log "Rotina atrasada") | Alta |
 
 Os limites são os mesmos no Prometheus local e no Azure Monitor.
 
 ## Application Insights
 
 - O agente Java (`applicationinsights-agent`) vai dentro da imagem, em `/app/agente/`, mas só é ligado na Azure. O Terraform define `JAVA_TOOL_OPTIONS=-javaagent:/app/agente/applicationinsights-agent.jar` e a variável `APPLICATIONINSIGHTS_CONNECTION_STRING`, que vem do Key Vault.
-- A amostragem está em 50% (`backend/docker/applicationinsights.json`), para ficar dentro da cota gratuita de ingestão.
+- A amostragem está em 50% (`backend/docker/applicationinsights.json`), para ficar dentro da cota gratuita de ingestão. Os logs (`trace`) ficam fora da amostragem, para o alerta das rotinas não perder nenhuma falha (KAN-104).
 
 ## Regras para logs
 

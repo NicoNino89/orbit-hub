@@ -481,6 +481,10 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R12 – Limpeza e retenção | Diária | Remove cadastros não confirmados e aplica a retenção de dados | `retencao.*`, `cadastro.*` |
 | R13 – Campanhas (F2) | De hora em hora | Inicia e encerra campanhas; consolida métricas | `publicidade.*` |
 | R14 – Monitor de prazos (SLA) | De hora em hora | Alerta sobre casos de verificação, curadoria, moderação, suporte e LGPD próximos do prazo | `*.sla_*` |
+| R15 – Propostas paradas | De hora em hora | Alerta o administrador das propostas de segunda aprovação sem decisão no prazo (KAN-81) | `aprovacao.prazo_horas` |
+| R16 – Revisão de acessos | Diária | Lembra o administrador quando a revisão dos acessos da equipe vence (KAN-75) | `acesso.revisao_meses` |
+
+O mecanismo comum (agendamento no horário de Brasília, trava entre instâncias, registro de cada execução, pausa, execução manual e alertas de falha e de atraso) está em `compartilhado.rotinas` (KAN-104). Em produção, as rotinas só rodam com a API ligada: com escala a zero, nenhuma réplica fica no ar para disparar o horário.
 
 ---
 

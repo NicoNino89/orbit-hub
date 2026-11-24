@@ -42,6 +42,7 @@ public final class ParametrosFixos implements LeituraDeParametros {
         definir(Chaves.CONVITE_VALIDADE, "14", ChronoUnit.DAYS);
         definir(Chaves.ACESSO_REVISAO, "3", null);
         definir(Chaves.APROVACAO_PRAZO, "48", ChronoUnit.HOURS);
+        definir(Chaves.RETENCAO_TOKENS, "30", ChronoUnit.DAYS);
     }
 
     /**
