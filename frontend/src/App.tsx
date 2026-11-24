@@ -8,6 +8,7 @@ import { PaginaNovoEmail } from './conta/PaginaNovoEmail'
 import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
 import { Inicio } from './Inicio'
 import { AreaLogada, Painel } from './painel/AreaLogada'
+import { AreaEmpreendedor, AreaInvestidor, RotaDePapel } from './painel/AreasDePapel'
 import { RotaProtegida } from './sessao/RotaProtegida'
 import { SessaoProvider } from './sessao/SessaoProvider'
 import { PaginaTermos } from './termos/PaginaTermos'
@@ -41,6 +42,12 @@ export function Rotas() {
           <Route element={<AreaLogada />}>
             <Route path="/painel" element={<Painel />} />
             <Route path="/conta" element={<PaginaConta />} />
+            <Route element={<RotaDePapel papel="INVESTIDOR" />}>
+              <Route path="/investidor" element={<AreaInvestidor />} />
+            </Route>
+            <Route element={<RotaDePapel papel="EMPREENDEDOR" />}>
+              <Route path="/empreendedor" element={<AreaEmpreendedor />} />
+            </Route>
           </Route>
         </Route>
         <Route path="*" element={<Inicio />} />

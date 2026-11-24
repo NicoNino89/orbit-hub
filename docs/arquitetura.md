@@ -71,7 +71,12 @@ br.com.orbithub
 
 - Spring Security com **access token JWT** de curta duração.
 - **Refresh token** em cookie `HttpOnly`, com apenas o hash guardado no banco, rotação a cada uso e revogação individual ou por usuário (KAN-57).
-- Permissões verificadas no servidor para todas as operações (KAN-34).
+- Permissões verificadas no servidor para todas as operações (KAN-34):
+  - toda rota nova nasce exigindo login; as públicas ficam listadas em `SegurancaConfig`;
+  - papel por anotação na classe ou no método: `@SomenteInvestidor`, `@SomenteEmpreendedor`, `@SomenteAdmin` (`compartilhado.seguranca.Permissoes`);
+  - dono do recurso por `@PreAuthorize("@acesso.ehDono('startup', #id)")`, com um `DonoDeRecurso` registrado pelo módulo dono do recurso; tipo sem regra é negado;
+  - toda recusa responde em Problem Details (401 `nao_autenticado`, 403 `acesso_negado`) e fica registrada na tabela `acesso_negado` e no log;
+  - o access token traz o id da sessão e é recusado na hora depois do logout ou da troca de senha (KAN-57).
 - Separação entre informações públicas (Nível 1) e confidenciais (Nível 2), com liberação explícita pelo empreendedor (KAN-28 a KAN-33).
 - Tratamento de dados pessoais conforme a LGPD.
 

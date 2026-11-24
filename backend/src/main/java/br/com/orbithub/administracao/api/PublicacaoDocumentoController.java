@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteAdmin;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1/admin/documentos-legais")
-@PreAuthorize("hasRole('ADMIN')")
+@SomenteAdmin
 @Tag(name = "Termos e políticas", description = "Documentos legais e avisos versionados")
 class PublicacaoDocumentoController {
 
