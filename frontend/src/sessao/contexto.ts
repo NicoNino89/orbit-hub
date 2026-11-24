@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { UsuarioResumo } from '../api/autenticacao'
+import type { DesafioApi, UsuarioResumo } from '../api/autenticacao'
 import type { Papel } from '../api/contas'
 
 export type EstadoSessao =
@@ -11,7 +11,10 @@ export interface Sessao {
   estado: EstadoSessao
   /** Papel com que a pessoa está atuando agora (KAN-12), entre os que a conta tem. */
   papelAtivo: Papel | null
-  entrar: (email: string, senha: string) => Promise<void>
+  /** Entra com e-mail e senha; nas contas da equipe devolve o desafio do segundo fator (KAN-75). */
+  entrar: (email: string, senha: string) => Promise<DesafioApi | null>
+  /** Conclui a entrada da equipe com o código do aplicativo autenticador (KAN-75). */
+  confirmarSegundoFator: (desafio: string, codigo: string) => Promise<void>
   sair: () => Promise<void>
   /** Renova a sessão agora (depois de aceitar termos, por exemplo); devolve se conseguiu. */
   renovar: () => Promise<boolean>

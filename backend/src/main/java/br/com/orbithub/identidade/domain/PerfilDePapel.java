@@ -16,17 +16,18 @@ public sealed interface PerfilDePapel permits PerfilDePapel.Investidor, PerfilDe
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:00
-     * Cartão Jira: KAN-12
+     * Hora: 10:35
+     * Cartão Jira: KAN-75
      * Título: Fábrica de perfis
      * Objetivo: Criar o perfil correspondente ao papel.
-     * Decisões: Papel interno (ADMIN) não tem perfil público: recusado com IllegalArgumentException.
+     * Decisões: Papel interno não tem perfil público: recusado com IllegalArgumentException. O caso padrão
+     *           cobre todos os papéis internos, inclusive os que vierem depois (KAN-75).
      */
     static PerfilDePapel para(Papel papel) {
         return switch (papel) {
             case INVESTIDOR -> new Investidor();
             case EMPREENDEDOR -> new Empreendedor();
-            case ADMIN -> throw new IllegalArgumentException("ADMIN não é um papel de cadastro");
+            default -> throw new IllegalArgumentException(papel + " não é um papel de cadastro");
         };
     }
 

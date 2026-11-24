@@ -20,14 +20,83 @@ export interface SessaoApi {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:10
- * Cartão Jira: KAN-13
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
+ * Título: Desafio do segundo fator
+ * Objetivo: Tipar a resposta do login quando a conta é da equipe e falta o código do aplicativo.
+ * Decisões: "segundoFator" diz se é a primeira configuração ou só o código.
+ */
+export interface DesafioApi {
+  segundoFator: 'CONFIGURAR' | 'CODIGO'
+  desafio: string
+  expiraEm: string
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
+ * Título: Dados para o aplicativo autenticador
+ * Objetivo: Tipar o segredo e o endereço otpauth:// devolvidos na configuração.
+ * Decisões: O segredo vem em blocos de 4 letras.
+ */
+export interface ConfiguracaoSegundoFator {
+  segredo: string
+  endereco: string
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
  * Título: Entrar
- * Objetivo: Enviar e-mail e senha e receber a sessão (o refresh token chega no cookie HttpOnly).
- * Decisões: Rota anônima: nenhum token antigo é enviado.
+ * Objetivo: Enviar e-mail e senha e receber a sessão ou, nas contas da equipe, o desafio do segundo fator.
+ * Decisões: Requisição anônima; o cookie de refresh só vem com a sessão.
  */
 export function entrar(email: string, senha: string) {
-  return requisitar<SessaoApi>('/api/v1/auth/entrar', { metodo: 'POST', corpo: { email, senha }, anonima: true })
+  return requisitar<SessaoApi | DesafioApi>('/api/v1/auth/entrar', { metodo: 'POST', corpo: { email, senha }, anonima: true })
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
+ * Título: É desafio
+ * Objetivo: Distinguir a resposta de desafio da sessão aberta.
+ * Decisões: Pela presença do campo "segundoFator".
+ */
+export function ehDesafio(resposta: SessaoApi | DesafioApi): resposta is DesafioApi {
+  return 'segundoFator' in resposta
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
+ * Título: Configurar o aplicativo
+ * Objetivo: Pedir o segredo para cadastrar no aplicativo autenticador.
+ * Decisões: Só com o desafio do login.
+ */
+export function configurarSegundoFator(desafio: string) {
+  return requisitar<ConfiguracaoSegundoFator>('/api/v1/auth/segundo-fator/configuracao',
+    { metodo: 'POST', corpo: { desafio }, anonima: true })
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 11:55
+ * Cartão Jira: KAN-75
+ * Título: Confirmar o código
+ * Objetivo: Enviar o código do aplicativo e receber a sessão.
+ * Decisões: Mesmo formato de sessão do login comum.
+ */
+export function confirmarSegundoFator(desafio: string, codigo: string) {
+  return requisitar<SessaoApi>('/api/v1/auth/segundo-fator', { metodo: 'POST', corpo: { desafio, codigo }, anonima: true })
 }
 
 /**

@@ -6,7 +6,7 @@ import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
 
-const NOMES: Record<Papel, string> = { INVESTIDOR: 'investidores', EMPREENDEDOR: 'empreendedores', ADMIN: 'administradores' }
+const NOMES: Partial<Record<Papel, string>> = { INVESTIDOR: 'investidores', EMPREENDEDOR: 'empreendedores' }
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -29,7 +29,7 @@ export function RotaDePapel({ papel }: { papel: Papel }) {
     return (
       <section className="flex flex-col gap-3">
         <h1 className="text-2xl font-semibold">Área exclusiva</h1>
-        <p>Esta área é só para {NOMES[papel]}. Você pode ativar esse papel na sua conta.</p>
+        <p>Esta área é só para {NOMES[papel] ?? 'a equipe'}. Você pode ativar esse papel na sua conta.</p>
         <Link to="/conta" className={CLASSE_LINK}>Ir para Minha conta</Link>
       </section>
     )

@@ -1,7 +1,9 @@
 package br.com.orbithub.compartilhado.seguranca;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import br.com.orbithub.identidade.domain.Papel;
 import java.time.Clock;
+import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,8 +49,13 @@ public class SegurancaConfig {
     /** Envios abertos sem login: cadastro e confirmação (KAN-12), recuperação de senha (KAN-14) e novo e-mail (KAN-16). */
     static final String[] ROTAS_PUBLICAS_ENVIO = {
         "/api/v1/contas", "/api/v1/contas/confirmacao", "/api/v1/contas/confirmacao/reenvio",
-        "/api/v1/contas/senha/esqueci", "/api/v1/contas/senha/redefinir", "/api/v1/contas/email/confirmacao"
+        "/api/v1/contas/senha/esqueci", "/api/v1/contas/senha/redefinir", "/api/v1/contas/email/confirmacao",
+        "/api/v1/equipe/convite"
     };
+
+    /** Papéis que abrem o backoffice (/api/v1/admin/**): todos os papéis internos (KAN-75). */
+    static final String[] PAPEIS_DA_EQUIPE = Arrays.stream(Papel.values())
+            .filter(Papel::interno).map(Enum::name).toArray(String[]::new);
 
     /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92). */
     static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais"};
@@ -68,13 +75,14 @@ public class SegurancaConfig {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 00:20
-     * Cartão Jira: KAN-57
+     * Hora: 10:25
+     * Cartão Jira: KAN-75
      * Título: Cadeia de filtros de segurança
      * Objetivo: Definir rotas públicas, exigir token no resto e ligar o resource server de JWT.
      * Decisões: Stateless; CORS pela política de CorsConfig; qualquer rota nova nasce protegida; /api/v1/admin
-     *           exige ADMIN já no filtro, além das regras nos métodos (defesa em profundidade, KAN-92). As
-     *           recusas (401 e 403) respondem em Problem Details e ficam registradas (KAN-34).
+     *           exige um papel interno já no filtro, e cada tela exige o seu papel no método (defesa em
+     *           profundidade, KAN-92 e KAN-75). As recusas (401 e 403) respondem em Problem Details e ficam
+     *           registradas (KAN-34).
      */
     @Bean
     SecurityFilterChain cadeiaDeSeguranca(HttpSecurity http, JwtAuthenticationConverter conversor,
@@ -89,7 +97,7 @@ public class SegurancaConfig {
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
                         .requestMatchers(HttpMethod.GET, ROTAS_PUBLICAS_LEITURA).permitAll()
                         .requestMatchers(HttpMethod.POST, ROTAS_PUBLICAS_ENVIO).permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole(PAPEIS_DA_EQUIPE)
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(respostas).accessDeniedHandler(respostas))
                 .oauth2ResourceServer(o -> o

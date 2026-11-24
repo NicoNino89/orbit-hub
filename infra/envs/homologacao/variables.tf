@@ -18,3 +18,16 @@ variable "email_alertas" {
   type      = string
   sensitive = true
 }
+
+variable "primeiro_admin_email" {
+  description = "Primeiro administrador da plataforma (KAN-75); vazio não cria ninguém."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "primeiro_admin_nome" {
+  type      = string
+  default   = "Administrador"
+  sensitive = true
+}

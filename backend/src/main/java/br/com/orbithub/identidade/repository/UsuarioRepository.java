@@ -1,9 +1,13 @@
 package br.com.orbithub.identidade.repository;
 
+import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -37,4 +41,30 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
      * Decisões: Usado no cadastro e na troca de e-mail; a unicidade final é garantida pelo banco.
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 11:10
+     * Cartão Jira: KAN-75
+     * Título: Contas da equipe
+     * Objetivo: Listar todas as contas internas, inclusive convidadas e desligadas.
+     * Decisões: Em ordem de nome, para a tela da equipe.
+     */
+    List<Usuario> findByInternaTrueOrderByNomeAsc();
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 11:10
+     * Cartão Jira: KAN-75
+     * Título: Membros ativos com um papel
+     * Objetivo: Contar os membros ativos da equipe que têm um papel (por exemplo, administradores).
+     * Decisões: Usado para impedir que a plataforma fique sem administrador.
+     */
+    @Query("""
+            select count(u) from Usuario u join u.papeis p
+            where u.interna = true and u.status = br.com.orbithub.identidade.domain.StatusUsuario.ATIVO
+            and p = :papel""")
+    long contarEquipeAtivaComPapel(@Param("papel") Papel papel);
 }

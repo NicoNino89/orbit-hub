@@ -1,9 +1,7 @@
 import { Link, Outlet } from 'react-router'
-import { PAPEIS_INTERNOS } from '../admin/papeisInternos'
-import type { Papel } from '../api/contas'
+import { ehPapelPublico, NOMES_DOS_PAPEIS } from '../api/contas'
 import { useSessao } from '../sessao/contexto'
 
-const NOMES: Record<Papel, string> = { INVESTIDOR: 'Investidor', EMPREENDEDOR: 'Empreendedor', ADMIN: 'Administrador' }
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -19,8 +17,8 @@ const NOMES: Record<Papel, string> = { INVESTIDOR: 'Investidor', EMPREENDEDOR: '
 export function AreaLogada() {
   const { estado, papelAtivo, escolherPapel, sair } = useSessao()
   if (estado.status !== 'autenticado') return null
-  const papeis = estado.usuario.papeis.filter((p) => p !== 'ADMIN')
-  const daEquipe = estado.usuario.papeis.some((p) => PAPEIS_INTERNOS.includes(p))
+  const papeis = estado.usuario.papeis.filter(ehPapelPublico)
+  const daEquipe = estado.usuario.papeis.some((p) => !ehPapelPublico(p))
 
   return (
     <div className="min-h-svh">
@@ -37,12 +35,12 @@ export function AreaLogada() {
                 {papeis.map((p) => (
                   <button key={p} type="button" aria-pressed={p === papelAtivo} onClick={() => escolherPapel(p)}
                     className={`rounded px-3 py-1 font-semibold ${p === papelAtivo ? 'bg-primary text-on-primary' : ''}`}>
-                    {NOMES[p]}
+                    {NOMES_DOS_PAPEIS[p]}
                   </button>
                 ))}
               </div>
             ) : (
-              papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES[papelAtivo]}</span>
+              papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES_DOS_PAPEIS[papelAtivo]}</span>
             )}
             {daEquipe && <Link to="/admin" className="font-semibold text-primary underline-offset-2 hover:underline">Backoffice</Link>}
             <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
@@ -94,7 +92,7 @@ export function Painel() {
         {papelAtivo === null && (
           <p className="text-muted">
             Sua conta não tem papel público.{' '}
-            {estado.usuario.papeis.some((p) => PAPEIS_INTERNOS.includes(p)) && (
+            {estado.usuario.papeis.some((p) => !ehPapelPublico(p)) && (
               <Link to="/admin" className="font-semibold text-primary">Abrir o backoffice</Link>
             )}
           </p>

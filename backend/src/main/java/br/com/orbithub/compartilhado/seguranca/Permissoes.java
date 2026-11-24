@@ -54,4 +54,21 @@ public final class Permissoes {
     @PreAuthorize("hasRole('ADMIN')")
     public @interface SomenteAdmin {
     }
+
+    /** Administrador ou encarregado de dados: consulta da trilha de auditoria (KAN-80, KAN-75). */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENCARREGADO_DADOS')")
+    public @interface AdminOuEncarregado {
+    }
+
+    /** Qualquer papel da equipe interna, para ações comuns a todos os times (KAN-75). */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALISTA_VERIFICACAO', 'CURADOR', 'MODERADOR', 'SUPORTE_N1', 'SUPORTE_N2', "
+            + "'ENCARREGADO_DADOS', 'JURIDICO')")
+    public @interface SomenteEquipe {
+    }
 }

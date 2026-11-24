@@ -83,6 +83,13 @@ br.com.orbithub
   - cada requisição a essas rotas vira um registro em `registro_auditoria`: quem, ação, objeto, resultado (sucesso ou falha, com o status) e quando. O serviço dá nome de negócio à ação com `ContextoDeAuditoria.descrever(...)` (por exemplo, `DOCUMENTO_LEGAL_PUBLICADO`); sem isso, a ação fica registrada como método e rota;
   - a trilha é imutável no próprio banco: um gatilho recusa `UPDATE`, `DELETE` e `TRUNCATE`;
   - a equipe só vê dados de Nível 2 por `AcessoJustificadoService.exigir(...)`, que pede um caso aberto (cada módulo com casos registra um `CasoAberto`) e justificativa, e grava o acesso antes de devolver os dados. Para a startup, o autor aparece como "equipe Orbit Hub".
+- **Equipe interna (KAN-75):**
+  - conta da equipe é separada da conta de investidor ou empreendedor (coluna `interna`): nunca recebe papel público, e conta pública nunca recebe papel interno. Papéis: administrador, analista de verificação, curador, moderador, suporte N1 e N2, encarregado de dados e jurídico;
+  - `/api/v1/admin/**` exige um papel interno no filtro, e cada tela exige o seu no método (`@SomenteAdmin`, `@AdminOuEncarregado`, `@SomenteEquipe`);
+  - só o administrador cadastra a equipe, por convite: o membro escolhe a própria senha. O primeiro administrador nasce na implantação ([`operacao/primeiro-administrador.md`](operacao/primeiro-administrador.md));
+  - entrada em dois fatores: a senha devolve um desafio, e só o código TOTP (RFC 6238, aplicativo autenticador) abre a sessão. O segredo fica cifrado com AES-GCM; códigos errados contam no mesmo bloqueio do login, e um código vale uma única vez;
+  - trocar papéis, desligar ou redefinir o segundo fator derruba as sessões do membro na hora. O desligamento devolve os casos abertos às filas (`CasosDoMembro`, registrado por cada fila);
+  - revisão de acessos a cada `acesso.revisao_meses` (padrão: 3), com a fotografia dos membros confirmados.
 - Separação entre informações públicas (Nível 1) e confidenciais (Nível 2), com liberação explícita pelo empreendedor (KAN-28 a KAN-33).
 - Tratamento de dados pessoais conforme a LGPD.
 

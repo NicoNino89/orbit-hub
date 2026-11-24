@@ -111,6 +111,15 @@ resource "azurerm_container_app" "api" {
         name  = "ORBIT_CONTA_CONFIRMAR_EMAIL"
         value = tostring(var.confirmar_email)
       }
+      # Primeiro administrador da implantação (KAN-75): só age enquanto não há administrador ativo.
+      env {
+        name  = "ORBIT_PRIMEIRO_ADMIN_EMAIL"
+        value = var.primeiro_admin_email
+      }
+      env {
+        name  = "ORBIT_PRIMEIRO_ADMIN_NOME"
+        value = var.primeiro_admin_nome
+      }
       env {
         name  = "ORBIT_ARMAZENAMENTO_TIPO"
         value = "azure-blob"
