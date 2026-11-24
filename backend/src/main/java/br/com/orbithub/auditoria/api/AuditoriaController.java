@@ -53,7 +53,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação do controller
      * Objetivo: Receber a trilha e o serviço de acesso justificado.
@@ -67,7 +67,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Consultar a trilha
      * Objetivo: Listar registros por pessoa, período, ação e objeto, paginados.
@@ -93,7 +93,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Tipos de ação
      * Objetivo: Listar os códigos de ação para o filtro da tela.
@@ -109,7 +109,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Pessoas da trilha
      * Objetivo: Listar quem aparece na trilha, para o filtro por pessoa da tela.
@@ -125,7 +125,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registrar acesso justificado
      * Objetivo: Liberar e registrar o acesso de um usuário interno aos dados de Nível 2 de uma startup.
@@ -144,7 +144,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Resumo dos filtros
      * Objetivo: Descrever, no registro da consulta, quais filtros foram usados.
@@ -173,7 +173,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Pedido de acesso justificado
      * Objetivo: Receber o caso, a startup e a justificativa.
@@ -190,7 +190,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registro na resposta
      * Objetivo: Expor um registro da trilha para a tela.
@@ -203,7 +203,7 @@ class AuditoriaController {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:20
+         * Hora: 10:09
          * Cartão Jira: KAN-80
          * Título: Conversão do registro
          * Objetivo: Montar a resposta a partir da entidade.
@@ -219,7 +219,7 @@ class AuditoriaController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:20
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Página da trilha
      * Objetivo: Devolver os registros com os dados de paginação.

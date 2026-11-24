@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:35
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Testes de integração da trilha de auditoria
  * Objetivo: Conferir, com PostgreSQL real, que as ações do backoffice ficam registradas com autor, objeto e
@@ -81,7 +81,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ação de sucesso e de falha registradas
      * Objetivo: Conferir que publicar um termo gera DOCUMENTO_LEGAL_PUBLICADO com autor e objeto, e que a
@@ -122,7 +122,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Trilha imutável no banco
      * Objetivo: Conferir que nem um UPDATE, DELETE ou TRUNCATE direto no banco altera a trilha.
@@ -146,7 +146,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Consulta com filtros e só para o administrador
      * Objetivo: Conferir os filtros por pessoa, ação e período e a recusa para quem não é administrador.
@@ -188,7 +188,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso justificado dentro do caso
      * Objetivo: Conferir que o acesso a dados confidenciais só é liberado com caso aberto e justificativa,
@@ -225,7 +225,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:40
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Recusa do gatilho
      * Objetivo: Conferir que o comando foi recusado pelo gatilho da trilha.
@@ -243,7 +243,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Conta de teste
      * Objetivo: Criar uma conta ativa, com os termos vigentes aceitos.
@@ -262,7 +262,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Token da conta
      * Objetivo: Abrir uma sessão e devolver o cabeçalho Authorization.
@@ -275,7 +275,7 @@ class AuditoriaIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:35
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Casos de teste
      * Objetivo: Registrar uma regra de denúncia que conhece um caso aberto sobre a startup de teste.
@@ -287,7 +287,7 @@ class AuditoriaIT {
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 10:35
+         * Hora: 10:09
          * Cartão Jira: KAN-80
          * Título: Regra de denúncia de teste
          * Objetivo: Responder que só o caso conhecido está aberto sobre a startup de teste.

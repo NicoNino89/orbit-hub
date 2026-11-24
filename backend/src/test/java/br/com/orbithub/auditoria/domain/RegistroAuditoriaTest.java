@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:30
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Testes do registro de auditoria
  * Objetivo: Garantir os campos obrigatórios e o corte dos textos no tamanho das colunas.
@@ -25,7 +25,7 @@ class RegistroAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registro completo
      * Objetivo: Conferir que todos os dados da ação chegam ao registro.
@@ -53,7 +53,7 @@ class RegistroAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ação e resultado obrigatórios
      * Objetivo: Recusar registro sem ação ou sem resultado.
@@ -74,7 +74,7 @@ class RegistroAuditoriaTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Corte dos textos
      * Objetivo: Garantir que texto longo é cortado e texto em branco vira nulo.

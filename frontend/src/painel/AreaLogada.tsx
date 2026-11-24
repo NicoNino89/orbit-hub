@@ -6,7 +6,7 @@ import { useSessao } from '../sessao/contexto'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:00
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Moldura da área logada
  * Objetivo: Cabeçalho comum com a marca, o papel em que a pessoa está atuando, o nome e o botão de sair.
@@ -60,7 +60,7 @@ export function AreaLogada() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:00
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Painel inicial
  * Objetivo: Dar as boas-vindas e indicar o próximo passo do papel ativo.

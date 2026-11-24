@@ -7,7 +7,7 @@ import { MENU_BACKOFFICE, PAPEIS_INTERNOS } from './papeisInternos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Rota da equipe interna
  * Objetivo: Só mostrar as telas do backoffice para contas com papel interno.
@@ -30,7 +30,7 @@ export function RotaInterna({ papeis = PAPEIS_INTERNOS }: { papeis?: Papel[] }) 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Moldura do backoffice
  * Objetivo: Mostrar o menu do backoffice e a tela escolhida.
@@ -61,7 +61,7 @@ export function AreaAdmin() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Início do backoffice
  * Objetivo: Dar as boas-vindas e apontar as telas disponíveis.

@@ -24,7 +24,7 @@ import org.mockito.ArgumentCaptor;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:30
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Testes do acesso justificado
  * Objetivo: Garantir que a equipe só vê dados de Nível 2 dentro de um caso aberto, com justificativa, e que o
@@ -44,7 +44,7 @@ class AcessoJustificadoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Preparação
      * Objetivo: Montar o serviço com uma regra de denúncia que conhece um caso aberto.
@@ -72,7 +72,7 @@ class AcessoJustificadoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso dentro do caso
      * Objetivo: Conferir que o acesso válido é gravado com caso, startup e justificativa.
@@ -95,7 +95,7 @@ class AcessoJustificadoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Justificativa obrigatória
      * Objetivo: Recusar justificativa vazia ou curta demais.
@@ -114,7 +114,7 @@ class AcessoJustificadoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Só dentro de caso aberto
      * Objetivo: Recusar tipo de caso desconhecido, caso inexistente ou caso sobre outra startup.
@@ -137,7 +137,7 @@ class AcessoJustificadoServiceTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:30
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Histórico da startup sem nome da equipe
      * Objetivo: Conferir que os acessos internos aparecem como "equipe Orbit Hub".

@@ -3,7 +3,7 @@ import { requisitar } from './cliente'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Registro da trilha de auditoria
  * Objetivo: Tipar um registro como a API devolve.
@@ -26,7 +26,7 @@ export interface RegistroAuditoria {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Página da trilha
  * Objetivo: Tipar a resposta paginada da consulta.
@@ -42,7 +42,7 @@ export interface PaginaAuditoria {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Filtros da trilha
  * Objetivo: Tipar os filtros aceitos pela consulta.
@@ -59,7 +59,7 @@ export interface FiltrosAuditoria {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Consultar a trilha
  * Objetivo: Buscar uma página da trilha com os filtros informados.
@@ -77,7 +77,7 @@ export function consultarAuditoria(filtros: FiltrosAuditoria) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Ações da trilha
  * Objetivo: Listar os códigos de ação para o filtro.
@@ -90,7 +90,7 @@ export function listarAcoesAuditadas() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:50
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Pessoas da trilha
  * Objetivo: Listar quem aparece na trilha, para o filtro por pessoa.

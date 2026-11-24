@@ -11,7 +11,7 @@ const CLASSE_CAMPO = 'rounded-md border border-line bg-surface px-3 py-2 outline
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 11:10
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Tela da trilha de auditoria
  * Objetivo: Consultar a trilha por pessoa, período e tipo de ação, com paginação.

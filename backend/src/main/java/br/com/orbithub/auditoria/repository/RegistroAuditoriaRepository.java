@@ -11,7 +11,7 @@ import org.springframework.data.repository.Repository;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:00
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Repositório da trilha de auditoria
  * Objetivo: Gravar e consultar registros de auditoria.
@@ -24,7 +24,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Gravar registro
      * Objetivo: Inserir um registro novo na trilha.
@@ -35,7 +35,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ações registradas
      * Objetivo: Listar os códigos de ação que já aparecem na trilha, para o filtro da tela.
@@ -47,7 +47,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Pessoas presentes na trilha
      * Objetivo: Listar quem já fez alguma ação, para o filtro por pessoa da tela.
@@ -62,7 +62,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Pessoa da trilha
      * Objetivo: Representar uma pessoa que aparece na trilha.
@@ -74,7 +74,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registros sobre um objeto
      * Objetivo: Listar as ações de um tipo sobre um objeto (por exemplo, acessos internos a uma startup).
@@ -86,7 +86,7 @@ public interface RegistroAuditoriaRepository extends Repository<RegistroAuditori
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registros de uma conta
      * Objetivo: Listar as ações feitas por uma conta.

@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:05
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Trilha de auditoria
  * Objetivo: Gravar as ações da equipe interna e permitir a consulta com filtros por pessoa, período e ação.
@@ -42,7 +42,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação do serviço
      * Objetivo: Receber o repositório, as contas (para o nome do autor) e o relógio.
@@ -57,7 +57,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Registrar uma ação
      * Objetivo: Gravar uma ação na trilha.
@@ -77,7 +77,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Consultar a trilha
      * Objetivo: Buscar registros por pessoa, período, ação e objeto, do mais recente para o mais antigo.
@@ -98,7 +98,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Ações conhecidas
      * Objetivo: Listar os códigos de ação presentes na trilha, para o filtro por tipo de ação.
@@ -112,7 +112,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:45
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Pessoas presentes na trilha
      * Objetivo: Listar quem já fez ações, para o filtro por pessoa.
@@ -126,7 +126,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Montagem do filtro
      * Objetivo: Converter o filtro em condições da consulta.
@@ -160,7 +160,7 @@ public class TrilhaDeAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:05
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Filtro da consulta
      * Objetivo: Agrupar os filtros aceitos pela trilha.

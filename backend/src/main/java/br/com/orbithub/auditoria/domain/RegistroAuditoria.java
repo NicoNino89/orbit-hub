@@ -14,7 +14,7 @@ import org.hibernate.annotations.Immutable;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:00
+ * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Registro da trilha de auditoria
  * Objetivo: Representar uma ação da equipe interna: quem, o quê, quando, sobre qual objeto e com qual resultado.
@@ -64,7 +64,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Construtor exigido pelo JPA
      * Objetivo: Permitir que o Hibernate instancie o registro ao ler do banco.
@@ -76,7 +76,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Criação de um registro
      * Objetivo: Montar o registro de uma ação a partir dos dados coletados.
@@ -104,7 +104,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Corte de texto
      * Objetivo: Limitar um texto ao tamanho da coluna.
@@ -121,7 +121,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao identificador
      * Objetivo: Expor o identificador do registro.
@@ -134,7 +134,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao autor
      * Objetivo: Expor o id da conta que fez a ação.
@@ -147,7 +147,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao nome do autor
      * Objetivo: Expor o nome do autor no momento da ação.
@@ -160,7 +160,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso à ação
      * Objetivo: Expor o código da ação (por exemplo, DOCUMENTO_LEGAL_PUBLICADO).
@@ -173,7 +173,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao tipo do objeto
      * Objetivo: Expor o tipo do objeto afetado (por exemplo, startup).
@@ -186,7 +186,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao id do objeto
      * Objetivo: Expor o identificador do objeto afetado.
@@ -199,7 +199,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao resultado
      * Objetivo: Dizer se a ação deu certo.
@@ -212,7 +212,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao status HTTP
      * Objetivo: Expor o status da resposta, quando a ação veio da API.
@@ -225,7 +225,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao detalhe
      * Objetivo: Expor o resumo legível da ação.
@@ -238,7 +238,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso à justificativa
      * Objetivo: Expor a justificativa informada pelo autor.
@@ -251,7 +251,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Acesso ao momento
      * Objetivo: Expor quando a ação aconteceu.
@@ -264,7 +264,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Resultado de uma ação
      * Objetivo: Enumerar os resultados possíveis.
@@ -278,7 +278,7 @@ public class RegistroAuditoria {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 10:00
+     * Hora: 10:09
      * Cartão Jira: KAN-80
      * Título: Dados de uma ação a registrar
      * Objetivo: Agrupar o que se sabe de uma ação antes de virar registro.
