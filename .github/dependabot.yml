@@ -1,0 +1,14 @@
+# Mantém as actions dos workflows atualizadas. Elas são fixadas por SHA (regra do SonarCloud contra
+# troca maliciosa de tag); o Dependabot abre um PR por semana com o SHA novo e a versão no comentário.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]

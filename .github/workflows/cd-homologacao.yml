@@ -30,10 +30,12 @@ env:
 jobs:
   publicar:
     name: Publicar em homologação
+    # Só publica código do próprio repositório: um fork nunca chega aqui (evento push e repositório de origem conferidos).
     if: >-
       vars.AZURE_CLIENT_ID != '' &&
       (github.event_name == 'workflow_dispatch' ||
-       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'))
+       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
     environment:
       name: homologacao
@@ -46,11 +48,11 @@ jobs:
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "curto=${sha:0:7}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ steps.versao.outputs.sha }}
 
-      - uses: azure/login@v3
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
