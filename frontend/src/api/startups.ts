@@ -209,7 +209,7 @@ export function lerLogotipo(id: string) {
  */
 export type SecaoDaStartup =
   | 'CADASTRO' | 'PROBLEMA_E_SOLUCAO' | 'PRODUTO' | 'MERCADO' | 'MODELO_DE_NEGOCIO' | 'TRACAO' | 'EQUIPE_E_ESTRUTURA'
-  | 'PLANEJAMENTO' | 'NECESSIDADE_DE_INVESTIMENTO' | 'MATURIDADE'
+  | 'PLANEJAMENTO' | 'NECESSIDADE_DE_INVESTIMENTO' | 'MATURIDADE' | 'DATA_ROOM'
 
 export const NOMES_DAS_SECOES: Record<SecaoDaStartup, string> = {
   CADASTRO: 'Dados cadastrais',
@@ -222,6 +222,7 @@ export const NOMES_DAS_SECOES: Record<SecaoDaStartup, string> = {
   PLANEJAMENTO: 'Planejamento',
   NECESSIDADE_DE_INVESTIMENTO: 'Necessidade de investimento',
   MATURIDADE: 'Estágio do negócio',
+  DATA_ROOM: 'Data Room',
 }
 
 export const EXPLICACAO_DO_PAPEL_NA_STARTUP: Record<PapelNaStartup, string> = {
