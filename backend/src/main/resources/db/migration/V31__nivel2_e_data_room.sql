@@ -90,7 +90,7 @@ CREATE TABLE dataroom_link (
 );
 
 INSERT INTO parametro (chave, grupo, descricao, tipo, unidade, valor, valor_padrao, minimo, maximo, opcoes, sensivel) VALUES
-('dataroom.tamanho_max_mb', 'dataroom', 'Tamanho máximo de cada documento do Data Room', 'INTEIRO', 'MEGABYTES', '10', '10', 1, 25, NULL, FALSE),
+('dataroom.tamanho_max_mb', 'dataroom', 'Tamanho máximo de cada documento do Data Room', 'INTEIRO', 'MEGABYTES', '7', '7', 1, 7, NULL, FALSE),
 ('dataroom.formatos_aceitos', 'dataroom', 'Formatos aceitos no Data Room', 'OPCAO', 'TEXTO', 'PDF_OFFICE_IMAGENS', 'PDF_OFFICE_IMAGENS', NULL, NULL,
  'PDF,PDF_OFFICE,PDF_OFFICE_IMAGENS', FALSE),
 ('dataroom.link_minutos', 'dataroom', 'Validade do link temporário de um documento do Data Room', 'INTEIRO', 'MINUTOS', '10', '10', 1, 60, NULL, FALSE);
