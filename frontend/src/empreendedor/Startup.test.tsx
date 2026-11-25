@@ -103,4 +103,86 @@ describe('Cadastro da startup (KAN-21)', () => {
     expect(screen.queryByRole('button', { name: 'Salvar dados cadastrais' })).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Arquivo do logotipo')).not.toBeInTheDocument()
   })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:13
+   * Cartão Jira: KAN-21
+   * Título: Logotipo
+   * Objetivo: Conferir que o logotipo salvo aparece e que o envio de um novo mostra o aviso.
+   * Decisões: Endereço local do arquivo simulado (o jsdom não cria).
+   */
+  it('mostra o logotipo e envia um novo', async () => {
+    vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: vi.fn(() => 'blob:logo'), revokeObjectURL: vi.fn() }))
+    const { chamadas } = abrir('/empreendedor/startups/s1', {
+      'GET /api/v1/startups/s1': () => ({ corpo: { ...STARTUP, temLogotipo: true } }),
+      'GET /api/v1/startups/s1/logotipo': () => ({ corpo: {} }),
+      'PUT /api/v1/startups/s1/logotipo': () => ({ corpo: { ...STARTUP, temLogotipo: true, atualizadaEm: '2026-11-24T18:10:00Z' } }),
+    })
+    expect(await screen.findByRole('img', { name: 'Logotipo de NovaSafra' })).toHaveAttribute('src', 'blob:logo')
+    await userEvent.upload(screen.getByLabelText('Arquivo do logotipo'), new File(['png'], 'logo.png', { type: 'image/png' }))
+    expect(await screen.findByText('Logotipo atualizado.')).toBeInTheDocument()
+    expect(chamadas.some((c) => c.chave === 'PUT /api/v1/startups/s1/logotipo')).toBe(true)
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:13
+   * Cartão Jira: KAN-21
+   * Título: Recusas do servidor
+   * Objetivo: Conferir que as mensagens do servidor aparecem ao criar, ao salvar, ao enviar o logotipo e ao abrir uma
+   *           startup que não existe.
+   * Decisões: Erros 422 e 404 simulados.
+   */
+  it('mostra as recusas do servidor', async () => {
+    abrir('/empreendedor/startups/s1', {
+      'GET /api/v1/startups/s1': () => ({ corpo: STARTUP }),
+      'PUT /api/v1/startups/s1/cadastro': () => ({ status: 422, corpo: { detail: 'Este CNPJ já está cadastrado.', codigo: 'cnpj_repetido' } }),
+      'PUT /api/v1/startups/s1/logotipo': () => ({ status: 422, corpo: { detail: 'Envie PNG, JPG ou WebP.', codigo: 'formato_invalido' } }),
+    })
+    await userEvent.click(await screen.findByRole('button', { name: 'Salvar dados cadastrais' }))
+    expect(await screen.findByText('Este CNPJ já está cadastrado.')).toBeInTheDocument()
+    await userEvent.upload(screen.getByLabelText('Arquivo do logotipo'), new File(['x'], 'logo.png', { type: 'image/png' }))
+    expect(await screen.findByText('Envie PNG, JPG ou WebP.')).toBeInTheDocument()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:13
+   * Cartão Jira: KAN-21
+   * Título: Criação recusada e startup inexistente
+   * Objetivo: Conferir a mensagem ao criar com erro e ao abrir uma startup de fora da equipe.
+   * Decisões: Erros 422 e 404 simulados.
+   */
+  it('mostra o erro ao criar e ao abrir startup de fora', async () => {
+    abrir('/empreendedor/startups/nova', {
+      'POST /api/v1/startups': () => ({ status: 422, corpo: { detail: 'Informe o nome da startup.', codigo: 'nome_obrigatorio' } }),
+    })
+    const form = await screen.findByRole('form', { name: 'Dados cadastrais' })
+    await userEvent.type(within(form).getByLabelText('Nome da startup'), 'X')
+    await within(form).findByRole('option', { name: 'Agronegócio' })
+    await userEvent.selectOptions(within(form).getByLabelText('Segmento'), 'AGRONEGOCIO')
+    await userEvent.selectOptions(within(form).getByLabelText('Localização'), 'MT')
+    await userEvent.click(within(form).getByRole('button', { name: 'Criar startup' }))
+    expect(await screen.findByText('Informe o nome da startup.')).toBeInTheDocument()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:13
+   * Cartão Jira: KAN-21
+   * Título: Startup de fora
+   * Objetivo: Conferir a mensagem quando a startup não é da equipe.
+   * Decisões: 404 simulado.
+   */
+  it('avisa quando a startup não é da equipe', async () => {
+    abrir('/empreendedor/startups/s9', {
+      'GET /api/v1/startups/s9': () => ({ status: 404, corpo: { detail: 'Startup não encontrada.' } }),
+    })
+    expect(await screen.findByText('Startup não encontrada.')).toBeInTheDocument()
+  })
 })

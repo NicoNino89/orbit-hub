@@ -2,6 +2,7 @@ package br.com.orbithub.investidores.service;
 
 import br.com.orbithub.administracao.domain.Lista;
 import br.com.orbithub.administracao.service.ListasService;
+import br.com.orbithub.compartilhado.convites.TokensDeConvite;
 import br.com.orbithub.compartilhado.documentos.Cnpj;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
@@ -20,20 +21,13 @@ import br.com.orbithub.investidores.repository.MembroDaOrganizacaoRepository;
 import br.com.orbithub.investidores.repository.OrganizacaoRepository;
 import br.com.orbithub.notificacoes.domain.TipoDeNotificacao;
 import br.com.orbithub.notificacoes.service.NotificacoesService;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -56,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrganizacoesService {
 
     static final String TIPO_PESSOA_FISICA = "ANJO";
-    private static final Pattern EMAIL = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
-    private static final SecureRandom ALEATORIO = new SecureRandom();
 
     private final OrganizacaoRepository organizacoes;
     private final MembroDaOrganizacaoRepository membros;
@@ -178,8 +170,8 @@ public class OrganizacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
+     * Hora: 23:20
+     * Cartão Jira: KAN-65
      * Título: Convidar
      * Objetivo: Enviar um convite por e-mail para alguém entrar com o papel escolhido.
      * Decisões: Um novo convite para o mesmo e-mail cancela o anterior; quem já é membro não é convidado. O link vale por
@@ -189,7 +181,7 @@ public class OrganizacoesService {
     public ConviteDeOrganizacao convidar(UUID eu, UUID organizacaoId, String emailConvidado, PapelNaOrganizacao papel) {
         exigirAdministrador(eu, organizacaoId);
         String destino = emailConvidado == null ? "" : emailConvidado.strip().toLowerCase(Locale.ROOT);
-        if (!EMAIL.matcher(destino).matches()) {
+        if (!TokensDeConvite.emailValido(destino)) {
             throw new RegraDeNegocioException("email_invalido", "Informe um e-mail válido.");
         }
         contas.contaAtivaDoEmail(destino).ifPresent(id -> membros.findByOrganizacaoIdAndUsuarioIdAndSaiuEmIsNull(organizacaoId, id)
@@ -199,8 +191,8 @@ public class OrganizacoesService {
         Instant agora = relogio.instant();
         convites.findByOrganizacaoIdAndAceitoEmIsNullAndCanceladoEmIsNullOrderByCriadoEmDesc(organizacaoId).stream()
                 .filter(c -> c.getEmail().equals(destino)).forEach(c -> c.cancelar(agora));
-        String token = novoToken();
-        ConviteDeOrganizacao convite = convites.save(ConviteDeOrganizacao.novo(organizacaoId, destino, papel, hash(token), eu,
+        String token = TokensDeConvite.novoToken();
+        ConviteDeOrganizacao convite = convites.save(ConviteDeOrganizacao.novo(organizacaoId, destino, papel, TokensDeConvite.hash(token), eu,
                 agora, agora.plus(parametros.duracao(Chaves.CONVITE_VALIDADE))));
         Organizacao organizacao = organizacao(organizacaoId);
         String quem = contas.nome(eu).orElse("Um administrador");
@@ -497,14 +489,14 @@ public class OrganizacoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
+     * Hora: 23:20
+     * Cartão Jira: KAN-65
      * Título: Convite válido
      * Objetivo: Encontrar o convite do token e conferir que ainda pode ser aceito.
      * Decisões: Mensagem única para qualquer problema.
      */
     private ConviteDeOrganizacao conviteValido(String token) {
-        return convites.findByTokenHash(hash(token == null ? "" : token)).filter(c -> c.pendente(relogio.instant()))
+        return convites.findByTokenHash(TokensDeConvite.hash(token)).filter(c -> c.pendente(relogio.instant()))
                 .orElseThrow(() -> new RegraDeNegocioException("convite_invalido",
                         "Este convite não vale mais. Peça um novo ao administrador da organização."));
     }
@@ -524,39 +516,6 @@ public class OrganizacoesService {
             case MEMBRO -> "membro";
             case OBSERVADOR -> "observador";
         };
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
-     * Título: Novo token
-     * Objetivo: Gerar um token aleatório para o link do convite.
-     * Decisões: 32 bytes em Base64 para URL, sem preenchimento.
-     */
-    private static String novoToken() {
-        byte[] bytes = new byte[32];
-        ALEATORIO.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 14:05
-     * Cartão Jira: KAN-60
-     * Título: Hash do token
-     * Objetivo: Calcular o SHA-256 do token, que é o que fica no banco.
-     * Decisões: Hexadecimal minúsculo.
-     */
-    static String hash(String token) {
-        try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
-                    .digest(token.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 indisponível", e);
-        }
     }
 
     /**
