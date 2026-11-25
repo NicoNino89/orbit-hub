@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import {
   CADASTRO_VAZIO, criarStartup, lerLogotipo, lerStartup, NOMES_DA_SITUACAO_DA_STARTUP, NOMES_DO_PAPEL_NA_STARTUP,
-  salvarCadastro, type Startup, trocarLogotipo,
+  podeEditar, salvarCadastro, type Startup, trocarLogotipo,
 } from '../api/startups'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
+import { EquipeDaStartup } from './EquipeDaStartup'
 import { FormularioCadastral } from './FormularioCadastral'
 
 /**
@@ -46,13 +47,13 @@ export function PaginaNovaStartup() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 22:33
- * Cartão Jira: KAN-21
+ * Hora: 22:48
+ * Cartão Jira: KAN-65
  * Título: Editor da startup
  * Objetivo: Mostrar a startup com a situação, o selo de empresa não constituída, o logotipo e a etapa dos dados
  *           cadastrais.
- * Decisões: Navegação por etapas, que cresce com as próximas histórias (KAN-22 a KAN-27). Colaborador vê o formulário
- *           bloqueado até ter a seção autorizada (KAN-65).
+ * Decisões: Navegação por etapas, que cresce com as próximas histórias (KAN-22 a KAN-27), e a aba da equipe (KAN-65).
+ *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele.
  */
 export function PaginaStartup() {
   const { id = '' } = useParams()
@@ -60,6 +61,7 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
+  const [aba, setAba] = useState<'cadastro' | 'equipe'>('cadastro')
 
   useEffect(() => {
     let ativo = true
@@ -85,7 +87,7 @@ export function PaginaStartup() {
   }, [id, startup?.temLogotipo, startup?.atualizadaEm])
 
   if (!startup) return erro ? <AlertaErro>{erro}</AlertaErro> : <p className="text-muted">Carregando…</p>
-  const bloqueado = startup.meuPapel === 'COLABORADOR'
+  const bloqueado = !podeEditar(startup, 'CADASTRO')
 
   return (
     <section className="flex flex-col gap-5">
@@ -106,10 +108,17 @@ export function PaginaStartup() {
       {aviso && <p role="status" className="rounded-md bg-ok-soft px-3 py-2 text-sm text-ok">{aviso}</p>}
 
       <nav aria-label="Etapas do cadastro" className="flex flex-wrap gap-2 text-sm">
-        <span className="rounded-md bg-primary px-3 py-1 font-semibold text-on-primary" aria-current="step">Dados cadastrais</span>
+        {([['cadastro', 'Dados cadastrais'], ['equipe', 'Equipe']] as const).map(([chave, nome]) => (
+          <button key={chave} type="button" onClick={() => setAba(chave)} aria-current={aba === chave ? 'step' : undefined}
+            className={aba === chave ? 'rounded-md bg-primary px-3 py-1 font-semibold text-on-primary' : 'rounded-md border border-line px-3 py-1'}>
+            {nome}
+          </button>
+        ))}
       </nav>
 
-      {!bloqueado && (
+      {aba === 'equipe' && <EquipeDaStartup startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} />}
+
+      {aba === 'cadastro' && !bloqueado && (
         <label className={`${CLASSE_LINK} self-start text-sm`}>
           {startup.temLogotipo ? 'Trocar logotipo' : 'Enviar logotipo'} (PNG, JPG ou WebP)
           <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Arquivo do logotipo"
@@ -123,7 +132,7 @@ export function PaginaStartup() {
         </label>
       )}
 
-      <FormularioCadastral key={startup.atualizadaEm} inicial={startup} rotuloDoBotao="Salvar dados cadastrais" bloqueado={bloqueado}
+      {aba === 'cadastro' && <FormularioCadastral key={startup.atualizadaEm} inicial={startup} rotuloDoBotao="Salvar dados cadastrais" bloqueado={bloqueado}
         aoSalvar={async (dados) => {
           try {
             setStartup(await salvarCadastro(id, dados))
@@ -133,7 +142,7 @@ export function PaginaStartup() {
             setAviso(null)
             setErro(e instanceof Error ? e.message : 'Não foi possível salvar.')
           }
-        }} />
+        }} />}
     </section>
   )
 }

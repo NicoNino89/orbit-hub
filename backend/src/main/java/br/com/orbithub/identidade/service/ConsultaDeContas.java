@@ -144,4 +144,18 @@ public class ConsultaDeContas {
         return usuarios.findById(contaId).filter(Usuario::podeTerSessao)
                 .map(u -> u.getPapeis().contains(Papel.INVESTIDOR)).orElse(false);
     }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
+     * Título: Conta ativa com o papel
+     * Objetivo: Dizer se a conta ativa tem o papel informado (por exemplo, empreendedor para entrar numa startup).
+     * Decisões: Conta inexistente ou inativa responde falso.
+     */
+    @Transactional(readOnly = true)
+    public boolean temPapelAtivo(UUID contaId, Papel papel) {
+        return usuarios.findById(contaId).filter(Usuario::podeTerSessao).map(u -> u.getPapeis().contains(papel)).orElse(false);
+    }
 }

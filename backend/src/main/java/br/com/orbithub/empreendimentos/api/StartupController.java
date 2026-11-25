@@ -7,8 +7,10 @@ import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteEmpreendedor;
 import br.com.orbithub.empreendimentos.domain.Fundador;
 import br.com.orbithub.empreendimentos.domain.PapelNaStartup;
 import br.com.orbithub.empreendimentos.domain.RedeSocial;
+import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
+import br.com.orbithub.empreendimentos.service.EquipeDaStartupService;
 import br.com.orbithub.empreendimentos.service.StartupsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.CacheControl;
@@ -52,18 +55,20 @@ import org.springframework.web.multipart.MultipartFile;
 class StartupController {
 
     private final StartupsService startups;
+    private final EquipeDaStartupService equipe;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:33
-     * Cartão Jira: KAN-21
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
      * Título: Criação do controller
-     * Objetivo: Receber o serviço das startups.
+     * Objetivo: Receber os serviços das startups e da equipe.
      * Decisões: Injeção por construtor.
      */
-    StartupController(StartupsService startups) {
+    StartupController(StartupsService startups, EquipeDaStartupService equipe) {
         this.startups = startups;
+        this.equipe = equipe;
     }
 
     /**
@@ -79,7 +84,7 @@ class StartupController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cria uma startup")
     StartupResponse criar(@RequestBody CadastroRequest pedido, @AuthenticationPrincipal Jwt token) {
-        return StartupResponse.de(startups.criar(Autenticado.id(token), pedido.cadastro()), PapelNaStartup.FUNDADOR_ADMINISTRADOR);
+        return StartupResponse.de(startups.criar(Autenticado.id(token), pedido.cadastro()), PapelNaStartup.FUNDADOR_ADMINISTRADOR, Set.of());
     }
 
     /**
@@ -111,7 +116,7 @@ class StartupController {
     @Operation(summary = "Dados cadastrais de uma startup")
     StartupResponse detalhe(@PathVariable UUID id, @AuthenticationPrincipal Jwt token) {
         StartupsService.Vinculo v = startups.detalhe(Autenticado.id(token), id);
-        return StartupResponse.de(v.startup(), v.papel());
+        return StartupResponse.de(v.startup(), v.papel(), equipe.minhasSecoes(Autenticado.id(token), id));
     }
 
     /**
@@ -127,7 +132,7 @@ class StartupController {
     @Operation(summary = "Salva os dados cadastrais")
     StartupResponse editar(@PathVariable UUID id, @RequestBody CadastroRequest pedido, @AuthenticationPrincipal Jwt token) {
         UUID eu = Autenticado.id(token);
-        return StartupResponse.de(startups.editarCadastro(eu, id, pedido.cadastro()), startups.papel(eu, id));
+        return StartupResponse.de(startups.editarCadastro(eu, id, pedido.cadastro()), startups.papel(eu, id), equipe.minhasSecoes(eu, id));
     }
 
     /**
@@ -149,7 +154,7 @@ class StartupController {
             throw new RegraDeNegocioException("logotipo_ilegivel", "Não foi possível ler o arquivo. Tente de novo.");
         }
         UUID eu = Autenticado.id(token);
-        return StartupResponse.de(startups.trocarLogotipo(eu, id, conteudo), startups.papel(eu, id));
+        return StartupResponse.de(startups.trocarLogotipo(eu, id, conteudo), startups.papel(eu, id), equipe.minhasSecoes(eu, id));
     }
 
     /**
@@ -211,16 +216,17 @@ class StartupController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:33
-     * Cartão Jira: KAN-21
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
      * Título: Startup na resposta
-     * Objetivo: Expor os dados cadastrais com o CNPJ formatado e o papel de quem pergunta.
+     * Objetivo: Expor os dados cadastrais com o CNPJ formatado, o papel de quem pergunta e, colaborador, as seções
+     *           que ele edita (KAN-65).
      * Decisões: "constituida" falso = selo "empresa ainda não constituída".
      */
     record StartupResponse(UUID id, String nome, String nomeFantasia, String razaoSocial, String cnpj, String segmento,
                            String localizacao, String site, Map<RedeSocial, String> redes, List<Fundador> fundadores,
                            SituacaoDaStartup situacao, boolean constituida, boolean temLogotipo, Instant atualizadaEm,
-                           PapelNaStartup meuPapel) {
+                           PapelNaStartup meuPapel, Set<SecaoDaStartup> minhasSecoes) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
@@ -231,11 +237,11 @@ class StartupController {
          * Objetivo: Montar a resposta a partir da startup.
          * Decisões: CNPJ formatado.
          */
-        static StartupResponse de(Startup s, PapelNaStartup papel) {
+        static StartupResponse de(Startup s, PapelNaStartup papel, Set<SecaoDaStartup> secoes) {
             Startup.Cadastro c = s.cadastro();
             return new StartupResponse(s.getId(), c.nome(), c.nomeFantasia(), c.razaoSocial(),
                     c.cnpj() == null ? null : Cnpj.formatar(c.cnpj()), c.segmento(), c.localizacao(), c.site(), c.redes(),
-                    c.fundadores(), s.getSituacao(), s.constituida(), s.getLogotipoChave() != null, s.getAtualizadaEm(), papel);
+                    c.fundadores(), s.getSituacao(), s.constituida(), s.getLogotipoChave() != null, s.getAtualizadaEm(), papel, secoes);
         }
     }
 }

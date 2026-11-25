@@ -15,7 +15,7 @@ const SESSAO: SessaoApi = {
 const STARTUP = {
   id: 's1', nome: 'NovaSafra', nomeFantasia: null, razaoSocial: null, cnpj: null, segmento: 'AGRONEGOCIO', localizacao: 'MT', site: null,
   redes: {}, fundadores: [], situacao: 'RASCUNHO', constituida: false, temLogotipo: false, atualizadaEm: '2026-11-24T18:00:00Z',
-  meuPapel: 'FUNDADOR_ADMINISTRADOR',
+  meuPapel: 'FUNDADOR_ADMINISTRADOR', minhasSecoes: [],
 }
 
 /**
@@ -86,15 +86,16 @@ describe('Cadastro da startup (KAN-21)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 22:33
-   * Cartão Jira: KAN-21
+   * Hora: 22:48
+   * Cartão Jira: KAN-65
    * Título: Colaborador
-   * Objetivo: Conferir que o colaborador vê o cadastro bloqueado, sem botão de salvar nem envio de logotipo.
-   * Decisões: As seções autorizadas chegam no KAN-65.
+   * Objetivo: Conferir que o colaborador sem a seção de dados cadastrais vê o cadastro bloqueado, sem botão de salvar
+   *           nem envio de logotipo.
+   * Decisões: Autorizado só em Mercado (KAN-65).
    */
-  it('bloqueia o cadastro para o colaborador', async () => {
+  it('bloqueia o cadastro para o colaborador sem a seção', async () => {
     abrir('/empreendedor/startups/s1', {
-      'GET /api/v1/startups/s1': () => ({ corpo: { ...STARTUP, meuPapel: 'COLABORADOR', cnpj: '11.222.333/0001-81', constituida: true } }),
+      'GET /api/v1/startups/s1': () => ({ corpo: { ...STARTUP, meuPapel: 'COLABORADOR', minhasSecoes: ['MERCADO'], cnpj: '11.222.333/0001-81', constituida: true } }),
     })
     expect(await screen.findByRole('heading', { name: 'NovaSafra' })).toBeInTheDocument()
     expect(screen.queryByText('Empresa ainda não constituída')).not.toBeInTheDocument()

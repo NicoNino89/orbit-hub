@@ -16,6 +16,7 @@ import { PaginaConviteEquipe } from './conta/PaginaConviteEquipe'
 import { PaginaEntrar } from './conta/PaginaEntrar'
 import { PaginaNovoEmail } from './conta/PaginaNovoEmail'
 import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
+import { PaginaConviteStartup } from './empreendedor/PaginaConviteStartup'
 import { PaginaNovaStartup, PaginaStartup } from './empreendedor/PaginasDaStartup'
 import { Inicio } from './Inicio'
 import { PaginaConviteOrganizacao } from './investidor/PaginaConviteOrganizacao'
@@ -71,6 +72,7 @@ export function Rotas() {
             <Route path="/conta" element={<PaginaConta />} />
             <Route path="/notificacoes" element={<PaginaNotificacoes />} />
             <Route path="/organizacoes/convite" element={<PaginaConviteOrganizacao />} />
+            <Route path="/startups/convite" element={<PaginaConviteStartup />} />
             <Route element={<RotaDePapel papel="INVESTIDOR" />}>
               <Route path="/investidor" element={<AreaInvestidor />} />
               <Route path="/investidor/onboarding" element={<PaginaPerfilDeInvestimento onboarding />} />

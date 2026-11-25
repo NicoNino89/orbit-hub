@@ -29,6 +29,7 @@ public enum TipoDeNotificacao {
     NOVA_OPORTUNIDADE("Oportunidades", "Nova startup compatível com a sua tese", false, Canal.PLATAFORMA),
     RODADA_AVISO("Oportunidades", "Avisos de rodada", false, Canal.PLATAFORMA),
     ORGANIZACAO("Organizações", "Convites e mudanças nas suas organizações", false, Canal.AMBOS),
+    STARTUP("Startups", "Convites e mudanças nas equipes das suas startups", false, Canal.AMBOS),
     TERMOS_ATUALIZADOS("Conta", "Termos e políticas atualizados", true, Canal.AMBOS),
     SEGURANCA_CONTA("Conta", "Segurança da conta (senha e e-mail)", true, Canal.AMBOS),
     EQUIPE_APROVACAO("Equipe", "Ação grave aguardando a sua aprovação", true, Canal.AMBOS),

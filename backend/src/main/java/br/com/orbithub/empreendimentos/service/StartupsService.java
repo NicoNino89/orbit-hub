@@ -11,6 +11,7 @@ import br.com.orbithub.empreendimentos.domain.Fundador;
 import br.com.orbithub.empreendimentos.domain.MembroDaStartup;
 import br.com.orbithub.empreendimentos.domain.PapelNaStartup;
 import br.com.orbithub.empreendimentos.domain.RedeSocial;
+import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.domain.Startup.Cadastro;
 import br.com.orbithub.empreendimentos.repository.MembroDaStartupRepository;
@@ -128,15 +129,15 @@ public class StartupsService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:33
-     * Cartão Jira: KAN-21
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
      * Título: Editar cadastro
      * Objetivo: Salvar os dados cadastrais, as redes e os fundadores.
-     * Decisões: Fundador administrador e fundador editam; colaborador só com a seção autorizada (KAN-65).
+     * Decisões: Fundadores editam; colaborador só com a seção de dados cadastrais autorizada (KAN-65).
      */
     @Transactional
     public Startup editarCadastro(UUID eu, UUID startupId, Cadastro pedido) {
-        exigirEditor(eu, startupId);
+        exigirEditor(eu, startupId, SecaoDaStartup.CADASTRO);
         Startup startup = startup(startupId);
         startup.atualizarCadastro(conferir(pedido, startupId), relogio.instant());
         return startup;
@@ -145,15 +146,15 @@ public class StartupsService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:33
-     * Cartão Jira: KAN-21
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
      * Título: Trocar logotipo
      * Objetivo: Guardar o logotipo novo e apagar o anterior.
      * Decisões: PNG, JPEG ou WebP, até startup.logotipo_max_mb.
      */
     @Transactional
     public Startup trocarLogotipo(UUID eu, UUID startupId, byte[] conteudo) {
-        exigirEditor(eu, startupId);
+        exigirEditor(eu, startupId, SecaoDaStartup.CADASTRO);
         long maximo = parametros.inteiro(LOGOTIPO_MAX) * 1024 * 1024;
         if (conteudo == null || conteudo.length == 0 || conteudo.length > maximo) {
             throw new RegraDeNegocioException("logotipo_tamanho", "O logotipo precisa ter até " + parametros.inteiro(LOGOTIPO_MAX) + " MB.");
@@ -207,15 +208,32 @@ public class StartupsService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:33
-     * Cartão Jira: KAN-21
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
      * Título: Exigir quem edita
-     * Objetivo: Recusar quem não pode editar o cadastro.
-     * Decisões: Colaborador entra pela seção autorizada no KAN-65; até lá, 403.
+     * Objetivo: Recusar quem não pode editar uma seção do cadastro.
+     * Decisões: Fundadores editam tudo; colaborador, só as seções autorizadas (KAN-65). Serviço público para as seções.
      */
-    private void exigirEditor(UUID eu, UUID startupId) {
-        if (papel(eu, startupId) == PapelNaStartup.COLABORADOR) {
+    public void exigirEditor(UUID eu, UUID startupId, SecaoDaStartup secao) {
+        MembroDaStartup membro = membros.findByStartupIdAndUsuarioIdAndSaiuEmIsNull(startupId, eu)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Startup não encontrada."));
+        if (!membro.podeEditar(secao)) {
             throw new AccessDeniedException("Colaborador só edita as seções autorizadas pelo administrador.");
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
+     * Título: Exigir fundador administrador
+     * Objetivo: Recusar quem não é fundador administrador (gerenciar equipe, publicar, rodada, Nível 2).
+     * Decisões: Membro de outro papel: 403; quem não é membro: 404. Serviço público.
+     */
+    public void exigirAdministrador(UUID eu, UUID startupId) {
+        if (papel(eu, startupId) != PapelNaStartup.FUNDADOR_ADMINISTRADOR) {
+            throw new AccessDeniedException("Só o fundador administrador pode fazer isso.");
         }
     }
 
