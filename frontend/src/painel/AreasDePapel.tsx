@@ -7,6 +7,7 @@ import { lerPerfil, type DadosDoPerfil } from '../api/perfilDeInvestimento'
 import { minhaVerificacao, type Selo } from '../api/verificacoes'
 import { SeloDeVerificacao } from '../investidor/PaginaVerificacao'
 import { ResumoDoPerfil } from '../investidor/ResumoDoPerfil'
+import { NOMES_DA_SITUACAO_DA_STARTUP, NOMES_DO_PAPEL_NA_STARTUP, type ResumoDaStartup } from '../api/startups'
 import { useAtuacao } from '../sessao/atuacao'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
@@ -146,25 +147,34 @@ interface SituacaoInvestidor {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 01:50
- * Cartão Jira: KAN-34
+ * Hora: 22:33
+ * Cartão Jira: KAN-21
  * Título: Área do empreendedor
- * Objetivo: Mostrar as startups da conta.
- * Decisões: O cadastro da startup chega na S4 (KAN-21).
+ * Objetivo: Mostrar as startups de que a pessoa faz parte e levar ao cadastro de uma nova.
+ * Decisões: Cada startup mostra a situação, o papel e o selo de empresa ainda não constituída.
  */
 export function AreaEmpreendedor() {
-  const { dados, erro } = useArea<{ startups: string[]; proximoPasso: string }>('/api/v1/empreendimentos/meus')
+  const { dados, erro } = useArea<ResumoDaStartup[]>('/api/v1/startups/minhas')
   return (
     <section className="flex flex-col gap-3">
       <h1 className="font-display text-3xl font-semibold tracking-tight">Área do empreendedor</h1>
       {erro && <AlertaErro>{erro}</AlertaErro>}
-      {dados && (
-        <p className="text-muted">
-          {dados.startups.length === 0
-            ? 'Você ainda não cadastrou nenhuma startup. Disponível em breve.'
-            : `${dados.startups.length} startup(s) cadastrada(s).`}
-        </p>
+      {dados && dados.length === 0 && <p className="text-muted">Você ainda não cadastrou nenhuma startup.</p>}
+      {dados && dados.length > 0 && (
+        <ul className="flex flex-col gap-2" aria-label="Minhas startups">
+          {dados.map((s) => (
+            <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface p-4 text-sm">
+              <Link to={`/empreendedor/startups/${s.id}`} className={CLASSE_LINK}>{s.nome}</Link>
+              <span className="flex flex-wrap items-center gap-2 text-xs">
+                {!s.constituida && <span className="rounded bg-warn-soft px-2 py-0.5 font-semibold text-warn">Empresa ainda não constituída</span>}
+                <span className="rounded bg-surface-2 px-2 py-0.5 font-semibold">{NOMES_DA_SITUACAO_DA_STARTUP[s.situacao]}</span>
+                <span className="text-muted">{NOMES_DO_PAPEL_NA_STARTUP[s.meuPapel]}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
+      <Link to="/empreendedor/startups/nova" className={CLASSE_LINK}>Cadastrar startup</Link>
     </section>
   )
 }

@@ -16,6 +16,7 @@ import { PaginaConviteEquipe } from './conta/PaginaConviteEquipe'
 import { PaginaEntrar } from './conta/PaginaEntrar'
 import { PaginaNovoEmail } from './conta/PaginaNovoEmail'
 import { PaginaEsqueciSenha, PaginaRedefinirSenha } from './conta/PaginasSenha'
+import { PaginaNovaStartup, PaginaStartup } from './empreendedor/PaginasDaStartup'
 import { Inicio } from './Inicio'
 import { PaginaConviteOrganizacao } from './investidor/PaginaConviteOrganizacao'
 import { PaginaOrganizacao } from './investidor/PaginaOrganizacao'
@@ -32,8 +33,8 @@ import { PaginaTermos } from './termos/PaginaTermos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 17:43
- * Cartão Jira: KAN-87
+ * Hora: 22:33
+ * Cartão Jira: KAN-21
  * Título: Rotas da aplicação
  * Objetivo: Associar cada endereço à sua tela, separando as públicas das que exigem login.
  * Decisões: Roteador definitivo (React Router) desde o KAN-92; o nginx devolve o index.html para qualquer
@@ -47,6 +48,7 @@ import { PaginaTermos } from './termos/PaginaTermos'
  *           perfil de investimento também fica na área do investidor (KAN-61), e o onboarding da tese usa a mesma
  *           tela (KAN-18). A verificação de identidade do investidor também (KAN-62). A fila de verificação é do
  *           analista de verificação e do administrador (KAN-83). "Meus vínculos" é de toda a equipe (KAN-87).
+ *           O cadastro da startup fica na área do empreendedor (KAN-21).
  */
 export function Rotas() {
   return (
@@ -79,6 +81,8 @@ export function Rotas() {
             </Route>
             <Route element={<RotaDePapel papel="EMPREENDEDOR" />}>
               <Route path="/empreendedor" element={<AreaEmpreendedor />} />
+              <Route path="/empreendedor/startups/nova" element={<PaginaNovaStartup />} />
+              <Route path="/empreendedor/startups/:id" element={<PaginaStartup />} />
             </Route>
             <Route element={<RotaInterna />}>
               <Route path="/admin" element={<AreaAdmin />}>
