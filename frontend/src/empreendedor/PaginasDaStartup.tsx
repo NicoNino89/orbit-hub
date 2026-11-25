@@ -4,6 +4,7 @@ import {
   CADASTRO_VAZIO, criarStartup, lerLogotipo, lerStartup, NOMES_DA_SITUACAO_DA_STARTUP, NOMES_DO_PAPEL_NA_STARTUP,
   NOMES_DAS_SECOES, podeEditar, salvarCadastro, type SecaoDaStartup, type Startup, trocarLogotipo,
 } from '../api/startups'
+import { progressoDaStartup, type ProgressoDaStartup } from '../api/publicacao'
 import { type CampoDoCatalogo, catalogoDeCampos, salvarSecao, type ValoresDasSecoes, valoresDasSecoes } from '../api/secoes'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
@@ -11,6 +12,7 @@ import { EquipeDaStartup } from './EquipeDaStartup'
 import { FormularioCadastral } from './FormularioCadastral'
 import { FormularioDaSecao } from './FormularioDaSecao'
 import { PainelDeIndicadores } from './PainelDeIndicadores'
+import { PainelDePublicacao } from './PainelDePublicacao'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -50,13 +52,14 @@ export function PaginaNovaStartup() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 22:56
- * Cartão Jira: KAN-22
+ * Hora: 23:40
+ * Cartão Jira: KAN-27
  * Título: Editor da startup
  * Objetivo: Mostrar a startup com a situação, o selo de empresa não constituída, o logotipo e a etapa dos dados
  *           cadastrais.
- * Decisões: Navegação por etapas: dados cadastrais, as seções que o catálogo do servidor descreve (KAN-22 em diante)
- *           e a equipe (KAN-65).
+ * Decisões: Navegação por etapas: dados cadastrais, as seções que o catálogo do servidor descreve (KAN-22 em diante),
+ *           a equipe (KAN-65) e a publicação, com a barra de progresso dos obrigatórios e a marca nas etapas completas
+ *           (KAN-27).
  *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele.
  */
 export function PaginaStartup() {
@@ -65,7 +68,16 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
-  const [aba, setAba] = useState<'cadastro' | 'equipe' | SecaoDaStartup>('cadastro')
+  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | SecaoDaStartup>('cadastro')
+  const [progresso, setProgresso] = useState<ProgressoDaStartup | null>(null)
+  const [versao, setVersao] = useState(0)
+  const recarregar = () => setVersao((v) => v + 1)
+
+  useEffect(() => {
+    let ativo = true
+    progressoDaStartup(id).then((p) => { if (ativo) setProgresso(p) }).catch(() => undefined)
+    return () => { ativo = false }
+  }, [id, versao])
   const [catalogo, setCatalogo] = useState<CampoDoCatalogo[]>([])
   const [valores, setValores] = useState<ValoresDasSecoes | null>(null)
 
@@ -106,8 +118,10 @@ export function PaginaStartup() {
     ['cadastro', 'Dados cadastrais'],
     ...secoesComCampos.map((secao): [SecaoDaStartup, string] => [secao, NOMES_DAS_SECOES[secao]]),
     ['equipe', 'Equipe'],
+    ['publicacao', 'Publicação'],
   ]
-  const secaoAberta = aba === 'cadastro' || aba === 'equipe' ? null : aba
+  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' ? null : aba
+  const completa = (chave: typeof aba) => progresso?.secoes.find((s) => (chave === 'cadastro' ? s.secao === 'CADASTRO' : s.secao === chave))?.completa ?? false
 
   return (
     <section className="flex flex-col gap-5">
@@ -124,6 +138,15 @@ export function PaginaStartup() {
           </p>
         </div>
       </header>
+      {progresso && (
+        <div className="flex flex-col gap-1 text-sm">
+          <div className="flex justify-between"><span>Obrigatórios para publicar</span><span>{progresso.percentual}%</span></div>
+          <div role="progressbar" aria-label="Progresso do cadastro" aria-valuenow={progresso.percentual} aria-valuemin={0} aria-valuemax={100}
+            className="h-2 overflow-hidden rounded-full bg-surface-2">
+            <div className="h-full bg-primary" style={{ width: `${progresso.percentual}%` }} />
+          </div>
+        </div>
+      )}
       {erro && <AlertaErro>{erro}</AlertaErro>}
       {aviso && <p role="status" className="rounded-md bg-ok-soft px-3 py-2 text-sm text-ok">{aviso}</p>}
 
@@ -131,10 +154,15 @@ export function PaginaStartup() {
         {etapas.map(([chave, nome]) => (
           <button key={chave} type="button" onClick={() => setAba(chave)} aria-current={aba === chave ? 'step' : undefined}
             className={aba === chave ? 'rounded-md bg-primary px-3 py-1 font-semibold text-on-primary' : 'rounded-md border border-line px-3 py-1'}>
-            {nome}
+            {nome}{completa(chave) && <span aria-hidden="true"> ✓</span>}
           </button>
         ))}
       </nav>
+
+      {aba === 'publicacao' && progresso && (
+        <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso}
+          aoMudar={() => { recarregar(); lerStartup(id).then(setStartup).catch(() => undefined) }} />
+      )}
 
       {secaoAberta === 'TRACAO' && <PainelDeIndicadores startupId={id} podeEditar={podeEditar(startup, 'TRACAO')} />}
 
@@ -144,6 +172,7 @@ export function PaginaStartup() {
           aoSalvar={async (dados) => {
             try {
               setValores(await salvarSecao(id, secaoAberta, dados))
+              recarregar()
               setErro(null)
               setAviso(`${NOMES_DAS_SECOES[secaoAberta]}: salvo.`)
             } catch (e) {
@@ -173,6 +202,7 @@ export function PaginaStartup() {
         aoSalvar={async (dados) => {
           try {
             setStartup(await salvarCadastro(id, dados))
+            recarregar()
             setErro(null)
             setAviso('Dados cadastrais salvos.')
           } catch (e) {

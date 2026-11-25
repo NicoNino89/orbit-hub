@@ -101,20 +101,21 @@ class SecoesDaStartupController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:30
-     * Cartão Jira: KAN-26
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
      * Título: Campo na resposta
      * Objetivo: Expor um campo do catálogo para a tela montar o formulário.
-     * Decisões: Lista só para o tipo LISTA; limite só para texto e inteiro; opções com explicação só para a escala (KAN-26).
+     * Decisões: Lista só para o tipo LISTA; limite só para texto e inteiro; opções com explicação só para a escala (KAN-26);
+     *           "obrigatorio" marca o que é exigido para publicar (KAN-27).
      */
     record CampoResponse(CampoDaStartup campo, SecaoDaStartup secao, String rotulo, CampoDaStartup.Tipo tipo, Integer limite,
-                         Lista lista, String ajuda, List<Opcao> opcoes) {
+                         Lista lista, String ajuda, List<Opcao> opcoes, boolean obrigatorio) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 23:30
-         * Cartão Jira: KAN-26
+         * Hora: 23:40
+         * Cartão Jira: KAN-27
          * Título: Conversão
          * Objetivo: Montar a resposta a partir do catálogo.
          * Decisões: Limite de caracteres no texto e máximo no inteiro (KAN-25); nulo nos outros.
@@ -124,7 +125,7 @@ class SecoesDaStartupController {
                     c.getTipo() == CampoDaStartup.Tipo.TEXTO || c.getTipo() == CampoDaStartup.Tipo.INTEIRO ? c.getLimite() : null,
                     c.getLista(), c.getAjuda(), c.getTipo() == CampoDaStartup.Tipo.ESCALA
                     ? Arrays.stream(MaturidadeDoNegocio.values()).map(m -> new Opcao(m.name(), m.getRotulo(), m.getExplicacao())).toList()
-                    : null);
+                    : null, c.obrigatorioParaPublicar());
         }
     }
 

@@ -2,7 +2,10 @@ package br.com.orbithub.empreendimentos.domain;
 
 import br.com.orbithub.administracao.domain.Lista;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -105,6 +108,10 @@ public enum CampoDaStartup {
      */
     public enum Tipo { TEXTO, SIM_NAO, LISTA, PERCENTUAL, INTEIRO, ESCALA }
 
+    private static final Set<CampoDaStartup> OBRIGATORIOS = Collections.unmodifiableSet(EnumSet.of(
+            CampoDaStartup.PROBLEMA, CampoDaStartup.SOLUCAO, CampoDaStartup.DESCRICAO_PRODUTO, CampoDaStartup.PUBLICO_ALVO,
+            CampoDaStartup.MODELO, CampoDaStartup.GERACAO_RECEITA, CampoDaStartup.ESTAGIO));
+
     private final SecaoDaStartup secao;
     private final String rotulo;
     private final Tipo tipo;
@@ -128,6 +135,19 @@ public enum CampoDaStartup {
         this.limite = limite;
         this.lista = lista;
         this.ajuda = ajuda;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Obrigatório para publicar
+     * Objetivo: Dizer se o campo precisa estar preenchido para enviar a startup à publicação.
+     * Decisões: O mínimo para a curadoria avaliar: problema, solução, produto, público-alvo, classificação e geração de receita, e o estágio (KAN-26). Os demais enriquecem a página, mas não travam o envio.
+     */
+    public boolean obrigatorioParaPublicar() {
+        return OBRIGATORIOS.contains(this);
     }
 
     /**

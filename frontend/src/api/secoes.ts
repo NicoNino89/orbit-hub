@@ -20,6 +20,8 @@ export interface CampoDoCatalogo {
   ajuda: string | null
   /** Níveis da escala com a explicação (só no tipo ESCALA, KAN-26). */
   opcoes?: { codigo: string; rotulo: string; explicacao: string }[] | null
+  /** Exigido para enviar a startup à publicação (KAN-27). */
+  obrigatorio?: boolean
 }
 
 export type ValoresDasSecoes = Record<string, string>

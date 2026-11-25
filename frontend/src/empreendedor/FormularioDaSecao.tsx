@@ -6,13 +6,30 @@ import { CLASSE_BOTAO_PRIMARIO } from '../ui/estilos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 23:30
- * Cartão Jira: KAN-26
+ * Hora: 23:40
+ * Cartão Jira: KAN-27
+ * Título: Campo conforme o tipo
+ * Objetivo: Escolher o componente do campo pelo tipo do catálogo.
+ * Decisões: Texto é o padrão.
+ */
+function Campo(props: { campo: CampoDoCatalogo; valor: string; aoMudar: (v: string) => void }) {
+  if (props.campo.tipo === 'SIM_NAO') return <SimOuNao {...props} />
+  if (props.campo.tipo === 'LISTA') return <OpcaoDaLista {...props} />
+  if (props.campo.tipo === 'PERCENTUAL' || props.campo.tipo === 'INTEIRO') return <Numero {...props} />
+  if (props.campo.tipo === 'ESCALA') return <Escala {...props} />
+  return <Texto {...props} />
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 23:40
+ * Cartão Jira: KAN-27
  * Título: Formulário de uma seção
  * Objetivo: Montar, a partir do catálogo, os campos de uma seção do cadastro, com o contador de caracteres visível.
  * Decisões: Texto vira área de texto com limite; sim/não vira escolha única; lista vira seleção (KAN-23); percentual e
  *           inteiro viram campo numérico, com a soma das destinações à vista (KAN-25); a escala vira uma lista de opções com
- *           a explicação de cada nível (KAN-26). Bloqueado para quem não pode editar a
+ *           a explicação de cada nível (KAN-26). Os obrigatórios para publicar ganham a marca (KAN-27). Bloqueado para quem não pode editar a
  *           seção. Nada é obrigatório para salvar o rascunho.
  */
 export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar }: {
@@ -33,14 +50,12 @@ export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar
     <form aria-label={titulo} className="flex flex-col gap-4"
       onSubmit={(e) => { e.preventDefault(); setSalvando(true); void aoSalvar(valores).finally(() => setSalvando(false)) }}>
       <fieldset disabled={bloqueado} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
-        {campos.map((c) => {
-          const props = { campo: c, valor: valores[c.campo], aoMudar: (v: string) => mudar(c.campo, v) }
-          if (c.tipo === 'SIM_NAO') return <SimOuNao key={c.campo} {...props} />
-          if (c.tipo === 'LISTA') return <OpcaoDaLista key={c.campo} {...props} />
-          if (c.tipo === 'PERCENTUAL' || c.tipo === 'INTEIRO') return <Numero key={c.campo} {...props} />
-          if (c.tipo === 'ESCALA') return <Escala key={c.campo} {...props} />
-          return <Texto key={c.campo} {...props} />
-        })}
+        {campos.map((c) => (
+          <div key={c.campo} className="flex flex-col gap-1">
+            {c.obrigatorio && <span className="self-start rounded bg-warn-soft px-2 py-0.5 text-xs font-semibold text-warn">Obrigatório para publicar</span>}
+            <Campo campo={c} valor={valores[c.campo]} aoMudar={(v: string) => mudar(c.campo, v)} />
+          </div>
+        ))}
         {percentuais.length > 0 && (
           <p role="status" className={`text-sm ${soma > 100 ? 'font-semibold text-crit' : 'text-muted'}`}>
             Soma das destinações: {soma.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}% de 100%

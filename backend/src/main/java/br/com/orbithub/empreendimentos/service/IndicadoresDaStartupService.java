@@ -5,6 +5,7 @@ import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.empreendimentos.domain.IndicadorDaStartup;
 import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.ValorDeIndicador;
+import br.com.orbithub.empreendimentos.repository.StartupRepository;
 import br.com.orbithub.empreendimentos.repository.ValorDeIndicadorRepository;
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -39,6 +40,7 @@ public class IndicadoresDaStartupService {
     private static final ZoneId BRASILIA = ZoneId.of("America/Sao_Paulo");
 
     private final ValorDeIndicadorRepository valores;
+    private final StartupRepository startups;
     private final StartupsService cadastro;
     private final LeituraDeParametros parametros;
     private final Clock relogio;
@@ -46,15 +48,16 @@ public class IndicadoresDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:11
-     * Cartão Jira: KAN-24
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
      * Título: Criação do serviço
-     * Objetivo: Receber o repositório, o cadastro, os parâmetros e o relógio.
+     * Objetivo: Receber os repositórios, o cadastro, os parâmetros e o relógio.
      * Decisões: Injeção por construtor.
      */
-    public IndicadoresDaStartupService(ValorDeIndicadorRepository valores, StartupsService cadastro, LeituraDeParametros parametros,
-                                       Clock relogio) {
+    public IndicadoresDaStartupService(ValorDeIndicadorRepository valores, StartupRepository startups, StartupsService cadastro,
+                                       LeituraDeParametros parametros, Clock relogio) {
         this.valores = valores;
+        this.startups = startups;
         this.cadastro = cadastro;
         this.parametros = parametros;
         this.relogio = relogio;
@@ -90,11 +93,12 @@ public class IndicadoresDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:11
-     * Cartão Jira: KAN-24
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
      * Título: Registrar valor
      * Objetivo: Declarar um novo valor de um indicador.
-     * Decisões: Sem referência não salva. Referência no futuro é recusada. Valores anteriores ficam no histórico.
+     * Decisões: Sem referência não salva. Referência no futuro é recusada. Valores anteriores ficam no histórico. Conta como
+     *           atualização da startup, para a R8 (KAN-27).
      */
     @Transactional
     public Indicador registrar(UUID eu, UUID startupId, IndicadorDaStartup indicador, BigDecimal valor, String referencia) {
@@ -112,6 +116,7 @@ public class IndicadoresDaStartupService {
         }
         Instant agora = relogio.instant();
         valores.save(ValorDeIndicador.novo(startupId, indicador, valor, mes, eu, agora));
+        startups.findById(startupId).ifPresent(s -> s.registrarAtualizacao(agora));
         return listar(eu, startupId).stream().filter(i -> i.indicador() == indicador).findFirst().orElseThrow();
     }
 

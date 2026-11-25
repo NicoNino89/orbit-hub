@@ -1,5 +1,6 @@
 package br.com.orbithub.empreendimentos.domain;
 
+import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -18,8 +19,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -88,6 +92,15 @@ public class Startup {
     @MapKeyColumn(name = "campo", length = 60)
     @Column(name = "valor", nullable = false, columnDefinition = "TEXT")
     private Map<CampoDaStartup, String> campos = new EnumMap<>(CampoDaStartup.class);
+
+    @Column(name = "enviada_em")
+    private Instant enviadaEm;
+
+    @Column(name = "publicada_em")
+    private Instant publicadaEm;
+
+    @Column(name = "aviso_inatividade_em")
+    private Instant avisoInatividadeEm;
 
     @Column(name = "lembrete_indicadores_em")
     private Instant lembreteIndicadoresEm;
@@ -363,6 +376,145 @@ public class Startup {
      */
     public void registrarLembreteDeIndicadores(Instant agora) {
         this.lembreteIndicadoresEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Enviar para revisão
+     * Objetivo: Passar a startup para "em revisão", na fila da curadoria (KAN-66).
+     * Decisões: Vale de rascunho, devolvida ou despublicada; devolve a situação anterior para o histórico.
+     */
+    public SituacaoDaStartup enviarParaRevisao(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.RASCUNHO, SituacaoDaStartup.DEVOLVIDA, SituacaoDaStartup.DESPUBLICADA),
+                SituacaoDaStartup.EM_REVISAO, agora, () -> this.enviadaEm = agora);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Cancelar envio
+     * Objetivo: Tirar a startup da fila da curadoria antes da decisão.
+     * Decisões: Volta para rascunho, ou para despublicada se já foi publicada antes.
+     */
+    public SituacaoDaStartup cancelarEnvio(Instant agora) {
+        SituacaoDaStartup volta = publicadaEm == null ? SituacaoDaStartup.RASCUNHO : SituacaoDaStartup.DESPUBLICADA;
+        return mudar(EnumSet.of(SituacaoDaStartup.EM_REVISAO), volta, agora, () -> this.enviadaEm = null);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Despublicar
+     * Objetivo: Tirar a startup publicada do catálogo.
+     * Decisões: Só de publicada; o aviso de inatividade é limpo.
+     */
+    public SituacaoDaStartup despublicar(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.PUBLICADA), SituacaoDaStartup.DESPUBLICADA, agora, () -> this.avisoInatividadeEm = null);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Mudar situação
+     * Objetivo: Conferir a situação de origem e aplicar a nova.
+     * Decisões: Situação inválida: regra de negócio com a situação atual na mensagem. Não muda a data de atualização do cadastro.
+     */
+    private SituacaoDaStartup mudar(Set<SituacaoDaStartup> origens, SituacaoDaStartup destino, Instant agora, Runnable efeito) {
+        if (!origens.contains(situacao)) {
+            throw new RegraDeNegocioException("situacao_invalida",
+                    "Não é possível fazer isso com a startup " + situacao.name().toLowerCase(Locale.ROOT).replace('_', ' ') + ".");
+        }
+        SituacaoDaStartup anterior = situacao;
+        situacao = destino;
+        efeito.run();
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Registrar atualização
+     * Objetivo: Marcar que a equipe mexeu no conteúdo da startup (para a R8 saber que ela está ativa).
+     * Decisões: Usado pelas partes do cadastro que não passam pelos dados cadastrais (indicadores).
+     */
+    public void registrarAtualizacao(Instant agora) {
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Avisar inatividade
+     * Objetivo: Guardar quando a equipe foi avisada de que a startup publicada está sem atualização.
+     * Decisões: A R8 despublica se nada mudar em 30 dias.
+     */
+    public void registrarAvisoDeInatividade(Instant agora) {
+        this.avisoInatividadeEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Limpar aviso de inatividade
+     * Objetivo: Esquecer o aviso quando a startup volta a ser atualizada.
+     * Decisões: Chamado pela R8.
+     */
+    public void limparAvisoDeInatividade() {
+        this.avisoInatividadeEm = null;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Acesso ao aviso de inatividade
+     * Objetivo: Expor quando a equipe foi avisada da inatividade.
+     * Decisões: Nulo sem aviso.
+     */
+    public Instant getAvisoInatividadeEm() {
+        return avisoInatividadeEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Acesso ao envio
+     * Objetivo: Expor quando a startup foi enviada para revisão.
+     * Decisões: Nulo fora da revisão.
+     */
+    public Instant getEnviadaEm() {
+        return enviadaEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:40
+     * Cartão Jira: KAN-27
+     * Título: Acesso à publicação
+     * Objetivo: Expor quando a startup foi publicada pela última vez.
+     * Decisões: Nulo se nunca foi publicada; quem publica é a curadoria (KAN-66).
+     */
+    public Instant getPublicadaEm() {
+        return publicadaEm;
     }
 
     /**
