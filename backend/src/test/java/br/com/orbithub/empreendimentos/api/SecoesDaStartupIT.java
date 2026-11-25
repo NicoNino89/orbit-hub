@@ -132,6 +132,37 @@ class SecoesDaStartupIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
+     * Título: Planejamento e necessidade de investimento
+     * Objetivo: Conferir os percentuais (faixa, casas, soma até 100%), o prazo inteiro com o máximo e o salvamento normalizado.
+     * Decisões: Destinação 40 + 35,5 + 24,5 = 100.
+     */
+    @Test
+    void planejamentoENecessidade() throws Exception {
+        Usuario eva = conta(Papel.EMPREENDEDOR);
+        String id = startup(eva);
+        mvc.perform(get("/api/v1/startups/campos").header(HttpHeaders.AUTHORIZATION, bearer(eva)))
+                .andExpect(jsonPath("$[?(@.campo == 'PRAZO_USO_MESES')].limite").value(org.hamcrest.Matchers.contains(120)));
+        String n = "NECESSIDADE_DE_INVESTIMENTO";
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"101\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"-1\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"10,555\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"muito\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"60\",\"DESTINO_EQUIPE\":\"50\"}").andExpect(jsonPath("$.codigo").value("percentuais_acima"));
+        secao(eva, id, n, "{\"PRAZO_USO_MESES\":\"0\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"PRAZO_USO_MESES\":\"121\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"PRAZO_USO_MESES\":\"18.5\"}").andExpect(jsonPath("$.codigo").value("numero_invalido"));
+        secao(eva, id, n, "{\"DESTINO_PRODUTO\":\"40\",\"DESTINO_COMERCIAL\":\"35,5\",\"DESTINO_EQUIPE\":\"24.50\",\"PRAZO_USO_MESES\":\"18\"}")
+                .andExpect(status().isOk()).andExpect(jsonPath("$.DESTINO_COMERCIAL").value("35.5"))
+                .andExpect(jsonPath("$.DESTINO_EQUIPE").value("24.5")).andExpect(jsonPath("$.PRAZO_USO_MESES").value("18"));
+        secao(eva, id, "PLANEJAMENTO", "{\"RISCOS\":\"Sazonalidade da safra\",\"MITIGACAO\":\"Clientes em duas regiões\"}")
+                .andExpect(jsonPath("$.RISCOS").value("Sazonalidade da safra")).andExpect(jsonPath("$.PRAZO_USO_MESES").value("18"));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 22:56
      * Cartão Jira: KAN-22
      * Título: Salvar seção pela API

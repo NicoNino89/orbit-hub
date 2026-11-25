@@ -14,7 +14,7 @@ export interface CampoDoCatalogo {
   campo: string
   secao: SecaoDaStartup
   rotulo: string
-  tipo: 'TEXTO' | 'SIM_NAO' | 'LISTA'
+  tipo: 'TEXTO' | 'SIM_NAO' | 'LISTA' | 'PERCENTUAL' | 'INTEIRO'
   limite: number | null
   lista: string | null
   ajuda: string | null

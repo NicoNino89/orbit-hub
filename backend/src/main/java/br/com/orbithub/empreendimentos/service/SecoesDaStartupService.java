@@ -7,6 +7,7 @@ import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
 import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.repository.StartupRepository;
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.EnumMap;
 import java.util.Map;
@@ -28,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class SecoesDaStartupService {
+
+    private static final BigDecimal CEM = BigDecimal.valueOf(100);
 
     private final StartupRepository startups;
     private final StartupsService cadastro;
@@ -68,11 +71,12 @@ public class SecoesDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:56
-     * Cartão Jira: KAN-22
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
      * Título: Salvar seção
      * Objetivo: Conferir e gravar os valores de uma seção.
-     * Decisões: Campo desconhecido ou de outra seção é recusado, para não gravar o que a tela não mostra.
+     * Decisões: Campo desconhecido ou de outra seção é recusado, para não gravar o que a tela não mostra. Os percentuais
+     *           de uma seção (destinação dos recursos) somam no máximo 100% (KAN-25).
      */
     @Transactional
     public Map<CampoDaStartup, String> salvar(UUID eu, UUID startupId, SecaoDaStartup secao, Map<String, String> valores) {
@@ -87,6 +91,11 @@ public class SecoesDaStartupService {
                 conferidos.put(campo, conferir(campo, valor.strip()));
             }
         });
+        BigDecimal soma = conferidos.entrySet().stream().filter(e -> e.getKey().getTipo() == CampoDaStartup.Tipo.PERCENTUAL)
+                .map(e -> new BigDecimal(e.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (soma.compareTo(CEM) > 0) {
+            throw new RegraDeNegocioException("percentuais_acima", "A soma das destinações passa de 100% (" + soma.stripTrailingZeros().toPlainString() + "%).");
+        }
         Startup startup = startup(startupId);
         startup.preencherSecao(secao, conferidos, relogio.instant());
         return startup.campos();
@@ -116,12 +125,12 @@ public class SecoesDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:02
-     * Cartão Jira: KAN-23
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
      * Título: Conferir valor
      * Objetivo: Validar o valor conforme o tipo do campo e devolvê-lo normalizado.
-     * Decisões: Texto pelo limite; sim/não; opção ativa da lista (KAN-23). Os próximos tipos chegam com as histórias que
-     *           os usam.
+     * Decisões: Texto pelo limite; sim/não; opção ativa da lista (KAN-23); percentual de 0 a 100 e inteiro de 1 ao limite
+     *           (KAN-25). Vírgula decimal aceita.
      */
     String conferir(CampoDaStartup campo, String valor) {
         return switch (campo.getTipo()) {
@@ -139,7 +148,39 @@ public class SecoesDaStartupService {
                 yield valor;
             }
             case LISTA -> listas.exigirAtivo(campo.getLista(), valor).getCodigo();
+            case PERCENTUAL -> {
+                BigDecimal n = numero(campo, valor);
+                if (n.compareTo(BigDecimal.ZERO) < 0 || n.compareTo(CEM) > 0 || Math.max(n.stripTrailingZeros().scale(), 0) > 2) {
+                    throw new RegraDeNegocioException("numero_invalido", "Informe um percentual de 0 a 100 em \"" + campo.getRotulo() + "\".");
+                }
+                yield n.stripTrailingZeros().toPlainString();
+            }
+            case INTEIRO -> {
+                BigDecimal n = numero(campo, valor);
+                if (n.stripTrailingZeros().scale() > 0 || n.compareTo(BigDecimal.ONE) < 0 || n.compareTo(BigDecimal.valueOf(campo.getLimite())) > 0) {
+                    throw new RegraDeNegocioException("numero_invalido",
+                            "Informe um número inteiro de 1 a " + campo.getLimite() + " em \"" + campo.getRotulo() + "\".");
+                }
+                yield n.toBigInteger().toString();
+            }
         };
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
+     * Título: Número
+     * Objetivo: Ler o número digitado num campo numérico.
+     * Decisões: Aceita vírgula decimal.
+     */
+    private static BigDecimal numero(CampoDaStartup campo, String valor) {
+        try {
+            return new BigDecimal(valor.replace(',', '.'));
+        } catch (NumberFormatException e) {
+            throw new RegraDeNegocioException("numero_invalido", "Informe um número em \"" + campo.getRotulo() + "\".");
+        }
     }
 
     /**

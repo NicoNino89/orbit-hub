@@ -22,6 +22,9 @@ const CATALOGO = [
   { campo: 'PROBLEMA', secao: 'PROBLEMA_E_SOLUCAO', rotulo: 'Qual problema a startup resolve', tipo: 'TEXTO', limite: 20, lista: null, ajuda: 'Descreva a dor.' },
   { campo: 'SOLUCAO', secao: 'PROBLEMA_E_SOLUCAO', rotulo: 'Solução proposta', tipo: 'TEXTO', limite: 1000, lista: null, ajuda: null },
   { campo: 'TEM_MVP', secao: 'PRODUTO', rotulo: 'Já existe um MVP?', tipo: 'SIM_NAO', limite: null, lista: null, ajuda: null },
+  { campo: 'DESTINO_PRODUTO', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Destinação para produto (%)', tipo: 'PERCENTUAL', limite: null, lista: null, ajuda: 'Valores ficam só na rodada.' },
+  { campo: 'DESTINO_EQUIPE', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Destinação para equipe (%)', tipo: 'PERCENTUAL', limite: null, lista: null, ajuda: null },
+  { campo: 'PRAZO_USO_MESES', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Prazo de uso (meses)', tipo: 'INTEIRO', limite: 120, lista: null, ajuda: null },
   { campo: 'MODELO', secao: 'MODELO_DE_NEGOCIO', rotulo: 'Classificação do modelo de negócio', tipo: 'LISTA', limite: null, lista: 'MODELO_NEGOCIO', ajuda: 'Usada nos filtros.' },
 ]
 
@@ -138,5 +141,36 @@ describe('Seções da startup (KAN-22)', () => {
     await userEvent.click(within(form).getByRole('button', { name: 'Salvar modelo de negócio' }))
     expect(await screen.findByText('Modelo de negócio: salvo.')).toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'PUT /api/v1/startups/s1/secoes/MODELO_DE_NEGOCIO')?.corpo).toEqual({ MODELO: 'MARKETPLACE' })
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:26
+   * Cartão Jira: KAN-25
+   * Título: Destinação dos recursos
+   * Objetivo: Conferir a soma das destinações à vista, o destaque acima de 100% e o salvamento dos números.
+   * Decisões: O servidor também recusa a soma acima de 100%.
+   */
+  it('mostra a soma das destinações e salva os números', async () => {
+    const { chamadas } = abrir('/empreendedor/startups/s1', {
+      'GET /api/v1/startups/s1': () => ({ corpo: STARTUP }),
+      'GET /api/v1/startups/campos': () => ({ corpo: CATALOGO }),
+      'GET /api/v1/startups/s1/secoes': () => ({ corpo: {} }),
+      'PUT /api/v1/startups/s1/secoes/NECESSIDADE_DE_INVESTIMENTO': ({ corpo }) => ({ corpo }),
+    })
+    await userEvent.click(await screen.findByRole('button', { name: 'Necessidade de investimento' }))
+    const form = await screen.findByRole('form', { name: 'Necessidade de investimento' })
+    await userEvent.type(within(form).getByLabelText('Destinação para produto (%)'), '70')
+    await userEvent.type(within(form).getByLabelText('Destinação para equipe (%)'), '40')
+    expect(within(form).getByText('Soma das destinações: 110% de 100%')).toHaveClass('text-crit')
+    await userEvent.clear(within(form).getByLabelText('Destinação para equipe (%)'))
+    await userEvent.type(within(form).getByLabelText('Destinação para equipe (%)'), '29,5')
+    expect(within(form).getByText('Soma das destinações: 99,5% de 100%')).not.toHaveClass('text-crit')
+    await userEvent.type(within(form).getByLabelText('Prazo de uso (meses)'), '18')
+    await userEvent.click(within(form).getByRole('button', { name: 'Salvar necessidade de investimento' }))
+    expect(await screen.findByText('Necessidade de investimento: salvo.')).toBeInTheDocument()
+    expect(chamadas.find((c) => c.chave === 'PUT /api/v1/startups/s1/secoes/NECESSIDADE_DE_INVESTIMENTO')?.corpo)
+      .toEqual({ DESTINO_PRODUTO: '70', DESTINO_EQUIPE: '29,5', PRAZO_USO_MESES: '18' })
   })
 })

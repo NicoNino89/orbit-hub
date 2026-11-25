@@ -69,19 +69,37 @@ public enum CampoDaStartup {
     COMPOSICAO_EQUIPE(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Composição da equipe", Tipo.TEXTO, 1000, null,
             "Quantas pessoas, em quais áreas, dedicação integral ou parcial."),
     ESTRUTURA_OPERACIONAL(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Estrutura operacional", Tipo.TEXTO, 1000, null, null),
-    PARCEIROS_ESTRATEGICOS(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Parceiros estratégicos", Tipo.TEXTO, 1000, null, null);
+    PARCEIROS_ESTRATEGICOS(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Parceiros estratégicos", Tipo.TEXTO, 1000, null, null),
+
+    OBJETIVOS_CURTO_PRAZO(SecaoDaStartup.PLANEJAMENTO, "Objetivos de curto prazo (até 1 ano)", Tipo.TEXTO, 1000, null, null),
+    OBJETIVOS_MEDIO_PRAZO(SecaoDaStartup.PLANEJAMENTO, "Objetivos de médio prazo (1 a 3 anos)", Tipo.TEXTO, 1000, null, null),
+    OBJETIVOS_LONGO_PRAZO(SecaoDaStartup.PLANEJAMENTO, "Objetivos de longo prazo (mais de 3 anos)", Tipo.TEXTO, 1000, null, null),
+    ESTRATEGIA_EXPANSAO(SecaoDaStartup.PLANEJAMENTO, "Estratégia de expansão", Tipo.TEXTO, 1000, null,
+            "Novos mercados, regiões, produtos ou canais."),
+    METAS(SecaoDaStartup.PLANEJAMENTO, "Metas", Tipo.TEXTO, 1000, null, "De preferência mensuráveis e com prazo."),
+    RISCOS(SecaoDaStartup.PLANEJAMENTO, "Riscos identificados", Tipo.TEXTO, 1000, null, null),
+    MITIGACAO(SecaoDaStartup.PLANEJAMENTO, "Estratégias de mitigação", Tipo.TEXTO, 1000, null, null),
+
+    DESTINO_PRODUTO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Destinação para produto e tecnologia (%)", Tipo.PERCENTUAL, 0, null,
+            "Valores, instrumento, valuation e participação oferecida ficam só na rodada."),
+    DESTINO_COMERCIAL(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Destinação para comercial e marketing (%)", Tipo.PERCENTUAL, 0, null, null),
+    DESTINO_EQUIPE(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Destinação para equipe (%)", Tipo.PERCENTUAL, 0, null, null),
+    DESTINO_OPERACAO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Destinação para operação e infraestrutura (%)", Tipo.PERCENTUAL, 0, null, null),
+    DESTINO_OUTROS(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Outras destinações (%)", Tipo.PERCENTUAL, 0, null, null),
+    PRAZO_USO_MESES(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Prazo estimado de uso dos recursos (meses)", Tipo.INTEIRO, 120, null, null),
+    METAS_DO_INVESTIMENTO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Metas que o investimento deve viabilizar", Tipo.TEXTO, 1000, null, null);
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:02
-     * Cartão Jira: KAN-23
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
      * Título: Tipo do campo
      * Objetivo: Dizer como o valor é escrito e conferido.
      * Decisões: TEXTO com limite; SIM_NAO "SIM" ou "NAO"; LISTA com o código de uma opção ativa da lista gerenciável
-     *           (KAN-23). Os próximos tipos chegam com as histórias que os usam.
+     *           (KAN-23); PERCENTUAL de 0 a 100, com até duas casas; INTEIRO de 1 até o limite (KAN-25).
      */
-    public enum Tipo { TEXTO, SIM_NAO, LISTA }
+    public enum Tipo { TEXTO, SIM_NAO, LISTA, PERCENTUAL, INTEIRO }
 
     private final SecaoDaStartup secao;
     private final String rotulo;
@@ -163,11 +181,11 @@ public enum CampoDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:56
-     * Cartão Jira: KAN-22
+     * Hora: 23:26
+     * Cartão Jira: KAN-25
      * Título: Acesso ao limite
-     * Objetivo: Expor o limite de caracteres do texto.
-     * Decisões: Zero para quem não é texto.
+     * Objetivo: Expor o limite de caracteres do texto ou o máximo do inteiro.
+     * Decisões: Zero para os outros tipos.
      */
     public int getLimite() {
         return limite;
