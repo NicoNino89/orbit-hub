@@ -22,6 +22,12 @@ interface Props<P extends PaginaFolheavel> {
   paginas: P[]
   rotulo: string
   renderizar: (pagina: P) => ReactNode
+  /** Página em que o folheador abre (KAN-37). */
+  inicial?: number
+  /** Avisa a página nova a cada mudança (KAN-37). */
+  aoMudar?: (indice: number) => void
+  /** Mostra a barra de progresso e "página X de Y" (KAN-37). */
+  comProgresso?: boolean
 }
 
 /** Duração de uma virada completa. */
@@ -130,14 +136,17 @@ function posicionarFaixa(el: HTMLElement, meio: Ponto, normal: Ponto, largura: n
  *   - Movimento reduzido: troca a página sem animação.
  *   - A animação escreve estilos direto no DOM a cada quadro, sem renderizar o React de novo.
  *   - Primeira versão (rotateY, 750 ms) reprovada no teste humano de 18/11/2026.
+ *   - KAN-37 (25/11/2026): abre na página inicial pedida, avisa cada mudança e, se pedido, mostra a barra de
+ *     progresso com "página X de Y".
  */
-export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderizar }: Props<P>) {
-  const [atual, setAtual] = useState(0)
+export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderizar, inicial = 0, aoMudar, comProgresso = false }: Props<P>) {
+  const inicio = Math.min(Math.max(inicial, 0), Math.max(paginas.length - 1, 0))
+  const [atual, setAtual] = useState(inicio)
   const [virada, setVirada] = useState<Virada | null>(null)
   const reduzido = useMovimentoReduzido()
   const total = paginas.length
 
-  const atualRef = useRef(0)
+  const atualRef = useRef(inicio)
   const viradaRef = useRef<Virada | null>(null)
   const progresso = useRef(0)
   const quadro = useRef<number | null>(null)
@@ -367,6 +376,7 @@ export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderiz
   const mudarAtual = (indice: number) => {
     atualRef.current = indice
     setAtual(indice)
+    aoMudar?.(indice)
   }
 
   /**
@@ -630,6 +640,16 @@ export function Folheador<P extends PaginaFolheavel>({ paginas, rotulo, renderiz
           ›
         </button>
       </div>
+
+      {comProgresso && (
+        <div className="flex flex-col gap-1 text-sm">
+          <span>Página {atual + 1} de {total}</span>
+          <div role="progressbar" aria-label="Progresso na edição" aria-valuenow={atual + 1} aria-valuemin={1} aria-valuemax={total}
+            className="h-1.5 overflow-hidden rounded-full bg-surface-2">
+            <div className="h-full bg-primary transition-[width]" style={{ width: `${((atual + 1) / total) * 100}%` }} />
+          </div>
+        </div>
+      )}
 
       <div className="folheador-rodape">
         <span className="folheador-contador">

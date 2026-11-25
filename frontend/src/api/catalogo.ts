@@ -4,7 +4,7 @@ import type { SecaoDaStartup, SituacaoDaStartup } from './startups'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 10:40
+ * Hora: 11:03
  * Cartão Jira: KAN-28, KAN-29, KAN-36, KAN-66, KAN-84, KAN-85
  * Título: Tipos do catálogo e da curadoria
  * Objetivo: Tipar a apresentação em três páginas, a visibilidade, as revisões da curadoria e as edições temáticas.
@@ -163,7 +163,7 @@ export interface EdicaoNoCatalogo {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 10:40
+ * Hora: 11:03
  * Cartão Jira: KAN-28, KAN-29, KAN-36
  * Título: Chamadas da apresentação e da visibilidade
  * Objetivo: Ler a apresentação (catálogo, pré-visualização e completa), o logotipo, e ler e trocar a visibilidade.
@@ -283,4 +283,79 @@ export function edicoesVigentes() {
 
 export function edicaoVigente(id: string) {
   return requisitar<EdicaoNoCatalogo>(`/api/v1/catalogo/edicoes/${id}`)
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 25/11/2026
+ * Hora: 11:03
+ * Cartão Jira: KAN-38, KAN-39, KAN-41, KAN-42, KAN-43, KAN-44
+ * Título: Navegação e listas pessoais do catálogo
+ * Objetivo: Tipar e chamar a navegação com filtros, os favoritos, o histórico e os descartes.
+ * Decisões: Filtros viram parâmetros repetidos na consulta; vazios ficam de fora.
+ */
+export type ListaDoCatalogo = 'PERSONALIZADA' | 'NOVAS'
+
+export interface FiltrosDoCatalogo {
+  segmento: string[]
+  maturidade: string[]
+  localizacao: string[]
+  comRodada: '' | 'true' | 'false'
+  estagio: string[]
+  instrumento: string[]
+  captacaoMinima: string
+  captacaoMaxima: string
+}
+
+export const SEM_FILTROS: FiltrosDoCatalogo = {
+  segmento: [], maturidade: [], localizacao: [], comRodada: '', estagio: [], instrumento: [], captacaoMinima: '', captacaoMaxima: '',
+}
+
+export interface ItemDoCatalogo {
+  startup: CartaoDeStartup
+  criterios: string[]
+  rodadaAberta: boolean
+  favorito: boolean
+  publicadaEm: string | null
+}
+
+export interface ResultadoDoCatalogo { lista: ListaDoCatalogo; verificado: boolean; comPerfil: boolean; itens: ItemDoCatalogo[] }
+
+export type TipoDeMarcacao = 'FAVORITOS' | 'HISTORICO' | 'DESCARTADAS'
+
+export interface Marcada { startup: CartaoDeStartup; disponivel: boolean; em: string }
+
+export function consultaDosFiltros(lista: ListaDoCatalogo, f: FiltrosDoCatalogo) {
+  const p = new URLSearchParams({ lista })
+  for (const chave of ['segmento', 'maturidade', 'localizacao', 'estagio', 'instrumento'] as const) {
+    f[chave].forEach((v) => p.append(chave, v))
+  }
+  if (f.comRodada) p.set('comRodada', f.comRodada)
+  if (f.captacaoMinima) p.set('captacaoMinima', f.captacaoMinima)
+  if (f.captacaoMaxima) p.set('captacaoMaxima', f.captacaoMaxima)
+  return p.toString()
+}
+
+export function navegarNoCatalogo(lista: ListaDoCatalogo, filtros: FiltrosDoCatalogo) {
+  return requisitar<ResultadoDoCatalogo>(`/api/v1/catalogo/startups?${consultaDosFiltros(lista, filtros)}`)
+}
+
+export function marcacoesDaStartup(id: string) {
+  return requisitar<{ favorito: boolean; descartada: boolean }>(`/api/v1/catalogo/startups/${id}/marcacoes`)
+}
+
+export function favoritar(id: string, salvar: boolean) {
+  return requisitar<void>(`/api/v1/catalogo/favoritos/${id}`, { metodo: salvar ? 'PUT' : 'DELETE' })
+}
+
+export function descartar(id: string, descartada: boolean) {
+  return requisitar<void>(`/api/v1/catalogo/descartadas/${id}`, { metodo: descartada ? 'PUT' : 'DELETE' })
+}
+
+export function minhasMarcacoes(tipo: TipoDeMarcacao) {
+  return requisitar<Marcada[]>(`/api/v1/catalogo/minhas/${tipo}`)
+}
+
+export function limparHistorico() {
+  return requisitar<void>('/api/v1/catalogo/minhas/HISTORICO', { metodo: 'DELETE' })
 }

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import {
-  type Apresentacao, apresentacaoNoCatalogo, type CartaoDeStartup, edicaoVigente, type EdicaoNoCatalogo, edicoesVigentes, logotipoNoCatalogo,
+  type Apresentacao, apresentacaoNoCatalogo, type CartaoDeStartup, descartar, edicaoVigente, type EdicaoNoCatalogo, edicoesVigentes, favoritar,
+  logotipoNoCatalogo, marcacoesDaStartup,
 } from '../api/catalogo'
 import { requisitar } from '../api/cliente'
 import { AlertaErro } from '../ui/Campo'
@@ -11,17 +12,21 @@ import { ApresentacaoEmPaginas } from './ApresentacaoEmPaginas'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 10:40
+ * Hora: 11:03
  * Cartão Jira: KAN-36
  * Título: Startup no catálogo
  * Objetivo: Mostrar a apresentação de uma startup publicada a quem navega no catálogo.
- * Decisões: Só com login (rota protegida). Os dados da rodada dependem do selo do investidor (servidor).
+ * Decisões: Só com login (rota protegida). Os dados da rodada dependem do selo do investidor (servidor). Botões de
+ *           favoritar e descartar (KAN-41, KAN-44), sem aviso ao empreendedor.
  */
 export function PaginaStartupNoCatalogo() {
   const { id = '' } = useParams()
   const [apresentacao, setApresentacao] = useState<Apresentacao | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const logotipo = useCallback(() => logotipoNoCatalogo(id), [id])
+  const [marcas, setMarcas] = useState<{ favorito: boolean; descartada: boolean } | null>(null)
+  const lerMarcas = useCallback(() => { marcacoesDaStartup(id).then(setMarcas).catch(() => undefined) }, [id])
+  useEffect(() => { lerMarcas() }, [lerMarcas])
 
   useEffect(() => {
     let ativo = true
@@ -33,7 +38,18 @@ export function PaginaStartupNoCatalogo() {
   if (!apresentacao) return erro ? <AlertaErro>{erro}</AlertaErro> : <p className="text-muted">Carregando…</p>
   return (
     <section className="flex flex-col gap-4">
-      <Link to="/catalogo/edicoes" className={`${CLASSE_LINK} text-sm`}>← Edições do catálogo</Link>
+      <Link to="/catalogo" className={`${CLASSE_LINK} text-sm`}>← Catálogo</Link>
+      {marcas && (
+        <div className="flex flex-wrap gap-3 text-sm">
+          <button type="button" aria-pressed={marcas.favorito} className={CLASSE_LINK}
+            onClick={() => void favoritar(id, !marcas.favorito).then(lerMarcas)}>
+            {marcas.favorito ? '★ Nos favoritos' : '☆ Salvar nos favoritos'}
+          </button>
+          <button type="button" className={CLASSE_LINK} onClick={() => void descartar(id, !marcas.descartada).then(lerMarcas)}>
+            {marcas.descartada ? 'Desfazer descarte' : 'Descartar'}
+          </button>
+        </div>
+      )}
       {!apresentacao.comoVerificado && (
         <p className="rounded-md bg-surface-2 px-3 py-2 text-sm text-muted">
           Verifique sua identidade para ver os dados das rodadas abertas.

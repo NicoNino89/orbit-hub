@@ -10,6 +10,7 @@ import { PaginaParametros } from './admin/PaginaParametros'
 import { PaginaRotinas } from './admin/PaginaRotinas'
 import { PaginaFilaDeVerificacao, PaginaPedidoDeVerificacao } from './admin/PaginaVerificacaoAdmin'
 import { PaginaVinculos } from './admin/PaginaVinculos'
+import { PaginaCatalogo, PaginaMinhasDoCatalogo } from './catalogo/PaginaCatalogo'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -76,6 +77,8 @@ export function Rotas() {
             <Route path="/notificacoes" element={<PaginaNotificacoes />} />
             <Route path="/organizacoes/convite" element={<PaginaConviteOrganizacao />} />
             <Route path="/startups/convite" element={<PaginaConviteStartup />} />
+            <Route path="/catalogo" element={<PaginaCatalogo />} />
+            <Route path="/catalogo/minhas" element={<PaginaMinhasDoCatalogo />} />
             <Route path="/catalogo/edicoes" element={<PaginaEdicoesDoCatalogo />} />
             <Route path="/catalogo/edicoes/:id" element={<PaginaEdicaoDoCatalogo />} />
             <Route path="/catalogo/startups/:id" element={<PaginaStartupNoCatalogo />} />
