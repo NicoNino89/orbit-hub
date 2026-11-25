@@ -33,18 +33,44 @@ public enum CampoDaStartup {
     TECNOLOGIA(SecaoDaStartup.PRODUTO, "Tecnologia utilizada", Tipo.TEXTO, 1000, null, null),
     PROPRIEDADE_INTELECTUAL(SecaoDaStartup.PRODUTO, "Propriedade intelectual", Tipo.TEXTO, 1000, null,
             "Patentes, registros de marca ou de software e pedidos em andamento."),
-    DIFERENCIAIS_COMPETITIVOS(SecaoDaStartup.PRODUTO, "Diferenciais competitivos", Tipo.TEXTO, 1000, null, null);
+    DIFERENCIAIS_COMPETITIVOS(SecaoDaStartup.PRODUTO, "Diferenciais competitivos", Tipo.TEXTO, 1000, null, null),
+
+    PUBLICO_ALVO(SecaoDaStartup.MERCADO, "Público-alvo", Tipo.TEXTO, 1000, null,
+            "O segmento de atuação fica nos dados cadastrais; aqui, para quem você vende."),
+    PERFIL_CLIENTES(SecaoDaStartup.MERCADO, "Perfil dos clientes", Tipo.TEXTO, 1000, null,
+            "Pessoas ou empresas, porte, região, comportamento de compra."),
+    DIMENSAO_MERCADO(SecaoDaStartup.MERCADO, "Dimensão do mercado", Tipo.TEXTO, 1000, null,
+            "Tamanho total do mercado, com a fonte da estimativa."),
+    MERCADO_ENDERECAVEL(SecaoDaStartup.MERCADO, "Mercado endereçável", Tipo.TEXTO, 1000, null,
+            "A parte do mercado que a startup consegue atender hoje."),
+    CONCORRENTES(SecaoDaStartup.MERCADO, "Concorrentes", Tipo.TEXTO, 1000, null, "Diretos e indiretos, e como você se compara."),
+    BARREIRAS_ENTRADA(SecaoDaStartup.MERCADO, "Barreiras de entrada", Tipo.TEXTO, 1000, null, null),
+    TENDENCIAS(SecaoDaStartup.MERCADO, "Tendências", Tipo.TEXTO, 1000, null, null),
+    POTENCIAL_CRESCIMENTO(SecaoDaStartup.MERCADO, "Potencial de crescimento", Tipo.TEXTO, 1000, null, null),
+
+    MODELO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Classificação do modelo de negócio", Tipo.LISTA, 0, Lista.MODELO_NEGOCIO,
+            "Usada nos filtros do catálogo e na compatibilidade com investidores."),
+    GERACAO_RECEITA(SecaoDaStartup.MODELO_DE_NEGOCIO, "Como a startup gera receita", Tipo.TEXTO, 1000, null, null),
+    FONTES_FATURAMENTO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Fontes de faturamento", Tipo.TEXTO, 1000, null, null),
+    PRECIFICACAO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Precificação", Tipo.TEXTO, 1000, null, null),
+    MODELO_COMERCIALIZACAO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Modelo de comercialização", Tipo.TEXTO, 1000, null,
+            "Venda direta, parceiros, autosserviço, licitações..."),
+    RECEITAS_RECORRENTES(SecaoDaStartup.MODELO_DE_NEGOCIO, "Receitas recorrentes", Tipo.TEXTO, 1000, null,
+            "Assinaturas, contratos ou compras repetidas, se houver."),
+    ESTRUTURA_CUSTOS(SecaoDaStartup.MODELO_DE_NEGOCIO, "Estrutura de custos", Tipo.TEXTO, 1000, null, null),
+    CANAIS_DISTRIBUICAO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Canais de distribuição", Tipo.TEXTO, 1000, null, null);
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:56
-     * Cartão Jira: KAN-22
+     * Hora: 23:02
+     * Cartão Jira: KAN-23
      * Título: Tipo do campo
      * Objetivo: Dizer como o valor é escrito e conferido.
-     * Decisões: TEXTO com limite; SIM_NAO "SIM" ou "NAO". Os próximos tipos chegam com as histórias que os usam.
+     * Decisões: TEXTO com limite; SIM_NAO "SIM" ou "NAO"; LISTA com o código de uma opção ativa da lista gerenciável
+     *           (KAN-23). Os próximos tipos chegam com as histórias que os usam.
      */
-    public enum Tipo { TEXTO, SIM_NAO }
+    public enum Tipo { TEXTO, SIM_NAO, LISTA }
 
     private final SecaoDaStartup secao;
     private final String rotulo;

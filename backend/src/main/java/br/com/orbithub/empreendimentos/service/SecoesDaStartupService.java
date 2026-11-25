@@ -1,5 +1,6 @@
 package br.com.orbithub.empreendimentos.service;
 
+import br.com.orbithub.administracao.service.ListasService;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
@@ -30,20 +31,22 @@ public class SecoesDaStartupService {
 
     private final StartupRepository startups;
     private final StartupsService cadastro;
+    private final ListasService listas;
     private final Clock relogio;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:56
-     * Cartão Jira: KAN-22
+     * Hora: 23:02
+     * Cartão Jira: KAN-23
      * Título: Criação do serviço
-     * Objetivo: Receber o repositório, o cadastro e o relógio.
+     * Objetivo: Receber o repositório, o cadastro, as listas e o relógio.
      * Decisões: Injeção por construtor.
      */
-    public SecoesDaStartupService(StartupRepository startups, StartupsService cadastro, Clock relogio) {
+    public SecoesDaStartupService(StartupRepository startups, StartupsService cadastro, ListasService listas, Clock relogio) {
         this.startups = startups;
         this.cadastro = cadastro;
+        this.listas = listas;
         this.relogio = relogio;
     }
 
@@ -113,11 +116,12 @@ public class SecoesDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:56
-     * Cartão Jira: KAN-22
+     * Hora: 23:02
+     * Cartão Jira: KAN-23
      * Título: Conferir valor
      * Objetivo: Validar o valor conforme o tipo do campo e devolvê-lo normalizado.
-     * Decisões: Texto pelo limite; sim/não. Os próximos tipos chegam com as histórias que os usam.
+     * Decisões: Texto pelo limite; sim/não; opção ativa da lista (KAN-23). Os próximos tipos chegam com as histórias que
+     *           os usam.
      */
     String conferir(CampoDaStartup campo, String valor) {
         return switch (campo.getTipo()) {
@@ -134,6 +138,7 @@ public class SecoesDaStartupService {
                 }
                 yield valor;
             }
+            case LISTA -> listas.exigirAtivo(campo.getLista(), valor).getCodigo();
         };
     }
 

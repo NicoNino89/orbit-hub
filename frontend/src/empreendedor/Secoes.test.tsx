@@ -22,6 +22,7 @@ const CATALOGO = [
   { campo: 'PROBLEMA', secao: 'PROBLEMA_E_SOLUCAO', rotulo: 'Qual problema a startup resolve', tipo: 'TEXTO', limite: 20, lista: null, ajuda: 'Descreva a dor.' },
   { campo: 'SOLUCAO', secao: 'PROBLEMA_E_SOLUCAO', rotulo: 'Solução proposta', tipo: 'TEXTO', limite: 1000, lista: null, ajuda: null },
   { campo: 'TEM_MVP', secao: 'PRODUTO', rotulo: 'Já existe um MVP?', tipo: 'SIM_NAO', limite: null, lista: null, ajuda: null },
+  { campo: 'MODELO', secao: 'MODELO_DE_NEGOCIO', rotulo: 'Classificação do modelo de negócio', tipo: 'LISTA', limite: null, lista: 'MODELO_NEGOCIO', ajuda: 'Usada nos filtros.' },
 ]
 
 /**
@@ -111,5 +112,31 @@ describe('Seções da startup (KAN-22)', () => {
     expect(within(form).getByText(/não tem autorização para editar esta seção/)).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Produto ou serviço' }))
     expect(await screen.findByRole('button', { name: 'Salvar produto ou serviço' })).toBeInTheDocument()
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:02
+   * Cartão Jira: KAN-23
+   * Título: Classificar o modelo de negócio
+   * Objetivo: Conferir que o campo de lista mostra as opções da lista gerenciável e salva o código.
+   * Decisões: Lista simulada com SaaS e Marketplace.
+   */
+  it('classifica o modelo de negócio pela lista', async () => {
+    const { chamadas } = abrir('/empreendedor/startups/s1', {
+      'GET /api/v1/startups/s1': () => ({ corpo: STARTUP }),
+      'GET /api/v1/startups/campos': () => ({ corpo: CATALOGO }),
+      'GET /api/v1/startups/s1/secoes': () => ({ corpo: {} }),
+      'GET /api/v1/listas/MODELO_NEGOCIO': () => ({ corpo: [{ codigo: 'SAAS', rotulo: 'SaaS', grupo: null }, { codigo: 'MARKETPLACE', rotulo: 'Marketplace', grupo: null }] }),
+      'PUT /api/v1/startups/s1/secoes/MODELO_DE_NEGOCIO': ({ corpo }) => ({ corpo }),
+    })
+    await userEvent.click(await screen.findByRole('button', { name: 'Modelo de negócio' }))
+    const form = await screen.findByRole('form', { name: 'Modelo de negócio' })
+    await within(form).findByRole('option', { name: 'Marketplace' })
+    await userEvent.selectOptions(within(form).getByLabelText('Classificação do modelo de negócio'), 'MARKETPLACE')
+    await userEvent.click(within(form).getByRole('button', { name: 'Salvar modelo de negócio' }))
+    expect(await screen.findByText('Modelo de negócio: salvo.')).toBeInTheDocument()
+    expect(chamadas.find((c) => c.chave === 'PUT /api/v1/startups/s1/secoes/MODELO_DE_NEGOCIO')?.corpo).toEqual({ MODELO: 'MARKETPLACE' })
   })
 })

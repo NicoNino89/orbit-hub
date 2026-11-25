@@ -1,15 +1,16 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { opcoesDaLista } from '../api/organizacoes'
 import type { CampoDoCatalogo, ValoresDasSecoes } from '../api/secoes'
 import { CLASSE_BOTAO_PRIMARIO } from '../ui/estilos'
 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 22:56
- * Cartão Jira: KAN-22
+ * Hora: 23:02
+ * Cartão Jira: KAN-23
  * Título: Formulário de uma seção
  * Objetivo: Montar, a partir do catálogo, os campos de uma seção do cadastro, com o contador de caracteres visível.
- * Decisões: Texto vira área de texto com limite; sim/não vira escolha única. Bloqueado para quem não pode editar a
+ * Decisões: Texto vira área de texto com limite; sim/não vira escolha única; lista vira seleção (KAN-23). Bloqueado para quem não pode editar a
  *           seção. Nada é obrigatório para salvar o rascunho.
  */
 export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar }: {
@@ -28,9 +29,12 @@ export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar
     <form aria-label={titulo} className="flex flex-col gap-4"
       onSubmit={(e) => { e.preventDefault(); setSalvando(true); void aoSalvar(valores).finally(() => setSalvando(false)) }}>
       <fieldset disabled={bloqueado} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
-        {campos.map((c) => c.tipo === 'SIM_NAO'
-          ? <SimOuNao key={c.campo} campo={c} valor={valores[c.campo]} aoMudar={(v) => mudar(c.campo, v)} />
-          : <Texto key={c.campo} campo={c} valor={valores[c.campo]} aoMudar={(v) => mudar(c.campo, v)} />)}
+        {campos.map((c) => {
+          const props = { campo: c, valor: valores[c.campo], aoMudar: (v: string) => mudar(c.campo, v) }
+          if (c.tipo === 'SIM_NAO') return <SimOuNao key={c.campo} {...props} />
+          if (c.tipo === 'LISTA') return <OpcaoDaLista key={c.campo} {...props} />
+          return <Texto key={c.campo} {...props} />
+        })}
       </fieldset>
       {bloqueado
         ? <p className="text-sm text-muted">Você não tem autorização para editar esta seção. Peça a um fundador administrador.</p>
@@ -89,5 +93,33 @@ function SimOuNao({ campo, valor, aoMudar }: { campo: CampoDoCatalogo; valor: st
         ))}
       </div>
     </fieldset>
+  )
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 23:02
+ * Cartão Jira: KAN-23
+ * Título: Opção da lista
+ * Objetivo: Mostrar a escolha entre as opções ativas da lista gerenciável do campo.
+ * Decisões: "Escolha" deixa o campo vazio; a ajuda explica onde a classificação é usada.
+ */
+function OpcaoDaLista({ campo, valor, aoMudar }: { campo: CampoDoCatalogo; valor: string; aoMudar: (v: string) => void }) {
+  const id = useId()
+  const [opcoes, setOpcoes] = useState<{ codigo: string; rotulo: string }[]>([])
+  useEffect(() => {
+    if (campo.lista) opcoesDaLista(campo.lista).then(setOpcoes).catch(() => setOpcoes([]))
+  }, [campo.lista])
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={id} className="text-sm font-semibold">{campo.rotulo}</label>
+      <select id={id} value={valor} onChange={(e) => aoMudar(e.target.value)} aria-describedby={`${id}-ajuda`}
+        className="self-start rounded-md border border-line bg-surface px-3 py-2">
+        <option value="">Escolha</option>
+        {opcoes.map((o) => <option key={o.codigo} value={o.codigo}>{o.rotulo}</option>)}
+      </select>
+      {campo.ajuda && <p id={`${id}-ajuda`} className="text-xs text-muted">{campo.ajuda}</p>}
+    </div>
   )
 }

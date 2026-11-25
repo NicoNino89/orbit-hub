@@ -109,6 +109,29 @@ class SecoesDaStartupIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 23:02
+     * Cartão Jira: KAN-23
+     * Título: Mercado e modelo de negócio
+     * Objetivo: Conferir os campos de mercado e a classificação do modelo pela lista gerenciável (aceita e recusada).
+     * Decisões: SAAS existe na lista MODELO_NEGOCIO; ESPACIAL, não.
+     */
+    @Test
+    void mercadoEModeloDeNegocio() throws Exception {
+        Usuario eva = conta(Papel.EMPREENDEDOR);
+        String id = startup(eva);
+        mvc.perform(get("/api/v1/startups/campos").header(HttpHeaders.AUTHORIZATION, bearer(eva)))
+                .andExpect(jsonPath("$[?(@.campo == 'MODELO')].lista").value("MODELO_NEGOCIO"))
+                .andExpect(jsonPath("$[?(@.campo == 'MODELO')].limite").value(org.hamcrest.Matchers.contains(org.hamcrest.Matchers.nullValue())));
+        secao(eva, id, "MODELO_DE_NEGOCIO", "{\"MODELO\":\"ESPACIAL\"}").andExpect(jsonPath("$.codigo").value("opcao_indisponivel"));
+        secao(eva, id, "MODELO_DE_NEGOCIO", "{\"MODELO\":\"SAAS\",\"PRECIFICACAO\":\"Por usuário ao mês\"}")
+                .andExpect(status().isOk()).andExpect(jsonPath("$.MODELO").value("SAAS"));
+        secao(eva, id, "MERCADO", "{\"PUBLICO_ALVO\":\"Cooperativas\",\"CONCORRENTES\":\"Transportadoras locais\"}")
+                .andExpect(jsonPath("$.PUBLICO_ALVO").value("Cooperativas")).andExpect(jsonPath("$.MODELO").value("SAAS"));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 22:56
      * Cartão Jira: KAN-22
      * Título: Salvar seção pela API
