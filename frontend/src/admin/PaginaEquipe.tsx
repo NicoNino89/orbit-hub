@@ -9,6 +9,7 @@ import { useSessao } from '../sessao/contexto'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 import { FORMATO_DATA_HORA } from './datas'
+import { VinculosDaEquipe } from './PaginaVinculos'
 import { PAPEIS_INTERNOS } from './papeisInternos'
 
 const SITUACOES: Record<Membro['situacao'], { texto: string; classe: string }> = {
@@ -35,14 +36,15 @@ function mensagem(e: unknown) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 10:39
- * Cartão Jira: KAN-75
+ * Hora: 17:43
+ * Cartão Jira: KAN-87
  * Título: Tela da equipe interna
  * Objetivo: Deixar o administrador convidar, trocar papéis, desligar e redefinir o segundo fator da equipe, e
  *           fazer a revisão periódica de acessos.
  * Decisões: Tudo numa tela, com a revisão no topo quando vencida. Desligar pede o motivo e uma segunda
  *           confirmação na própria tela (sem caixa de diálogo do navegador). Não existe campo de senha: o membro
  *           escolhe a dele pelo convite.
+ *           A revisão mostra os vínculos declarados pela equipe (KAN-87).
  */
 export function PaginaEquipe() {
   const [membros, setMembros] = useState<Membro[] | null>(null)
@@ -90,6 +92,7 @@ export function PaginaEquipe() {
       {aviso && <p role="status" className="rounded-md bg-ok-soft px-3 py-2 text-sm text-ok">{aviso}</p>}
       {erro && <AlertaErro>{erro}</AlertaErro>}
       {revisao && <CartaoRevisao situacao={revisao} aoConfirmar={() => concluir('Revisão de acessos registrada.')} aoFalhar={setErro} />}
+      {revisao && <VinculosDaEquipe />}
       <FormularioConvite aoConvidar={(m) => concluir(`Convite enviado para ${m.email}.`)} aoFalhar={setErro} />
       {membros && (
         <ul className="flex flex-col gap-3" aria-label="Membros da equipe">

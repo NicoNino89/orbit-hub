@@ -16,9 +16,10 @@ spring:
       enabled: true
   servlet:
     multipart:
-      # foto do perfil até 2 MB (KAN-16); folga para o envelope do formulário
-      max-file-size: 3MB
-      max-request-size: 3MB
+      # teto técnico: foto do perfil até 2 MB (KAN-16) e documento de verificação até 5 MB (parâmetro
+      # verificacao.documento_max_mb, KAN-62); folga para o envelope do formulário
+      max-file-size: 6MB
+      max-request-size: 6MB
 
 server:
   port: ${PORT:8080}

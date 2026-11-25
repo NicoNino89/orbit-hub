@@ -64,15 +64,15 @@ describe('Áreas por papel (KAN-34)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 24/11/2026
-   * Hora: 01:50
-   * Cartão Jira: KAN-34
+   * Hora: 22:33
+   * Cartão Jira: KAN-21
    * Título: Área do próprio papel
    * Objetivo: Garantir que o empreendedor vê a própria área com os dados da API.
-   * Decisões: Lista de startups vazia.
+   * Decisões: Lista de startups vazia (KAN-21 lê as startups de verdade).
    */
   it('mostra a área do empreendedor com os dados da API', async () => {
     abrir('/empreendedor', ['EMPREENDEDOR'], {
-      'GET /api/v1/empreendimentos/meus': () => ({ corpo: { startups: [], proximoPasso: '/empreendedor/onboarding' } }),
+      'GET /api/v1/startups/minhas': () => ({ corpo: [] }),
     })
     expect(await screen.findByText(/ainda não cadastrou nenhuma startup/)).toBeInTheDocument()
   })

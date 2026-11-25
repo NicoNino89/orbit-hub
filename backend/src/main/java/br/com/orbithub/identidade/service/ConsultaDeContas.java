@@ -5,6 +5,7 @@ import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -112,5 +113,49 @@ public class ConsultaDeContas {
     @Transactional(readOnly = true)
     public List<UUID> contasPublicasAtivas() {
         return usuarios.idsPublicosAtivos();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 14:05
+     * Cartão Jira: KAN-60
+     * Título: Conta ativa pelo e-mail
+     * Objetivo: Encontrar a conta ativa de um e-mail (por exemplo, para avisar no sino quem recebeu um convite).
+     * Decisões: E-mail comparado em minúsculas; conta desativada ou pendente não é encontrada.
+     */
+    @Transactional(readOnly = true)
+    public Optional<UUID> contaAtivaDoEmail(String email) {
+        return usuarios.findByEmail(email.strip().toLowerCase(Locale.ROOT)).filter(Usuario::podeTerSessao)
+                .map(Usuario::getId);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 14:05
+     * Cartão Jira: KAN-60
+     * Título: Conta é investidora
+     * Objetivo: Dizer se a conta ativa tem o papel de investidor (quem pode entrar numa organização investidora).
+     * Decisões: Conta inexistente ou inativa responde falso.
+     */
+    @Transactional(readOnly = true)
+    public boolean investidoraAtiva(UUID contaId) {
+        return usuarios.findById(contaId).filter(Usuario::podeTerSessao)
+                .map(u -> u.getPapeis().contains(Papel.INVESTIDOR)).orElse(false);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 22:48
+     * Cartão Jira: KAN-65
+     * Título: Conta ativa com o papel
+     * Objetivo: Dizer se a conta ativa tem o papel informado (por exemplo, empreendedor para entrar numa startup).
+     * Decisões: Conta inexistente ou inativa responde falso.
+     */
+    @Transactional(readOnly = true)
+    public boolean temPapelAtivo(UUID contaId, Papel papel) {
+        return usuarios.findById(contaId).filter(Usuario::podeTerSessao).map(u -> u.getPapeis().contains(papel)).orElse(false);
     }
 }

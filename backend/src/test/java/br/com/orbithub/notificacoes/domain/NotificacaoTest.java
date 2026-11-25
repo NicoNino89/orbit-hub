@@ -61,19 +61,19 @@ class NotificacaoTest {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 12:34
-     * Cartão Jira: KAN-146
+     * Hora: 17:33
+     * Cartão Jira: KAN-83
      * Título: Obrigatórios
      * Objetivo: Conferir que os avisos de segurança, termos, prazo de conexão e da equipe são obrigatórios e chegam
      *           pelos dois canais.
-     * Decisões: Lista fechada.
+     * Decisões: Lista fechada. O encaminhamento entre times entrou com o KAN-83.
      */
     @Test
     void obrigatorios() {
         assertThat(Arrays.stream(TipoDeNotificacao.values()).filter(TipoDeNotificacao::isObrigatoria))
                 .containsExactlyInAnyOrder(TipoDeNotificacao.PRAZO_CONEXAO, TipoDeNotificacao.TERMOS_ATUALIZADOS,
                         TipoDeNotificacao.SEGURANCA_CONTA, TipoDeNotificacao.EQUIPE_APROVACAO,
-                        TipoDeNotificacao.EQUIPE_REVISAO_ACESSOS)
+                        TipoDeNotificacao.EQUIPE_REVISAO_ACESSOS, TipoDeNotificacao.EQUIPE_ENCAMINHAMENTO)
                 .allSatisfy(t -> assertThat(t.getPadrao()).isEqualTo(TipoDeNotificacao.Canal.AMBOS));
     }
 

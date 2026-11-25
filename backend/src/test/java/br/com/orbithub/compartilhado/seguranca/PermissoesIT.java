@@ -66,11 +66,11 @@ class PermissoesIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 01:50
-     * Cartão Jira: KAN-34
+     * Hora: 14:16
+     * Cartão Jira: KAN-61
      * Título: Papéis separados
      * Objetivo: Garantir que cada papel acessa só a própria área e que a recusa fica registrada.
-     * Decisões: Duas contas, uma de cada papel.
+     * Decisões: Duas contas, uma de cada papel. Sem tese, o próximo passo do investidor é o onboarding (KAN-18).
      */
     @Test
     void investidorEEmpreendedorNaoAcessamAAreaDoOutro() throws Exception {

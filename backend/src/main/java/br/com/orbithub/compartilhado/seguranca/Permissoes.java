@@ -63,6 +63,14 @@ public final class Permissoes {
     public @interface AdminOuEncarregado {
     }
 
+    /** Analista de verificação ou administrador: fila e decisões da verificação de identidade (KAN-83). */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALISTA_VERIFICACAO')")
+    public @interface VerificacaoOuAdmin {
+    }
+
     /** Qualquer papel da equipe interna, para ações comuns a todos os times (KAN-75). */
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)

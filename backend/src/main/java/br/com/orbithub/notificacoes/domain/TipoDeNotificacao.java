@@ -28,10 +28,13 @@ public enum TipoDeNotificacao {
     CURADORIA_RESULTADO("Análises", "Resultado da curadoria", false, Canal.AMBOS),
     NOVA_OPORTUNIDADE("Oportunidades", "Nova startup compatível com a sua tese", false, Canal.PLATAFORMA),
     RODADA_AVISO("Oportunidades", "Avisos de rodada", false, Canal.PLATAFORMA),
+    ORGANIZACAO("Organizações", "Convites e mudanças nas suas organizações", false, Canal.AMBOS),
+    STARTUP("Startups", "Convites e mudanças nas equipes das suas startups", false, Canal.AMBOS),
     TERMOS_ATUALIZADOS("Conta", "Termos e políticas atualizados", true, Canal.AMBOS),
     SEGURANCA_CONTA("Conta", "Segurança da conta (senha e e-mail)", true, Canal.AMBOS),
     EQUIPE_APROVACAO("Equipe", "Ação grave aguardando a sua aprovação", true, Canal.AMBOS),
-    EQUIPE_REVISAO_ACESSOS("Equipe", "Revisão de acessos vencida", true, Canal.AMBOS);
+    EQUIPE_REVISAO_ACESSOS("Equipe", "Revisão de acessos vencida", true, Canal.AMBOS),
+    EQUIPE_ENCAMINHAMENTO("Equipe", "Caso encaminhado a outro time (por exemplo, indício de fraude)", true, Canal.AMBOS);
 
     private final String grupo;
     private final String descricao;
