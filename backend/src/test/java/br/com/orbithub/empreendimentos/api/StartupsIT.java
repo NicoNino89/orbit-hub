@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,6 +53,9 @@ class StartupsIT {
 
     @Autowired
     MockMvc mvc;
+
+    @Autowired
+    JdbcTemplate jdbc;
 
     @Autowired
     UsuarioRepository usuarios;
@@ -137,6 +141,60 @@ class StartupsIT {
         mvc.perform(get("/api/v1/startups/" + id + "/logotipo").header(HttpHeaders.AUTHORIZATION, bearer(eva)))
                 .andExpect(status().isOk()).andExpect(content().bytes(PNG));
         mvc.perform(get("/api/v1/startups/" + id + "/logotipo").header(HttpHeaders.AUTHORIZATION, bearer(rita))).andExpect(status().isNotFound());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:14
+     * Cartão Jira: KAN-21
+     * Título: Recusas e detalhe
+     * Objetivo: Conferir o detalhe para a equipe, as recusas que faltavam (segmento, rede, fundador sem nome, participação
+     *           negativa, texto longo), o logotipo vazio ou grande demais e o colaborador sem a edição.
+     * Decisões: O colaborador é gravado direto no banco, porque o convite chega no KAN-65.
+     */
+    @Test
+    void recusasEDetalhe() throws Exception {
+        Usuario eva = conta(Papel.EMPREENDEDOR);
+        Usuario lia = conta(Papel.EMPREENDEDOR);
+        String id = JsonPath.read(criar(eva, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\"}")
+                .andReturn().getResponse().getContentAsString(), "$.id");
+        mvc.perform(get("/api/v1/startups/" + id).header(HttpHeaders.AUTHORIZATION, bearer(eva)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.nome").value("Detalhe")).andExpect(jsonPath("$.meuPapel").value("FUNDADOR_ADMINISTRADOR"));
+
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"localizacao\":\"SP\"}").andExpect(jsonPath("$.codigo").value("campos_obrigatorios"));
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\",\"redes\":{\"X\":\"x.com/detalhe\"}}")
+                .andExpect(jsonPath("$.codigo").value("rede_invalida"));
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\",\"fundadores\":[{\"nome\":\" \"}]}")
+                .andExpect(jsonPath("$.codigo").value("fundador_nome"));
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\",\"fundadores\":[{\"nome\":\"Eva\",\"participacao\":-1}]}")
+                .andExpect(jsonPath("$.codigo").value("participacao_invalida"));
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\",\"nomeFantasia\":\"" + "a".repeat(121) + "\"}")
+                .andExpect(jsonPath("$.codigo").value("texto_longo"));
+        editar(eva, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\",\"fundadores\":[{\"nome\":\"Eva\",\"cargo\":\" \"}]}")
+                .andExpect(status().isOk()).andExpect(jsonPath("$.fundadores[0].cargo").doesNotExist());
+
+        logotipo(eva, id, new byte[0]).andExpect(jsonPath("$.codigo").value("logotipo_tamanho"));
+        logotipo(eva, id, new byte[1024 * 1024 + 1]).andExpect(jsonPath("$.codigo").value("logotipo_tamanho"));
+
+        jdbc.update("INSERT INTO startup_membro (id, startup_id, usuario_id, papel, entrou_em, versao) VALUES (?, ?::uuid, ?, 'COLABORADOR', now(), 0)",
+                UUID.randomUUID(), id, lia.getId());
+        mvc.perform(get("/api/v1/startups/" + id).header(HttpHeaders.AUTHORIZATION, bearer(lia))).andExpect(jsonPath("$.meuPapel").value("COLABORADOR"));
+        editar(lia, id, "{\"nome\":\"Detalhe\",\"segmento\":\"FINTECH\",\"localizacao\":\"SP\"}").andExpect(status().isForbidden());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:14
+     * Cartão Jira: KAN-21
+     * Título: Editar pela API
+     * Objetivo: Enviar os dados cadastrais de uma startup.
+     * Decisões: Corpo em JSON.
+     */
+    private ResultActions editar(Usuario quem, String id, String corpo) throws Exception {
+        return mvc.perform(put("/api/v1/startups/" + id + "/cadastro").header(HttpHeaders.AUTHORIZATION, bearer(quem))
+                .contentType(MediaType.APPLICATION_JSON).content(corpo));
     }
 
     /**
