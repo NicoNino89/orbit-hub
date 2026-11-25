@@ -1,6 +1,7 @@
 package br.com.orbithub.catalogo.api;
 
 import br.com.orbithub.catalogo.service.ApresentacaoService;
+import br.com.orbithub.catalogo.service.MarcacoesDoInvestidor;
 import br.com.orbithub.compartilhado.seguranca.Autenticado;
 import br.com.orbithub.compartilhado.seguranca.Permissoes.CuradoriaOuAdmin;
 import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteEmpreendedor;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 10:40
+ * Hora: 11:03
  * Cartão Jira: KAN-29, KAN-36, KAN-84
  * Título: Apresentação da startup
  * Objetivo: Servir a apresentação em três páginas no catálogo (qualquer usuário cadastrado), na pré-visualização da
@@ -38,17 +39,19 @@ class ApresentacaoController {
 
     private final ApresentacaoService apresentacao;
     private final StartupsService startups;
+    private final MarcacoesDoInvestidor marcacoes;
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Criação
      * Objetivo: Receber os serviços.
      * Decisões: Injeção por construtor.
      */
-    ApresentacaoController(ApresentacaoService apresentacao, StartupsService startups) {
+    ApresentacaoController(ApresentacaoService apresentacao, StartupsService startups, MarcacoesDoInvestidor marcacoes) {
+        this.marcacoes = marcacoes;
         this.apresentacao = apresentacao;
         this.startups = startups;
     }
@@ -56,23 +59,26 @@ class ApresentacaoController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Apresentação no catálogo
      * Objetivo: Mostrar a startup publicada a quem navega.
-     * Decisões: O cabeçalho de organização define o selo usado para os dados da rodada.
+     * Decisões: O cabeçalho de organização define o selo usado para os dados da rodada. A visita entra no histórico
+     *           privado da pessoa (KAN-43).
      */
     @GetMapping("/api/v1/catalogo/startups/{id}")
     @Operation(summary = "Apresentação da startup no catálogo")
     ApresentacaoService.Apresentacao doCatalogo(@PathVariable UUID id, @AuthenticationPrincipal Jwt token,
                                                 @RequestHeader(name = AtuacaoService.CABECALHO, required = false) String organizacao) {
-        return apresentacao.doCatalogo(Autenticado.id(token), organizacao, id);
+        ApresentacaoService.Apresentacao a = apresentacao.doCatalogo(Autenticado.id(token), organizacao, id);
+        marcacoes.registrarVisita(Autenticado.id(token), id);
+        return a;
     }
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Logotipo no catálogo
      * Objetivo: Servir o logotipo da startup publicada.

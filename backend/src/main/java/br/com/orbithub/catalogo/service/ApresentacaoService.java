@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 10:40
+ * Hora: 11:03
  * Cartão Jira: KAN-29, KAN-36
  * Título: Apresentação da startup em três páginas
  * Objetivo: Montar a apresentação da startup no catálogo (Apresentação, Resumo executivo e Conheça o empreendimento),
@@ -109,7 +109,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Criação do serviço
      * Objetivo: Receber os serviços que fornecem os dados da startup, da rodada e da verificação.
@@ -130,7 +130,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Apresentação no catálogo
      * Objetivo: Montar a apresentação de uma startup publicada para quem está navegando no catálogo.
@@ -178,7 +178,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Cartão da startup
      * Objetivo: Montar o resumo usado nas listas do catálogo (edições): nome, segmento, estágio e localização, se pública.
@@ -198,7 +198,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Montar apresentação
      * Objetivo: Preencher o cabeçalho e as três páginas conforme o modo.
@@ -240,7 +240,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Itens de um código
      * Objetivo: Transformar um código do modelo (campo, indicadores, rodada ou fundadores) em itens e avisos.
@@ -335,7 +335,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Número
      * Objetivo: Escrever um número no formato brasileiro.
@@ -350,7 +350,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Formatar valor
      * Objetivo: Escrever o valor do campo como o investidor lê.
@@ -389,7 +389,7 @@ public class ApresentacaoService {
      * Objetivo: Dizer se quem navega tem o selo de verificado, como pessoa ou pela organização em nome de quem atua.
      * Decisões: Sem a organização no cabeçalho, vale o selo da pessoa.
      */
-    private boolean investidorVerificado(UUID eu, String organizacao) {
+    boolean investidorVerificado(UUID eu, String organizacao) {
         AtuacaoService.Atuacao a = atuacao.paraVer(eu, organizacao);
         Selo selo = a.emNomeDaOrganizacao() ? verificacoes.selo(SujeitoDaVerificacao.ORGANIZACAO, a.organizacao())
                 : verificacoes.selo(SujeitoDaVerificacao.PESSOA, eu);
@@ -399,7 +399,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Startup
      * Objetivo: Ler a startup pelo identificador.
@@ -418,7 +418,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Apresentação
      * Objetivo: Levar o modo, se a visão é de verificado, o cabeçalho e as três páginas.
@@ -430,7 +430,7 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 10:40
+     * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Cabeçalho
      * Objetivo: Levar a identidade da startup: nome, segmento, estágio, localização, site, redes, logotipo e selos.
