@@ -33,6 +33,8 @@ export const MENU_BACKOFFICE: { caminho: string; rotulo: string; papeis: Papel[]
   { caminho: '/admin/moderacao', rotulo: 'Moderação', papeis: ['ADMIN', 'MODERADOR', 'JURIDICO'] },
   { caminho: '/admin/recursos', rotulo: 'Recursos', papeis: ['ADMIN', 'MODERADOR', 'CURADOR', 'ANALISTA_VERIFICACAO'] },
   { caminho: '/admin/atendimento', rotulo: 'Atendimento', papeis: ['ADMIN', 'SUPORTE_N1', 'SUPORTE_N2', 'MODERADOR', 'ENCARREGADO_DADOS', 'JURIDICO'] },
+  { caminho: '/admin/privacidade', rotulo: 'Privacidade', papeis: ['ADMIN', 'ENCARREGADO_DADOS'] },
+  { caminho: '/admin/times', rotulo: 'Times', papeis: PAPEIS_INTERNOS },
   { caminho: '/admin/vinculos', rotulo: 'Meus vínculos', papeis: PAPEIS_INTERNOS },
   { caminho: '/admin/equipe', rotulo: 'Equipe', papeis: ['ADMIN'] },
   { caminho: '/admin/parametros', rotulo: 'Parâmetros', papeis: ['ADMIN'] },

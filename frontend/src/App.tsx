@@ -16,6 +16,7 @@ import { PaginaAgenda } from './agenda/Agenda'
 import { PaginaAjuda, PaginaChamado, PaginaConfirmarChamado, PaginaMeusPedidos } from './ajuda/Ajuda'
 import { PaginaAtendimento, PaginaChamadoDaEquipe } from './admin/PaginaAtendimento'
 import { PaginaCasoDeModeracao, PaginaFilaDeModeracao, PaginaRecursos } from './admin/PaginaModeracao'
+import { PaginaPrivacidade, PaginaTimes } from './admin/PaginaOperacao'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -114,6 +115,7 @@ export function Rotas() {
                 <Route index element={<InicioAdmin />} />
                 <Route path="aprovacoes" element={<PaginaAprovacoes />} />
                 <Route path="vinculos" element={<PaginaVinculos />} />
+                <Route path="times" element={<PaginaTimes />} />
                 <Route element={<RotaInterna papeis={['ADMIN']} />}>
                   <Route path="equipe" element={<PaginaEquipe />} />
                   <Route path="parametros" element={<PaginaParametros />} />
@@ -142,6 +144,7 @@ export function Rotas() {
                   <Route path="atendimento/:id" element={<PaginaChamadoDaEquipe />} />
                 </Route>
                 <Route element={<RotaInterna papeis={['ADMIN', 'ENCARREGADO_DADOS']} />}>
+                  <Route path="privacidade" element={<PaginaPrivacidade />} />
                   <Route path="auditoria" element={<PaginaAuditoria />} />
                 </Route>
               </Route>

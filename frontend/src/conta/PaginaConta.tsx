@@ -7,6 +7,7 @@ import {
 } from '../api/conta'
 import { ehPapelPublico, NOMES_DOS_PAPEIS, type Papel } from '../api/contas'
 import { ENDERECOS, listarVigentes } from '../api/documentos'
+import { SecaoPrivacidade } from './Privacidade'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
@@ -100,6 +101,7 @@ export function PaginaConta() {
       <SecaoPapeis conta={conta} aoMudar={recarregar} />
       <SecaoEmail emailAtual={conta.email} />
       <SecaoSenha aoMudar={recarregar} />
+      <SecaoPrivacidade />
       <Secao titulo="Histórico da conta">
         {historico.length === 0 ? (
           <p className="text-sm text-muted">Nenhuma mudança registrada ainda.</p>

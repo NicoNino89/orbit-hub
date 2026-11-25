@@ -381,8 +381,7 @@ class ModeracaoEAtendimentoIT {
                 .andReturn().getResponse().getContentAsString(), "$.id");
         jdbc.update("UPDATE chamado SET prazo_primeira_resposta = now() - interval '1 hour' WHERE id = ?::uuid", atrasado);
         rotinas.executarManual("R14", null);
-        assertThat(jdbc.queryForObject("SELECT alertado_em IS NOT NULL FROM chamado WHERE id = ?::uuid", Boolean.class, atrasado)).isTrue();
-        assertThat(contar(n1, "Chamado perto do prazo")).isPositive();
+        assertThat(jdbc.queryForObject("SELECT vencido_alertado_em IS NOT NULL FROM chamado WHERE id = ?::uuid", Boolean.class, atrasado)).isTrue();
     }
 
     /**

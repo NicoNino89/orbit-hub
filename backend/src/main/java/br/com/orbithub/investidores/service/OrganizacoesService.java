@@ -180,6 +180,42 @@ public class OrganizacoesService {
     @Transactional
     public ConviteDeOrganizacao convidar(UUID eu, UUID organizacaoId, String emailConvidado, PapelNaOrganizacao papel) {
         exigirAdministrador(eu, organizacaoId);
+        return enviarConvite(eu, organizacaoId, emailConvidado, papel);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-77
+     * Título: Cadastro assistido
+     * Objetivo: Criar a organização convidada (fundo, rede, instituição parceira) pela equipe e convidar o responsável
+     *           como administrador, que conclui o cadastro e aceita os termos pessoalmente.
+     * Decisões: A organização nasce sem membros (rascunho) até o aceite; a equipe nunca entra como membro nem aceita
+     *           termos. O convite vale por convite.validade_dias.
+     */
+    @Transactional
+    public ConviteDeOrganizacao criarAssistida(UUID equipe, Dados dados, String emailResponsavel) {
+        String tipo = conferirTipo(dados.tipo());
+        String cnpj = Cnpj.validar(dados.cnpj()).orElseThrow(() -> new RegraDeNegocioException("cnpj_invalido",
+                "CNPJ inválido. Confira os 14 dígitos."));
+        if (organizacoes.existsByCnpj(cnpj)) {
+            throw new RegraDeNegocioException("cnpj_em_uso", "Já existe uma organização com este CNPJ.");
+        }
+        Organizacao organizacao = organizacoes.save(Organizacao.nova(dados.nome(), tipo, cnpj, dados.site(), dados.descricao(), equipe, relogio.instant()));
+        return enviarConvite(equipe, organizacao.getId(), emailResponsavel, PapelNaOrganizacao.ADMINISTRADOR);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-60, KAN-77
+     * Título: Enviar convite
+     * Objetivo: Gravar e enviar o convite por e-mail, cancelando o anterior para o mesmo e-mail.
+     * Decisões: Quem já é membro não é convidado. Usado pelo administrador da organização e pelo cadastro assistido.
+     */
+    private ConviteDeOrganizacao enviarConvite(UUID eu, UUID organizacaoId, String emailConvidado, PapelNaOrganizacao papel) {
         String destino = emailConvidado == null ? "" : emailConvidado.strip().toLowerCase(Locale.ROOT);
         if (!TokensDeConvite.emailValido(destino)) {
             throw new RegraDeNegocioException("email_invalido", "Informe um e-mail válido.");
@@ -195,7 +231,7 @@ public class OrganizacoesService {
         ConviteDeOrganizacao convite = convites.save(ConviteDeOrganizacao.novo(organizacaoId, destino, papel, TokensDeConvite.hash(token), eu,
                 agora, agora.plus(parametros.duracao(Chaves.CONVITE_VALIDADE))));
         Organizacao organizacao = organizacao(organizacaoId);
-        String quem = contas.nome(eu).orElse("Um administrador");
+        String quem = contas.nome(eu).orElse("A equipe do Orbit Hub");
         String link = conta.webUrl() + "/organizacoes/convite?token=" + token;
         email.enviar(new EnvioDeEmail.MensagemEmail(destino, "Convite para a organização " + organizacao.getNome(),
                 quem + " convidou você para participar da organização " + organizacao.getNome() + " no Orbit Hub, como "
@@ -530,6 +566,24 @@ public class OrganizacoesService {
             case MEMBRO -> "membro";
             case OBSERVADOR -> "observador";
         };
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-77
+     * Título: Transferir a administração
+     * Objetivo: Tornar administrador um membro ativo da organização, depois da segunda aprovação.
+     * Decisões: O administrador anterior, se ainda estiver ativo, passa a membro.
+     */
+    @Transactional
+    public void transferirAdministracao(UUID organizacaoId, UUID novoTitular) {
+        MembroDaOrganizacao novo = membros.findByOrganizacaoIdAndUsuarioIdAndSaiuEmIsNull(organizacaoId, novoTitular)
+                .orElseThrow(() -> new RegraDeNegocioException("fora_da_organizacao", "O novo titular precisa ser membro ativo da organização."));
+        administradores(organizacaoId).stream().filter(id -> !id.equals(novoTitular))
+                .forEach(id -> membros.findByOrganizacaoIdAndUsuarioIdAndSaiuEmIsNull(organizacaoId, id).ifPresent(m -> m.trocarPapel(PapelNaOrganizacao.MEMBRO)));
+        novo.trocarPapel(PapelNaOrganizacao.ADMINISTRADOR);
     }
 
     /**

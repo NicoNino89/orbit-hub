@@ -477,10 +477,10 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R8 – Qualidade das startups | Diária, às 6h15 | Lembra a equipe dos indicadores de tração desatualizados, no máximo uma vez a cada 30 dias (KAN-24); avisa os fundadores administradores das startups publicadas sem atualização e, sem atualização em 30 dias, despublica (KAN-27) | `startup.indicador_desatualizado_meses`, `startup.inatividade_meses` |
 | R9 – Revalidação de verificação | Diária, às 6h | Encerra pedidos sem complemento no prazo, avisa antes do vencimento, vence verificações e apaga os documentos depois da guarda (KAN-83) | `verificacao.validade_meses`, `verificacao.aviso_revalidacao_dias`, `verificacao.prazo_complemento_dias`, `verificacao.retencao_documentos_meses` |
 | R10 – Edições do catálogo | Diária, às 0h05 | Põe no ar as edições agendadas que começaram e arquiva as que terminaram (KAN-85) | — |
-| R11 – Contas inativas | Semanal | Avisa e desativa contas inativas; alerta organizações sem administrador | `conta.inatividade_meses` |
+| R11 – Contas inativas | Semanal (segunda, 5h) | Avisa e desativa contas inativas; alerta o atendimento sobre startups e organizações sem administrador | `conta.inatividade_meses`, `conta.aviso_inatividade_dias` |
 | R12 – Limpeza e retenção | Diária | Remove cadastros não confirmados e aplica a retenção de dados | `retencao.*`, `cadastro.*` |
 | R13 – Campanhas (F2) | De hora em hora | Inicia e encerra campanhas; consolida métricas | `publicidade.*` |
-| R14 – Monitor de prazos (SLA) | De hora em hora | Alerta sobre casos de verificação, curadoria, moderação, suporte e LGPD próximos do prazo | `*.sla_*` |
+| R14 – Monitor de prazos (SLA) | De hora em hora | Alerta o responsável e o líder quando o caso consome `operacao.alerta_sla_percentual` do prazo, e o líder e os administradores quando vence (verificação, curadoria, moderação, recursos, atendimento e pedidos do titular) | `operacao.alerta_sla_percentual`, `*.sla_*` |
 | R15 – Propostas paradas | De hora em hora | Alerta o administrador das propostas de segunda aprovação sem decisão no prazo (KAN-81) | `aprovacao.prazo_horas` |
 | R16 – Revisão de acessos | Diária | Lembra o administrador quando a revisão dos acessos da equipe vence (KAN-75) | `acesso.revisao_meses` |
 | R17 – Envio dos avisos por e-mail | A cada minuto | Envia os e-mails da central de notificações e tenta de novo os que falharam (1, 5, 15, 60 minutos, depois de 6 em 6 horas), até desistir (KAN-146) | `notificacoes.max_tentativas_email` |

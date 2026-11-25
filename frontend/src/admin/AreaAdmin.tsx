@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router'
 import type { Papel } from '../api/contas'
 import { useSessao } from '../sessao/contexto'
 import { CLASSE_LINK } from '../ui/estilos'
+import { PainelDeOperacaoAdmin } from './PaginaOperacao'
 import { MENU_BACKOFFICE, PAPEIS_INTERNOS } from './papeisInternos'
 
 /**
@@ -64,14 +65,9 @@ export function AreaAdmin() {
  * Hora: 10:09
  * Cartão Jira: KAN-80
  * Título: Início do backoffice
- * Objetivo: Dar as boas-vindas e apontar as telas disponíveis.
- * Decisões: Sem indicadores ainda; o painel de operação é a KAN-82.
+ * Objetivo: Mostrar o painel de operação (KAN-82) como página inicial da equipe.
+ * Decisões: Toda ação feita no backoffice fica registrada na trilha de auditoria.
  */
 export function InicioAdmin() {
-  return (
-    <section className="flex flex-col gap-3">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">Backoffice</h1>
-      <p className="text-muted">Escolha uma área no menu. Toda ação feita aqui fica registrada na trilha de auditoria.</p>
-    </section>
-  )
+  return <PainelDeOperacaoAdmin />
 }
