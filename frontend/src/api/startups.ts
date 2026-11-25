@@ -10,7 +10,7 @@ import { requisitar } from './cliente'
  * Decisões: Mesmos nomes da API.
  */
 export type PapelNaStartup = 'FUNDADOR_ADMINISTRADOR' | 'FUNDADOR' | 'COLABORADOR'
-export type SituacaoDaStartup = 'RASCUNHO' | 'EM_REVISAO' | 'PUBLICADA' | 'DEVOLVIDA' | 'DESPUBLICADA'
+export type SituacaoDaStartup = 'RASCUNHO' | 'EM_REVISAO' | 'PUBLICADA' | 'DEVOLVIDA' | 'DESPUBLICADA' | 'RECUSADA'
 export type RedeSocial = 'LINKEDIN' | 'INSTAGRAM' | 'X' | 'FACEBOOK' | 'YOUTUBE' | 'OUTRA'
 
 export interface Fundador {
@@ -40,6 +40,7 @@ export const NOMES_DA_SITUACAO_DA_STARTUP: Record<SituacaoDaStartup, string> = {
   PUBLICADA: 'Publicada',
   DEVOLVIDA: 'Devolvida para ajustes',
   DESPUBLICADA: 'Despublicada',
+  RECUSADA: 'Recusada pela curadoria',
 }
 
 export const NOMES_DAS_REDES: Record<RedeSocial, string> = {

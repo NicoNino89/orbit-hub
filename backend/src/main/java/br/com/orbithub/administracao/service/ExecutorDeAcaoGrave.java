@@ -44,6 +44,18 @@ public interface ExecutorDeAcaoGrave {
 
     /**
      * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-84
+     * Título: Ao desistir da ação
+     * Objetivo: Avisar o executor de que a proposta foi rejeitada ou cancelada, para desfazer o que ficou à espera.
+     * Decisões: Padrão sem efeito.
+     */
+    default void aoDesistir(PropostaDeAprovacao proposta) {
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
      * Hora: 10:52
      * Cartão Jira: KAN-81

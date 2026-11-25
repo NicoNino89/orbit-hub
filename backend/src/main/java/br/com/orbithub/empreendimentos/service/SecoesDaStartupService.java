@@ -38,6 +38,7 @@ public class SecoesDaStartupService {
     private final StartupsService cadastro;
     private final ListasService listas;
     private final Clock relogio;
+    private final RevisoesDaStartup revisoes;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -45,10 +46,12 @@ public class SecoesDaStartupService {
      * Hora: 23:02
      * Cartão Jira: KAN-23
      * Título: Criação do serviço
-     * Objetivo: Receber o repositório, o cadastro, as listas e o relógio.
-     * Decisões: Injeção por construtor.
+     * Objetivo: Receber o repositório, o cadastro, as listas, o relógio e as revisões da curadoria.
+     * Decisões: Injeção por construtor. As revisões entram no KAN-66 (25/11/2026): mudar o estágio de startup publicada abre revisão.
      */
-    public SecoesDaStartupService(StartupRepository startups, StartupsService cadastro, ListasService listas, Clock relogio) {
+    public SecoesDaStartupService(StartupRepository startups, StartupsService cadastro, ListasService listas, Clock relogio,
+                                  RevisoesDaStartup revisoes) {
+        this.revisoes = revisoes;
         this.startups = startups;
         this.cadastro = cadastro;
         this.listas = listas;
@@ -100,6 +103,7 @@ public class SecoesDaStartupService {
         }
         Startup startup = startup(startupId);
         startup.preencherSecao(secao, conferidos, relogio.instant());
+        revisoes.conferirAlteracao(startup, eu);
         return startup.campos();
     }
 

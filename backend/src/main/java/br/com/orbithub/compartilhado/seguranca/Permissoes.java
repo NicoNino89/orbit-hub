@@ -71,6 +71,14 @@ public final class Permissoes {
     public @interface VerificacaoOuAdmin {
     }
 
+    /** Curador ou administrador: fila da curadoria e edições temáticas do catálogo (KAN-84, KAN-85). */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @PreAuthorize("hasAnyRole('ADMIN', 'CURADOR')")
+    public @interface CuradoriaOuAdmin {
+    }
+
     /** Qualquer papel da equipe interna, para ações comuns a todos os times (KAN-75). */
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)

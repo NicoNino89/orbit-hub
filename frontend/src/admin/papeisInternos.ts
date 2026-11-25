@@ -28,6 +28,8 @@ export const PAPEIS_INTERNOS: PapelInterno[] = [
 export const MENU_BACKOFFICE: { caminho: string; rotulo: string; papeis: Papel[] }[] = [
   { caminho: '/admin/aprovacoes', rotulo: 'Segunda aprovação', papeis: PAPEIS_INTERNOS },
   { caminho: '/admin/verificacao', rotulo: 'Verificação', papeis: ['ADMIN', 'ANALISTA_VERIFICACAO'] },
+  { caminho: '/admin/curadoria', rotulo: 'Curadoria', papeis: ['ADMIN', 'CURADOR'] },
+  { caminho: '/admin/edicoes', rotulo: 'Edições do catálogo', papeis: ['ADMIN', 'CURADOR'] },
   { caminho: '/admin/vinculos', rotulo: 'Meus vínculos', papeis: PAPEIS_INTERNOS },
   { caminho: '/admin/equipe', rotulo: 'Equipe', papeis: ['ADMIN'] },
   { caminho: '/admin/parametros', rotulo: 'Parâmetros', papeis: ['ADMIN'] },

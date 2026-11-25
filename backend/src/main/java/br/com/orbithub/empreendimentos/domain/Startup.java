@@ -20,9 +20,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -104,6 +106,24 @@ public class Startup {
 
     @Column(name = "lembrete_indicadores_em")
     private Instant lembreteIndicadoresEm;
+
+    @Column(name = "nome_aprovado", length = 120)
+    private String nomeAprovado;
+
+    @Column(name = "segmento_aprovado", length = 40)
+    private String segmentoAprovado;
+
+    @Column(name = "estagio_aprovado", length = 40)
+    private String estagioAprovado;
+
+    @Column(name = "participa_edicoes", nullable = false)
+    private boolean participaEdicoes = true;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "startup_visibilidade", joinColumns = @JoinColumn(name = "startup_id"))
+    @MapKeyColumn(name = "item", length = 60)
+    @Column(name = "publico", nullable = false)
+    private Map<String, Boolean> visibilidade = new HashMap<>();
 
     @Column(name = "criada_por", nullable = false)
     private UUID criadaPor;
@@ -515,6 +535,188 @@ public class Startup {
      */
     public Instant getPublicadaEm() {
         return publicadaEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Aprovar a publicação
+     * Objetivo: Publicar a startup em revisão e guardar os valores aprovados que o catálogo exibe.
+     * Decisões: Só sai de "em revisão". A data da primeira publicação é mantida nas republicações.
+     */
+    public SituacaoDaStartup aprovarPublicacao(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.EM_REVISAO), SituacaoDaStartup.PUBLICADA, agora, () -> {
+            if (publicadaEm == null) {
+                publicadaEm = agora;
+            }
+            aprovarValoresAtuais();
+        });
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Devolver para ajustes
+     * Objetivo: Devolver a startup em revisão ao empreendedor.
+     * Decisões: Os comentários ficam na revisão da curadoria.
+     */
+    public SituacaoDaStartup devolver(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.EM_REVISAO), SituacaoDaStartup.DEVOLVIDA, agora, () -> this.enviadaEm = null);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-84
+     * Título: Recusar por fraude
+     * Objetivo: Tirar a startup do catálogo e da fila depois da segunda aprovação da recusa por fraude.
+     * Decisões: Vale para a startup em revisão ou já publicada. Estado final; o recurso entra com a história de recursos.
+     */
+    public SituacaoDaStartup recusarPorFraude(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.EM_REVISAO, SituacaoDaStartup.PUBLICADA), SituacaoDaStartup.RECUSADA, agora,
+                () -> this.enviadaEm = null);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Aprovar os valores atuais
+     * Objetivo: Copiar nome, segmento e estágio atuais para os valores que o catálogo exibe.
+     * Decisões: Usado na publicação e na aprovação de uma alteração relevante.
+     */
+    public void aprovarValoresAtuais() {
+        this.nomeAprovado = nome;
+        this.segmentoAprovado = segmento;
+        this.estagioAprovado = campos.get(CampoDaStartup.ESTAGIO);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Alteração relevante pendente
+     * Objetivo: Dizer se a startup publicada tem nome, segmento ou estágio diferentes do que a curadoria aprovou.
+     * Decisões: Só faz sentido para a startup publicada; nas outras situações a revisão é a da publicação.
+     */
+    public boolean temAlteracaoRelevante() {
+        return situacao == SituacaoDaStartup.PUBLICADA && (!Objects.equals(nome, nomeAprovado)
+                || !Objects.equals(segmento, segmentoAprovado)
+                || !Objects.equals(campos.get(CampoDaStartup.ESTAGIO), estagioAprovado));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Valores aprovados
+     * Objetivo: Expor nome, segmento e estágio aprovados, que o catálogo mostra até a curadoria aprovar uma alteração.
+     * Decisões: Antes da primeira aprovação, nulos.
+     */
+    public String getNomeAprovado() {
+        return nomeAprovado;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Segmento aprovado
+     * Objetivo: Expor o segmento aprovado.
+     * Decisões: Código da lista de segmentos.
+     */
+    public String getSegmentoAprovado() {
+        return segmentoAprovado;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-66
+     * Título: Estágio aprovado
+     * Objetivo: Expor o estágio aprovado.
+     * Decisões: Nível da maturidade do negócio, como texto.
+     */
+    public String getEstagioAprovado() {
+        return estagioAprovado;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-28
+     * Título: Escolhas de visibilidade
+     * Objetivo: Devolver os itens em que a equipe mudou o padrão de visibilidade.
+     * Decisões: Cópia; o padrão de cada item fica em VisibilidadeDaStartup.
+     */
+    public Map<String, Boolean> visibilidade() {
+        return Map.copyOf(visibilidade);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-28
+     * Título: Definir visibilidade
+     * Objetivo: Trocar as escolhas de visibilidade da startup.
+     * Decisões: Substitui tudo; quem chama já conferiu os itens.
+     */
+    public void definirVisibilidade(Map<String, Boolean> escolhas, Instant agora) {
+        visibilidade.clear();
+        visibilidade.putAll(escolhas);
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-85
+     * Título: Participação nas edições
+     * Objetivo: Dizer se a startup aceita aparecer nas edições temáticas.
+     * Decisões: Começa aceitando.
+     */
+    public boolean isParticipaEdicoes() {
+        return participaEdicoes;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-85
+     * Título: Definir participação nas edições
+     * Objetivo: Registrar a escolha da equipe de participar ou não das edições temáticas.
+     * Decisões: Quem não participa sai das edições na próxima leitura do catálogo.
+     */
+    public void definirParticipacaoEmEdicoes(boolean participa, Instant agora) {
+        this.participaEdicoes = participa;
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-36
+     * Título: Segmento
+     * Objetivo: Expor o segmento atual.
+     * Decisões: Código da lista.
+     */
+    public String getSegmento() {
+        return segmento;
     }
 
     /**

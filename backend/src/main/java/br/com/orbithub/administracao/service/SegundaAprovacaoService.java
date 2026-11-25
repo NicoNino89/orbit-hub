@@ -135,12 +135,13 @@ public class SegundaAprovacaoService {
      * Cartão Jira: KAN-81
      * Título: Rejeitar
      * Objetivo: Registrar a rejeição; a ação não é executada.
-     * Decisões: Mesmas regras da aprovação.
+     * Decisões: Mesmas regras da aprovação. O executor é avisado para desfazer a espera (KAN-84, 25/11/2026).
      */
     @Transactional
     public PropostaDeAprovacao rejeitar(UUID propostaId, UUID aprovador, Set<Papel> papeis, String justificativa) {
         PropostaDeAprovacao proposta = decidivel(propostaId, aprovador, papeis, justificativa, ACAO_REJEITADA);
         proposta.rejeitar(aprovador, justificativa, relogio.instant());
+        executor(proposta.getTipo()).aoDesistir(proposta);
         return proposta;
     }
 
@@ -162,6 +163,7 @@ public class SegundaAprovacaoService {
         }
         exigirPendente(proposta);
         proposta.cancelar(quem, relogio.instant());
+        executor(proposta.getTipo()).aoDesistir(proposta);
         return proposta;
     }
 

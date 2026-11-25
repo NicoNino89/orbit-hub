@@ -4,6 +4,7 @@ import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
 import br.com.orbithub.empreendimentos.domain.MudancaDeSituacao;
+import br.com.orbithub.empreendimentos.domain.RevisaoDeCuradoria;
 import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
@@ -38,6 +39,7 @@ public class PublicacaoDaStartupService {
     private final MudancaDeSituacaoRepository historico;
     private final StartupsService cadastro;
     private final Clock relogio;
+    private final RevisoesDaStartup revisoes;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -45,11 +47,12 @@ public class PublicacaoDaStartupService {
      * Hora: 23:40
      * Cartão Jira: KAN-27
      * Título: Criação do serviço
-     * Objetivo: Receber os repositórios, o cadastro e o relógio.
-     * Decisões: Injeção por construtor.
+     * Objetivo: Receber os repositórios, o cadastro, o relógio e as revisões da curadoria.
+     * Decisões: Injeção por construtor. As revisões entram no KAN-66 (25/11/2026).
      */
     public PublicacaoDaStartupService(StartupRepository startups, MudancaDeSituacaoRepository historico, StartupsService cadastro,
-                                      Clock relogio) {
+                                      Clock relogio, RevisoesDaStartup revisoes) {
+        this.revisoes = revisoes;
         this.startups = startups;
         this.historico = historico;
         this.cadastro = cadastro;
@@ -79,7 +82,8 @@ public class PublicacaoDaStartupService {
      * Cartão Jira: KAN-27
      * Título: Enviar para publicação
      * Objetivo: Passar a startup para a revisão da plataforma.
-     * Decisões: Recusa com a lista do que falta.
+     * Decisões: Recusa com a lista do que falta. Abre a revisão da curadoria (KAN-66). Startup publicada com alteração
+     *           relevante devolvida pela curadoria reenvia a alteração e continua publicada (25/11/2026).
      */
     @Transactional
     public SituacaoDaStartup enviar(UUID eu, UUID startupId) {
@@ -89,7 +93,16 @@ public class PublicacaoDaStartupService {
         if (!p.podeEnviar()) {
             throw new RegraDeNegocioException("cadastro_incompleto", "Preencha antes de enviar: " + String.join(", ", p.pendencias()) + ".");
         }
-        return registrar(startup, startup.enviarParaRevisao(relogio.instant()), eu, null);
+        if (startup.getSituacao() == SituacaoDaStartup.PUBLICADA) {
+            if (!startup.temAlteracaoRelevante()) {
+                throw new RegraDeNegocioException("sem_alteracao", "Não há alteração de nome, segmento ou estágio para a curadoria revisar.");
+            }
+            revisoes.abrir(startup, RevisaoDeCuradoria.Tipo.ALTERACAO, eu);
+            return startup.getSituacao();
+        }
+        SituacaoDaStartup anterior = startup.enviarParaRevisao(relogio.instant());
+        revisoes.abrir(startup, RevisaoDeCuradoria.Tipo.PUBLICACAO, eu);
+        return registrar(startup, anterior, eu, null);
     }
 
     /**
@@ -105,7 +118,9 @@ public class PublicacaoDaStartupService {
     public SituacaoDaStartup cancelarEnvio(UUID eu, UUID startupId) {
         cadastro.exigirAdministrador(eu, startupId);
         Startup startup = startup(startupId);
-        return registrar(startup, startup.cancelarEnvio(relogio.instant()), eu, null);
+        SituacaoDaStartup anterior = startup.cancelarEnvio(relogio.instant());
+        revisoes.cancelar(startupId);
+        return registrar(startup, anterior, eu, null);
     }
 
     /**
@@ -122,6 +137,7 @@ public class PublicacaoDaStartupService {
     public SituacaoDaStartup despublicar(UUID eu, UUID startupId, String motivo) {
         cadastro.exigirAdministrador(eu, startupId);
         Startup startup = startup(startupId);
+        revisoes.cancelar(startupId);
         return registrar(startup, startup.despublicar(relogio.instant()), eu, motivo == null || motivo.isBlank() ? null : motivo.strip());
     }
 

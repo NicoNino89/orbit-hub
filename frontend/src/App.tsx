@@ -2,12 +2,15 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { AreaAdmin, InicioAdmin, RotaInterna } from './admin/AreaAdmin'
 import { PaginaAprovacoes } from './admin/PaginaAprovacoes'
 import { PaginaAuditoria } from './admin/PaginaAuditoria'
+import { PaginaFilaDaCuradoria, PaginaRevisaoDaCuradoria } from './admin/PaginaCuradoria'
+import { PaginaEdicao, PaginaEdicoes } from './admin/PaginaEdicoes'
 import { PaginaEquipe } from './admin/PaginaEquipe'
 import { PaginaListas } from './admin/PaginaListas'
 import { PaginaParametros } from './admin/PaginaParametros'
 import { PaginaRotinas } from './admin/PaginaRotinas'
 import { PaginaFilaDeVerificacao, PaginaPedidoDeVerificacao } from './admin/PaginaVerificacaoAdmin'
 import { PaginaVinculos } from './admin/PaginaVinculos'
+import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
 import { PaginaConfirmacao } from './conta/PaginaConfirmacao'
@@ -73,6 +76,9 @@ export function Rotas() {
             <Route path="/notificacoes" element={<PaginaNotificacoes />} />
             <Route path="/organizacoes/convite" element={<PaginaConviteOrganizacao />} />
             <Route path="/startups/convite" element={<PaginaConviteStartup />} />
+            <Route path="/catalogo/edicoes" element={<PaginaEdicoesDoCatalogo />} />
+            <Route path="/catalogo/edicoes/:id" element={<PaginaEdicaoDoCatalogo />} />
+            <Route path="/catalogo/startups/:id" element={<PaginaStartupNoCatalogo />} />
             <Route element={<RotaDePapel papel="INVESTIDOR" />}>
               <Route path="/investidor" element={<AreaInvestidor />} />
               <Route path="/investidor/onboarding" element={<PaginaPerfilDeInvestimento onboarding />} />
@@ -100,6 +106,12 @@ export function Rotas() {
                 <Route element={<RotaInterna papeis={['ADMIN', 'ANALISTA_VERIFICACAO']} />}>
                   <Route path="verificacao" element={<PaginaFilaDeVerificacao />} />
                   <Route path="verificacao/:id" element={<PaginaPedidoDeVerificacao />} />
+                </Route>
+                <Route element={<RotaInterna papeis={['ADMIN', 'CURADOR']} />}>
+                  <Route path="curadoria" element={<PaginaFilaDaCuradoria />} />
+                  <Route path="curadoria/:id" element={<PaginaRevisaoDaCuradoria />} />
+                  <Route path="edicoes" element={<PaginaEdicoes />} />
+                  <Route path="edicoes/:id" element={<PaginaEdicao />} />
                 </Route>
                 <Route element={<RotaInterna papeis={['ADMIN', 'ENCARREGADO_DADOS']} />}>
                   <Route path="auditoria" element={<PaginaAuditoria />} />

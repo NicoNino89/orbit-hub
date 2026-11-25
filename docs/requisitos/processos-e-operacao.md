@@ -476,7 +476,7 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R7 – Confirmação de participação | Diária | Cobra confirmações e marca as não confirmadas no prazo | `rodada.prazo_confirmacao_dias` |
 | R8 – Qualidade das startups | Diária, às 6h15 | Lembra a equipe dos indicadores de tração desatualizados, no máximo uma vez a cada 30 dias (KAN-24); avisa os fundadores administradores das startups publicadas sem atualização e, sem atualização em 30 dias, despublica (KAN-27) | `startup.indicador_desatualizado_meses`, `startup.inatividade_meses` |
 | R9 – Revalidação de verificação | Diária, às 6h | Encerra pedidos sem complemento no prazo, avisa antes do vencimento, vence verificações e apaga os documentos depois da guarda (KAN-83) | `verificacao.validade_meses`, `verificacao.aviso_revalidacao_dias`, `verificacao.prazo_complemento_dias`, `verificacao.retencao_documentos_meses` |
-| R10 – Edições do catálogo | Diária | Publica e arquiva edições conforme a vigência | — |
+| R10 – Edições do catálogo | Diária, às 0h05 | Põe no ar as edições agendadas que começaram e arquiva as que terminaram (KAN-85) | — |
 | R11 – Contas inativas | Semanal | Avisa e desativa contas inativas; alerta organizações sem administrador | `conta.inatividade_meses` |
 | R12 – Limpeza e retenção | Diária | Remove cadastros não confirmados e aplica a retenção de dados | `retencao.*`, `cadastro.*` |
 | R13 – Campanhas (F2) | De hora em hora | Inicia e encerra campanhas; consolida métricas | `publicidade.*` |
@@ -507,6 +507,7 @@ A central de notificações (KAN-146) é o único caminho de aviso para as pesso
 | `curadoria.sla_dias_uteis` | 3 | Não |
 | `catalogo.novas_dias` | 30 | Não |
 | `catalogo.frequencia_edicoes` | Mensal | Não |
+| `catalogo.capa_max_mb` | 2 | Não |
 | `conexao.lembrete_dias` | 7 e 21 | Não |
 | `conexao.expiracao_dias` | 30 | Não |
 | `conexao.nova_tentativa_dias` | 90 | Não |
