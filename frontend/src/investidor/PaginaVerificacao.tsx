@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FORMATO_DATA_HORA } from '../admin/datas'
+import { RecorrerDaDecisao } from '../ajuda/Ajuda'
 import {
   enviarDocumento, mandarParaAnalise, minhaVerificacao, NOMES_DA_SITUACAO, removerDocumento, type Selo,
   type SituacaoDaVerificacao,
@@ -109,6 +110,7 @@ export function PaginaVerificacao() {
         <div className="rounded-lg border border-line bg-surface p-4 text-sm">
           <p className="font-semibold">{NOMES_DA_SITUACAO[pedido.situacao]}</p>
           {pedido.observacao && <p className="mt-1">{pedido.observacao}</p>}
+          {pedido.situacao === 'RECUSADO' && <RecorrerDaDecisao origemTipo="VERIFICACAO" origemId={pedido.id} />}
           {pedido.situacao === 'PENDENTE_COMPLEMENTO' && pedido.prazoComplementoAte && (
             <p className="text-warn">Envie o complemento até {FORMATO_DATA_HORA.format(new Date(pedido.prazoComplementoAte))}, ou o pedido é encerrado.</p>
           )}

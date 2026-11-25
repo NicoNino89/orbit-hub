@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FORMATO_DATA_HORA } from '../admin/datas'
+import { AbrirDisputa } from '../ajuda/Denunciar'
 import {
   atualizarIntencao, cancelarRodada, concluirRodada, convidarCoInvestidor, convidarLider, decidirConvidado, definirPolitica, entrarNaRodada,
   NOMES_DA_POLITICA, NOMES_DA_SITUACAO_DA_RODADA, painelDaRodada, type PainelDaRodada, pedirEncerramento, type Politica, prorrogarRodada,
@@ -99,7 +100,10 @@ export function ConducaoDaRodada({ rodadaId, admin }: { rodadaId: string; startu
       </ul>
       {p.investimentos.length > 0 && (
         <ul aria-label="Investimentos registrados" className="text-xs text-muted">
-          {p.investimentos.map((i) => <li key={i.id}>{i.investidor} · {real(i.valor)} · {i.situacao.toLowerCase().replace('_', ' ')}</li>)}
+          {p.investimentos.map((i) => (
+            <li key={i.id}>{i.investidor} · {real(i.valor)} · {i.situacao.toLowerCase().replace('_', ' ')}
+              {i.situacao === 'CONTESTADO' && <> · <AbrirDisputa referenciaTipo="RODADA_INVESTIMENTO" referenciaId={i.id} /></>}</li>
+          ))}
         </ul>
       )}
       {admin && emCurso && (
@@ -201,6 +205,7 @@ export function RodadaDoInvestidor({ startupId }: { startupId: string }) {
               <button type="button" className={CLASSE_LINK} onClick={() => void tentar(() => responderInvestimento(i.id, false)).then(pronto)}>Contestar</button>
             </>
           )}
+          {i.situacao === 'CONTESTADO' && <AbrirDisputa referenciaTipo="RODADA_INVESTIMENTO" referenciaId={i.id} />}
         </div>
       ))}
     </section>

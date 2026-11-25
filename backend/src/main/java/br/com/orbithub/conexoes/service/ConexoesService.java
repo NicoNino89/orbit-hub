@@ -14,6 +14,7 @@ import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.service.BloqueiosDaStartup;
 import br.com.orbithub.empreendimentos.service.StartupsService;
+import br.com.orbithub.identidade.domain.ContaSuspensa;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.investidores.domain.PerfilDeInvestimento;
 import br.com.orbithub.investidores.service.AtuacaoService;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -502,6 +504,36 @@ public class ConexoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Ao suspender a conta
+     * Objetivo: Expirar os interesses pendentes da pessoa e tirá-la das rodadas abertas.
+     * Decisões: A conexão em rodada volta para a situação de antes da rodada. A medida só do Nível 2 não mexe nas conexões.
+     */
+    @EventListener
+    @Transactional
+    public void aoSuspenderConta(ContaSuspensa evento) {
+        if (evento.apenasNivel2()) {
+            return;
+        }
+        conexoes.findBySituacaoAndCriadaEmBefore(Conexao.Situacao.PENDENTE, relogio.instant().plusSeconds(1)).stream()
+                .filter(c -> evento.usuarioId().equals(c.getPessoaId()))
+                .forEach(this::expirar);
+        for (var p : jdbc.queryForList("SELECT p.id, p.conexao_id, p.conexao_anterior FROM rodada_participante p JOIN rodada r ON r.id = p.rodada_id "
+                + "WHERE p.pessoa_id = ? AND p.situacao <> 'SAIU' AND r.situacao IN ('ABERTA', 'EM_NEGOCIACAO')", evento.usuarioId())) {
+            jdbc.update("UPDATE rodada_participante SET situacao = 'SAIU', atualizado_em = ? WHERE id = ?", Timestamp.from(relogio.instant()), p.get("id"));
+            if (p.get("conexao_id") != null && p.get("conexao_anterior") != null) {
+                Conexao c = ler((UUID) p.get("conexao_id"));
+                if (c.getSituacao() == Conexao.Situacao.EM_NEGOCIACAO) {
+                    voltarAntesDaRodada(c, Conexao.Situacao.valueOf((String) p.get("conexao_anterior")), null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
      * Hora: 11:25
      * Cartão Jira: KAN-105
      * Título: Lembrar pela rotina
@@ -714,6 +746,15 @@ public class ConexoesService {
         return verificado(a.pessoa(), a.organizacao());
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-86, KAN-89, KAN-99, KAN-100, KAN-101, KAN-102, KAN-103
+     * Título: verificado
+     * Objetivo: Rotina auxiliar verificado.
+     * Decisões: Ver a documentação da classe.
+     */
     private boolean verificado(UUID pessoa, UUID organizacao) {
         Selo selo = organizacao != null ? verificacoes.selo(SujeitoDaVerificacao.ORGANIZACAO, organizacao)
                 : verificacoes.selo(SujeitoDaVerificacao.PESSOA, pessoa);
@@ -767,6 +808,15 @@ public class ConexoesService {
                          String lideranca, Selo selo) {
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-86, KAN-89, KAN-99, KAN-100, KAN-101, KAN-102, KAN-103
+     * Título: Contato
+     * Objetivo: Rotina auxiliar Contato.
+     * Decisões: Ver a documentação da classe.
+     */
     public record Contato(String nome, String email) {
     }
 
@@ -775,9 +825,27 @@ public class ConexoesService {
                        Resumo investidor, List<Contato> contatos, String feitaPor) {
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-86, KAN-89, KAN-99, KAN-100, KAN-101, KAN-102, KAN-103
+     * Título: Mudanca
+     * Objetivo: Rotina auxiliar Mudanca.
+     * Decisões: Ver a documentação da classe.
+     */
     public record Mudanca(Conexao.Situacao de, Conexao.Situacao para, String por, Conexao.Lado lado, Instant em) {
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-86, KAN-89, KAN-99, KAN-100, KAN-101, KAN-102, KAN-103
+     * Título: ParaInvestidor
+     * Objetivo: Rotina auxiliar ParaInvestidor.
+     * Decisões: Ver a documentação da classe.
+     */
     public record ParaInvestidor(Item conexao, boolean podeManifestar, String impedimento, boolean precisaVerificar) {
     }
 }

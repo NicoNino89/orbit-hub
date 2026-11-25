@@ -83,6 +83,9 @@ public class Usuario {
     @Column(name = "desligado_em")
     private Instant desligadoEm;
 
+    @Column(name = "suspensa_ate")
+    private Instant suspensaAte;
+
     @Version
     private long versao;
 
@@ -631,5 +634,72 @@ public class Usuario {
      */
     public Instant getDesligadoEm() {
         return desligadoEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Banida até
+     * Objetivo: Marcar a data usada para o banimento.
+     * Decisões: Fim distante em vez de nulo, para que a conta banida e a suspensa usem a mesma regra.
+     */
+    public static final Instant BANIDA = Instant.parse("9999-12-31T00:00:00Z");
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Suspender
+     * Objetivo: Impedir o acesso da conta até a data informada (ou para sempre, no banimento).
+     * Decisões: Uma suspensão nova substitui a anterior.
+     */
+    public void suspender(Instant ate, Instant agora) {
+        this.suspensaAte = ate;
+        this.atualizadoEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Levantar a suspensão
+     * Objetivo: Devolver o acesso quando a sanção é revogada no recurso ou a medida preventiva termina.
+     * Decisões: Sem efeito se não havia suspensão.
+     */
+    public void levantarSuspensao(Instant agora) {
+        if (suspensaAte != null) {
+            this.suspensaAte = null;
+            this.atualizadoEm = agora;
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Suspensa no instante
+     * Objetivo: Dizer se a conta está suspensa ou banida no instante informado.
+     * Decisões: A suspensão termina sozinha na data final.
+     */
+    public boolean suspensaEm(Instant instante) {
+        return suspensaAte != null && suspensaAte.isAfter(instante);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Fim da suspensão
+     * Objetivo: Devolver a data final da suspensão ou do banimento.
+     * Decisões: Nulo quando a conta não está suspensa.
+     */
+    public Instant getSuspensaAte() {
+        return suspensaAte;
     }
 }

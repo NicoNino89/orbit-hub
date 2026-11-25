@@ -374,6 +374,44 @@ public class StartupsService {
      * Objetivo: Devolver a startup para os outros módulos (conexões), sem conferir a equipe.
      * Decisões: 404 se não existir; quem chama decide o que pode ver.
      */
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Despublicar pela moderação
+     * Objetivo: Tirar a startup publicada do catálogo por sanção ou medida preventiva.
+     * Decisões: Devolve falso se ela já não estava publicada.
+     */
+    @Transactional
+    public boolean despublicarPorModeracao(UUID startupId) {
+        Startup s = startup(startupId);
+        if (s.getSituacao() != SituacaoDaStartup.PUBLICADA) {
+            return false;
+        }
+        s.despublicar(relogio.instant());
+        startups.save(s);
+        return true;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Republicar depois do recurso
+     * Objetivo: Pôr de volta no catálogo a startup despublicada pela moderação quando a sanção é revogada.
+     * Decisões: Só volta se ainda estiver despublicada.
+     */
+    @Transactional
+    public void republicarPorModeracao(UUID startupId) {
+        Startup s = startup(startupId);
+        if (s.getSituacao() == SituacaoDaStartup.DESPUBLICADA) {
+            s.republicar(relogio.instant());
+            startups.save(s);
+        }
+    }
+
     @Transactional(readOnly = true)
     public Startup ler(UUID startupId) {
         return startup(startupId);

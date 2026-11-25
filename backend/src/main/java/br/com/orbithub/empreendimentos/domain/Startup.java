@@ -448,6 +448,19 @@ public class Startup {
 
     /**
      * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-86
+     * Título: Republicar
+     * Objetivo: Pôr de volta no catálogo a startup despublicada pela moderação, quando a sanção é revogada.
+     * Decisões: Só de despublicada.
+     */
+    public SituacaoDaStartup republicar(Instant agora) {
+        return mudar(EnumSet.of(SituacaoDaStartup.DESPUBLICADA), SituacaoDaStartup.PUBLICADA, agora, () -> { });
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
      * Hora: 23:40
      * Cartão Jira: KAN-27
