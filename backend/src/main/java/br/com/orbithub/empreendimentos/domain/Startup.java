@@ -81,6 +81,13 @@ public class Startup {
     @OrderColumn(name = "ordem")
     private List<Fundador> fundadores = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "startup_campo", joinColumns = @JoinColumn(name = "startup_id"))
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn(name = "campo", length = 60)
+    @Column(name = "valor", nullable = false, columnDefinition = "TEXT")
+    private Map<CampoDaStartup, String> campos = new EnumMap<>(CampoDaStartup.class);
+
     @Column(name = "criada_por", nullable = false)
     private UUID criadaPor;
 
@@ -146,6 +153,38 @@ public class Startup {
         this.fundadores.clear();
         this.fundadores.addAll(c.fundadores());
         this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 22:56
+     * Cartão Jira: KAN-22
+     * Título: Preencher seção
+     * Objetivo: Trocar os valores de uma seção pelos informados.
+     * Decisões: Os campos da seção que não vierem (ou vierem vazios) são apagados; a validação fica no serviço.
+     */
+    public void preencherSecao(SecaoDaStartup secao, Map<CampoDaStartup, String> valores, Instant agora) {
+        campos.keySet().removeIf(c -> c.getSecao() == secao);
+        valores.forEach((c, v) -> {
+            if (c.getSecao() == secao && v != null && !v.isBlank()) {
+                campos.put(c, v.strip());
+            }
+        });
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 22:56
+     * Cartão Jira: KAN-22
+     * Título: Campos preenchidos
+     * Objetivo: Devolver os valores das seções descritivas.
+     * Decisões: Cópia, para quem lê não alterar a entidade.
+     */
+    public Map<CampoDaStartup, String> campos() {
+        return campos.isEmpty() ? Map.of() : new EnumMap<>(campos);
     }
 
     /**

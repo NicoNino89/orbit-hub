@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import {
   CADASTRO_VAZIO, criarStartup, lerLogotipo, lerStartup, NOMES_DA_SITUACAO_DA_STARTUP, NOMES_DO_PAPEL_NA_STARTUP,
-  podeEditar, salvarCadastro, type Startup, trocarLogotipo,
+  NOMES_DAS_SECOES, podeEditar, salvarCadastro, type SecaoDaStartup, type Startup, trocarLogotipo,
 } from '../api/startups'
+import { type CampoDoCatalogo, catalogoDeCampos, salvarSecao, type ValoresDasSecoes, valoresDasSecoes } from '../api/secoes'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
 import { EquipeDaStartup } from './EquipeDaStartup'
 import { FormularioCadastral } from './FormularioCadastral'
+import { FormularioDaSecao } from './FormularioDaSecao'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -47,12 +49,13 @@ export function PaginaNovaStartup() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 22:48
- * Cartão Jira: KAN-65
+ * Hora: 22:56
+ * Cartão Jira: KAN-22
  * Título: Editor da startup
  * Objetivo: Mostrar a startup com a situação, o selo de empresa não constituída, o logotipo e a etapa dos dados
  *           cadastrais.
- * Decisões: Navegação por etapas, que cresce com as próximas histórias (KAN-22 a KAN-27), e a aba da equipe (KAN-65).
+ * Decisões: Navegação por etapas: dados cadastrais, as seções que o catálogo do servidor descreve (KAN-22 em diante)
+ *           e a equipe (KAN-65).
  *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele.
  */
 export function PaginaStartup() {
@@ -61,7 +64,16 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
-  const [aba, setAba] = useState<'cadastro' | 'equipe'>('cadastro')
+  const [aba, setAba] = useState<'cadastro' | 'equipe' | SecaoDaStartup>('cadastro')
+  const [catalogo, setCatalogo] = useState<CampoDoCatalogo[]>([])
+  const [valores, setValores] = useState<ValoresDasSecoes | null>(null)
+
+  useEffect(() => {
+    let ativo = true
+    catalogoDeCampos().then((c) => { if (ativo) setCatalogo(c) }).catch(() => undefined)
+    valoresDasSecoes(id).then((v) => { if (ativo) setValores(v) }).catch(() => undefined)
+    return () => { ativo = false }
+  }, [id])
 
   useEffect(() => {
     let ativo = true
@@ -88,6 +100,13 @@ export function PaginaStartup() {
 
   if (!startup) return erro ? <AlertaErro>{erro}</AlertaErro> : <p className="text-muted">Carregando…</p>
   const bloqueado = !podeEditar(startup, 'CADASTRO')
+  const secoesComCampos = [...new Set(catalogo.map((c) => c.secao))]
+  const etapas: [typeof aba, string][] = [
+    ['cadastro', 'Dados cadastrais'],
+    ...secoesComCampos.map((secao): [SecaoDaStartup, string] => [secao, NOMES_DAS_SECOES[secao]]),
+    ['equipe', 'Equipe'],
+  ]
+  const secaoAberta = aba === 'cadastro' || aba === 'equipe' ? null : aba
 
   return (
     <section className="flex flex-col gap-5">
@@ -108,13 +127,28 @@ export function PaginaStartup() {
       {aviso && <p role="status" className="rounded-md bg-ok-soft px-3 py-2 text-sm text-ok">{aviso}</p>}
 
       <nav aria-label="Etapas do cadastro" className="flex flex-wrap gap-2 text-sm">
-        {([['cadastro', 'Dados cadastrais'], ['equipe', 'Equipe']] as const).map(([chave, nome]) => (
+        {etapas.map(([chave, nome]) => (
           <button key={chave} type="button" onClick={() => setAba(chave)} aria-current={aba === chave ? 'step' : undefined}
             className={aba === chave ? 'rounded-md bg-primary px-3 py-1 font-semibold text-on-primary' : 'rounded-md border border-line px-3 py-1'}>
             {nome}
           </button>
         ))}
       </nav>
+
+      {secaoAberta && valores && (
+        <FormularioDaSecao key={secaoAberta} titulo={NOMES_DAS_SECOES[secaoAberta]} inicial={valores}
+          campos={catalogo.filter((c) => c.secao === secaoAberta)} bloqueado={!podeEditar(startup, secaoAberta)}
+          aoSalvar={async (dados) => {
+            try {
+              setValores(await salvarSecao(id, secaoAberta, dados))
+              setErro(null)
+              setAviso(`${NOMES_DAS_SECOES[secaoAberta]}: salvo.`)
+            } catch (e) {
+              setAviso(null)
+              setErro(e instanceof Error ? e.message : 'Não foi possível salvar.')
+            }
+          }} />
+      )}
 
       {aba === 'equipe' && <EquipeDaStartup startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} />}
 
