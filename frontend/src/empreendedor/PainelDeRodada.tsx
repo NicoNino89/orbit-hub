@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { ConducaoDaRodada } from '../rodada/Conducao'
 import { opcoesDaLista } from '../api/organizacoes'
 import {
   acaoNaRodada, criarRodada, editarRodada, encerrarRodada, NOMES_DA_SITUACAO_DA_RODADA, type ResultadoDaRodada, type Rodada,
@@ -94,6 +95,7 @@ export function PainelDeRodada({ startupId, admin, constituida }: { startupId: s
             <ResumoDaRodada rodada={atual} catalogo={catalogo} estagio={nome(estagios, atual.estagio)} instrumento={nome(instrumentos, atual.instrumento)} />
           )}
           {admin && <AcoesDaRodada key={atual.situacao} rodada={atual} agir={agir} />}
+          {atual.situacao !== 'RASCUNHO' && <ConducaoDaRodada rodadaId={atual.id} startupId={startupId} admin={admin} />}
         </div>
       ) : admin ? (
         <div className="flex flex-col gap-2">

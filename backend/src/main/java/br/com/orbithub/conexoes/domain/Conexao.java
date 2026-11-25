@@ -183,6 +183,59 @@ public class Conexao {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Entrar na rodada
+     * Objetivo: Passar a conexão em Match ou em análise direto para em negociação, quando o investidor entra na rodada.
+     * Decisões: Única exceção ao passo a passo do diagrama, prevista no KAN-59. Devolve a situação anterior.
+     */
+    public Situacao entrarNaRodada(Instant agora) {
+        if (situacao != Situacao.MATCH && situacao != Situacao.EM_ANALISE && situacao != Situacao.EM_NEGOCIACAO) {
+            throw new RegraDeNegocioException("transicao_invalida", "A conexão precisa estar em Match, em análise ou em negociação.");
+        }
+        Situacao anterior = situacao;
+        situacao = Situacao.EM_NEGOCIACAO;
+        atualizadaEm = agora;
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-109
+     * Título: Voltar depois da rodada cancelada
+     * Objetivo: Devolver a conexão em negociação à situação de antes da rodada.
+     * Decisões: Só para Match ou em análise.
+     */
+    public Situacao voltarAntesDaRodada(Situacao para, Instant agora) {
+        if (situacao != Situacao.EM_NEGOCIACAO || (para != Situacao.MATCH && para != Situacao.EM_ANALISE)) {
+            throw new RegraDeNegocioException("transicao_invalida", "A conexão não pode voltar para essa situação.");
+        }
+        Situacao anterior = situacao;
+        situacao = para;
+        atualizadaEm = agora;
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Conexão por convite do líder
+     * Objetivo: Criar a conexão já em Match, quando o empreendedor aprova o co-investidor convidado pelo líder.
+     * Decisões: Sem manifestação de interesse; o pedido fica como "nenhum".
+     */
+    public static Conexao porConviteDoLider(UUID startupId, UUID pessoa, UUID organizacao, Instant agora) {
+        Conexao c = nova(startupId, pessoa, organizacao, new Interesse(null, null, Pedido.NENHUM, "Convite do investidor líder da rodada"), agora);
+        c.situacao = Situacao.MATCH;
+        return c;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
      * Hora: 11:25
      * Cartão Jira: KAN-49
      * Título: Encerrar

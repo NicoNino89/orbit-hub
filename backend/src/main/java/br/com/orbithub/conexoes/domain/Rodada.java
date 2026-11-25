@@ -92,6 +92,9 @@ public class Rodada {
     @Column(name = "encerrada_em")
     private Instant encerradaEm;
 
+    @Column(name = "lider_chave", insertable = false, updatable = false)
+    private UUID liderChave;
+
     @Version
     private long versao;
 
@@ -190,11 +193,70 @@ public class Rodada {
         if (situacao == SituacaoDaRodada.RASCUNHO && comResultado == ResultadoDaRodada.CONCLUIDA) {
             throw new RegraDeNegocioException("rodada_nao_aberta", "Uma rodada em rascunho só pode ser cancelada.");
         }
-        SituacaoDaRodada anterior = mudar(EnumSet.of(SituacaoDaRodada.RASCUNHO, SituacaoDaRodada.ABERTA, SituacaoDaRodada.EM_NEGOCIACAO),
-                SituacaoDaRodada.ENCERRADA);
+        SituacaoDaRodada anterior = mudar(EnumSet.of(SituacaoDaRodada.RASCUNHO, SituacaoDaRodada.ABERTA, SituacaoDaRodada.EM_NEGOCIACAO,
+                SituacaoDaRodada.AGUARDANDO_RESULTADO), SituacaoDaRodada.ENCERRADA);
         this.resultado = comResultado;
         this.encerradaEm = agora;
         return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-106
+     * Título: Aguardar resultado
+     * Objetivo: Passar a rodada aberta ou em negociação com o prazo vencido para "aguardando resultado".
+     * Decisões: Usado pela R6; novas entradas ficam bloqueadas.
+     */
+    public SituacaoDaRodada aguardarResultado() {
+        return mudar(EnumSet.of(SituacaoDaRodada.ABERTA, SituacaoDaRodada.EM_NEGOCIACAO), SituacaoDaRodada.AGUARDANDO_RESULTADO);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-109
+     * Título: Prorrogar
+     * Objetivo: Trocar o prazo da rodada e reabrir a que aguardava o resultado.
+     * Decisões: Os limites (quantas vezes e quantos dias) ficam no serviço.
+     */
+    public SituacaoDaRodada prorrogar(LocalDate novoPrazo, Instant agora) {
+        exigir(EnumSet.of(SituacaoDaRodada.ABERTA, SituacaoDaRodada.EM_NEGOCIACAO, SituacaoDaRodada.AGUARDANDO_RESULTADO));
+        SituacaoDaRodada anterior = situacao;
+        if (situacao == SituacaoDaRodada.AGUARDANDO_RESULTADO) {
+            situacao = SituacaoDaRodada.ABERTA;
+        }
+        this.prazo = novoPrazo;
+        this.atualizadaEm = agora;
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Sem líder
+     * Objetivo: Dizer se a rodada ainda não tem investidor líder.
+     * Decisões: O líder é gravado pela condução da rodada (KAN-59); aqui só leitura.
+     */
+    public boolean semLider() {
+        return liderChave == null;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Prazo (leitura)
+     * Objetivo: Expor o prazo.
+     * Decisões: Ver o campo.
+     */
+    public LocalDate getPrazo() {
+        return prazo;
     }
 
     /**

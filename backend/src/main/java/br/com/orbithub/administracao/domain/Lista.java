@@ -31,7 +31,8 @@ public enum Lista {
     EXPERIENCIA_INVESTIDOR("Experiência como investidor", false),
     INTERESSE_ESTRATEGICO("Interesses estratégicos", false),
     MOTIVO_DECISAO_VERIFICACAO("Motivos de decisão da verificação", true),
-    CATEGORIA_DATAROOM("Categorias do Data Room", false);
+    CATEGORIA_DATAROOM("Categorias do Data Room", false),
+    MOTIVO_RECUSA_REUNIAO("Motivos de recusa de reunião", false);
 
     private final String titulo;
     private final boolean comGrupo;

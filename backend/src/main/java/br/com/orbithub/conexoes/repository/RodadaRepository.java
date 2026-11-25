@@ -39,4 +39,15 @@ public interface RodadaRepository extends JpaRepository<Rodada, UUID> {
      * Decisões: No máximo uma.
      */
     Optional<Rodada> findFirstByStartupIdAndSituacaoNot(UUID startupId, SituacaoDaRodada situacao);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-106
+     * Título: Rodadas nas situações
+     * Objetivo: Listar as rodadas nas situações pedidas, para a R6.
+     * Decisões: Sem ordem.
+     */
+    List<Rodada> findBySituacaoIn(java.util.Collection<SituacaoDaRodada> situacoes);
 }

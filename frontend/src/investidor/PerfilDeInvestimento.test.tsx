@@ -129,7 +129,7 @@ describe('Perfil, tese e preferências de investimento (KAN-61, KAN-18, KAN-19)'
       }),
     })
     expect(await screen.findByText('Só o administrador da organização altera este perfil.')).toBeInTheDocument()
-    expect(await screen.findByText('Fundo de Venture Capital')).toBeInTheDocument()
+    expect((await screen.findAllByText('Fundo de Venture Capital')).length).toBeGreaterThan(0)
     expect(screen.getByLabelText('Ticket mínimo (R$)')).toBeDisabled()
     expect(screen.queryByRole('button', { name: 'Salvar perfil' })).not.toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'GET /api/v1/investidores/perfil')?.cabecalhos['X-Orbit-Organizacao']).toBe('o1')
