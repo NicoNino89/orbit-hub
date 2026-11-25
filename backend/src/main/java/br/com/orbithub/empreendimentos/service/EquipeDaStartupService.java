@@ -1,5 +1,6 @@
 package br.com.orbithub.empreendimentos.service;
 
+import br.com.orbithub.compartilhado.convites.TokensDeConvite;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
@@ -18,20 +19,13 @@ import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.identidade.service.ContaProperties;
 import br.com.orbithub.notificacoes.domain.TipoDeNotificacao;
 import br.com.orbithub.notificacoes.service.NotificacoesService;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,8 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class EquipeDaStartupService {
 
-    private static final Pattern EMAIL = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
-    private static final SecureRandom ALEATORIO = new SecureRandom();
 
     private final StartupRepository startups;
     private final MembroDaStartupRepository membros;
@@ -111,7 +103,7 @@ public class EquipeDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:48
+     * Hora: 23:20
      * Cartão Jira: KAN-65
      * Título: Convidar
      * Objetivo: Enviar um convite por e-mail com o papel (e as seções, para colaborador).
@@ -122,7 +114,7 @@ public class EquipeDaStartupService {
     public ConviteDaStartup convidar(UUID eu, UUID startupId, String emailConvidado, PapelNaStartup papel, Set<SecaoDaStartup> secoes) {
         cadastro.exigirAdministrador(eu, startupId);
         String destino = emailConvidado == null ? "" : emailConvidado.strip().toLowerCase(Locale.ROOT);
-        if (!EMAIL.matcher(destino).matches()) {
+        if (!TokensDeConvite.emailValido(destino)) {
             throw new RegraDeNegocioException("email_invalido", "Informe um e-mail válido.");
         }
         conferirSecoes(papel, secoes);
@@ -133,8 +125,8 @@ public class EquipeDaStartupService {
         Instant agora = relogio.instant();
         convites.findByStartupIdAndAceitoEmIsNullAndCanceladoEmIsNullOrderByCriadoEmDesc(startupId).stream()
                 .filter(c -> c.getEmail().equals(destino)).forEach(c -> c.cancelar(agora));
-        String token = novoToken();
-        ConviteDaStartup convite = convites.save(ConviteDaStartup.novo(startupId, destino, papel, secoes, hash(token), eu, agora,
+        String token = TokensDeConvite.novoToken();
+        ConviteDaStartup convite = convites.save(ConviteDaStartup.novo(startupId, destino, papel, secoes, TokensDeConvite.hash(token), eu, agora,
                 agora.plus(parametros.duracao(Chaves.CONVITE_VALIDADE))));
         Startup startup = startup(startupId);
         String quem = contas.nome(eu).orElse("Um fundador");
@@ -336,14 +328,14 @@ public class EquipeDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 22:48
+     * Hora: 23:20
      * Cartão Jira: KAN-65
      * Título: Convite válido
      * Objetivo: Encontrar o convite do token e conferir que ainda pode ser aceito.
      * Decisões: Mensagem única.
      */
     private ConviteDaStartup conviteValido(String token) {
-        return convites.findByTokenHash(hash(token == null ? "" : token)).filter(c -> c.pendente(relogio.instant()))
+        return convites.findByTokenHash(TokensDeConvite.hash(token)).filter(c -> c.pendente(relogio.instant()))
                 .orElseThrow(() -> new RegraDeNegocioException("convite_invalido", "Este convite não vale mais. Peça um novo a um fundador administrador."));
     }
 
@@ -375,38 +367,6 @@ public class EquipeDaStartupService {
             case FUNDADOR -> "fundador";
             case COLABORADOR -> "colaborador";
         };
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 22:48
-     * Cartão Jira: KAN-65
-     * Título: Novo token
-     * Objetivo: Gerar o token do link do convite.
-     * Decisões: 32 bytes em Base64 para URL.
-     */
-    private static String novoToken() {
-        byte[] bytes = new byte[32];
-        ALEATORIO.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    /**
-     * Autor: Nicholas Bruno Pimentel
-     * Data: 24/11/2026
-     * Hora: 22:48
-     * Cartão Jira: KAN-65
-     * Título: Hash do token
-     * Objetivo: Calcular o SHA-256 do token.
-     * Decisões: Hexadecimal minúsculo.
-     */
-    static String hash(String token) {
-        try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(token.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 indisponível", e);
-        }
     }
 
     /**
