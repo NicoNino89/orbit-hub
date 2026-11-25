@@ -12,6 +12,7 @@ import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.domain.VisibilidadeDaStartup;
 import br.com.orbithub.empreendimentos.repository.StartupRepository;
+import br.com.orbithub.empreendimentos.service.BloqueiosDaStartup;
 import br.com.orbithub.empreendimentos.service.IndicadoresDaStartupService;
 import br.com.orbithub.empreendimentos.service.StartupsService;
 import br.com.orbithub.investidores.service.AtuacaoService;
@@ -105,6 +106,7 @@ public class ApresentacaoService {
     private final ListasService listas;
     private final VerificacoesService verificacoes;
     private final AtuacaoService atuacao;
+    private final BloqueiosDaStartup bloqueios;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -117,7 +119,8 @@ public class ApresentacaoService {
      */
     public ApresentacaoService(StartupRepository startups, StartupsService cadastro, IndicadoresDaStartupService indicadores,
                                RodadasService rodadas, ListasService listas, VerificacoesService verificacoes,
-                               AtuacaoService atuacao) {
+                               AtuacaoService atuacao, BloqueiosDaStartup bloqueios) {
+        this.bloqueios = bloqueios;
         this.startups = startups;
         this.cadastro = cadastro;
         this.indicadores = indicadores;
@@ -136,11 +139,13 @@ public class ApresentacaoService {
      * Objetivo: Montar a apresentação de uma startup publicada para quem está navegando no catálogo.
      * Decisões: Só usuários cadastrados chegam aqui (a API exige login). Startup fora do catálogo responde 404. O
      *           investidor é verificado se a pessoa, ou a organização em nome de quem atua, tem o selo (KAN-62).
+     *           Startup que bloqueou quem atua também responde 404, em silêncio (KAN-67, 25/11/2026).
      */
     @Transactional(readOnly = true)
     public Apresentacao doCatalogo(UUID eu, String organizacao, UUID startupId) {
         Startup s = startup(startupId);
-        if (s.getSituacao() != SituacaoDaStartup.PUBLICADA) {
+        AtuacaoService.Atuacao a = atuacao.paraVer(eu, organizacao);
+        if (s.getSituacao() != SituacaoDaStartup.PUBLICADA || bloqueios.bloqueia(startupId, a.pessoa(), a.organizacao())) {
             throw new RecursoNaoEncontradoException("Startup não encontrada.");
         }
         return montar(s, Modo.CATALOGO, investidorVerificado(eu, organizacao));

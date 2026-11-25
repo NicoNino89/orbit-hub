@@ -25,4 +25,15 @@ public interface OrganizacaoRepository extends JpaRepository<Organizacao, UUID> 
      * Decisões: CNPJ normalizado.
      */
     boolean existsByCnpj(String cnpj);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-67
+     * Título: Organização pelo CNPJ
+     * Objetivo: Achar a organização pelo CNPJ (só dígitos).
+     * Decisões: CNPJ é único.
+     */
+    java.util.Optional<br.com.orbithub.investidores.domain.Organizacao> findByCnpj(String cnpj);
 }

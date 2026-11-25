@@ -119,6 +119,9 @@ public class Startup {
     @Column(name = "participa_edicoes", nullable = false)
     private boolean participaEdicoes = true;
 
+    @Column(name = "apenas_verificados", nullable = false)
+    private boolean apenasVerificados = true;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "startup_visibilidade", joinColumns = @JoinColumn(name = "startup_id"))
     @MapKeyColumn(name = "item", length = 60)
@@ -703,6 +706,33 @@ public class Startup {
      */
     public void definirParticipacaoEmEdicoes(boolean participa, Instant agora) {
         this.participaEdicoes = participa;
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-45, KAN-62
+     * Título: Aceita só verificados
+     * Objetivo: Dizer se a startup só aceita manifestações de investidores verificados.
+     * Decisões: Começa ligado (mais seguro perante a CVM); o fundador administrador pode desligar.
+     */
+    public boolean isApenasVerificados() {
+        return apenasVerificados;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-45, KAN-62
+     * Título: Definir só verificados
+     * Objetivo: Trocar a escolha de aceitar só investidores verificados.
+     * Decisões: Vale para manifestações novas.
+     */
+    public void definirApenasVerificados(boolean apenas, Instant agora) {
+        this.apenasVerificados = apenas;
         this.atualizadaEm = agora;
     }
 

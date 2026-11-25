@@ -359,3 +359,93 @@ export function minhasMarcacoes(tipo: TipoDeMarcacao) {
 export function limparHistorico() {
   return requisitar<void>('/api/v1/catalogo/minhas/HISTORICO', { metodo: 'DELETE' })
 }
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 25/11/2026
+ * Hora: 11:25
+ * Cartão Jira: KAN-45, KAN-46, KAN-47, KAN-48, KAN-49, KAN-67
+ * Título: Conexões e bloqueios
+ * Objetivo: Tipar e chamar o interesse, o Match, o ciclo das conexões, os painéis e os bloqueios da startup.
+ * Decisões: Mesmos nomes da API.
+ */
+export type SituacaoDaConexao = 'PENDENTE' | 'RECUSADA' | 'EXPIRADA' | 'RETIRADA' | 'MATCH' | 'EM_ANALISE' | 'EM_NEGOCIACAO' | 'INVESTIU' | 'ENCERRADA'
+export type PedidoDaConexao = 'NENHUM' | 'INFORMACOES' | 'APRESENTACAO'
+
+export const NOMES_DA_SITUACAO_DA_CONEXAO: Record<SituacaoDaConexao, string> = {
+  PENDENTE: 'Pendente', RECUSADA: 'Recusada', EXPIRADA: 'Expirada', RETIRADA: 'Retirada', MATCH: 'Match', EM_ANALISE: 'Em análise',
+  EM_NEGOCIACAO: 'Em negociação', INVESTIU: 'Investiu', ENCERRADA: 'Encerrada',
+}
+
+export const NOMES_DO_PEDIDO: Record<PedidoDaConexao, string> = {
+  NENHUM: 'Só demonstrar interesse', INFORMACOES: 'Pedir informações adicionais', APRESENTACAO: 'Pedir uma apresentação',
+}
+
+export interface ConexaoDoPainel {
+  id: string
+  startupId: string
+  startup: string
+  situacao: SituacaoDaConexao
+  valorPreliminar: number | null
+  condicoes: string | null
+  pedido: PedidoDaConexao
+  mensagem: string | null
+  criadaEm: string
+  atualizadaEm: string
+  aguardaVoce: boolean
+  motivo: string | null
+  investidor: { pessoa: string | null; organizacao: string | null; tipo: string | null; ticketMinimo: number | null;
+    ticketMaximo: number | null; lideranca: string | null; selo: Selo } | null
+  contatos: { nome: string | null; email: string | null }[]
+  feitaPor: string | null
+}
+
+export interface ConexaoParaInvestidor { conexao: ConexaoDoPainel | null; podeManifestar: boolean; impedimento: string | null; precisaVerificar: boolean }
+
+export interface MudancaDaConexao { de: SituacaoDaConexao | null; para: SituacaoDaConexao; por: string | null; lado: string; em: string }
+
+export interface PainelDeBloqueios {
+  ativos: { tipo: 'PESSOA' | 'ORGANIZACAO'; alvoId: string; rotulo: string; em: string }[]
+  historico: { acao: string; tipo: string; rotulo: string; por: string | null; em: string }[]
+  apenasVerificados: boolean
+}
+
+export function conexaoComAStartup(startupId: string) {
+  return requisitar<ConexaoParaInvestidor>(`/api/v1/catalogo/startups/${startupId}/conexao`)
+}
+
+export function demonstrarInteresse(startupId: string, dados: { valor: number | null; condicoes: string; pedido: PedidoDaConexao; mensagem: string }) {
+  return requisitar<{ id: string; situacao: SituacaoDaConexao }>(`/api/v1/catalogo/startups/${startupId}/interesse`, { metodo: 'POST', corpo: dados })
+}
+
+export function minhasConexoes() {
+  return requisitar<ConexaoDoPainel[]>('/api/v1/conexoes')
+}
+
+export function conexoesDaStartup(startupId: string, situacao: SituacaoDaConexao | '') {
+  return requisitar<ConexaoDoPainel[]>(`/api/v1/startups/${startupId}/conexoes${situacao ? `?situacao=${situacao}` : ''}`)
+}
+
+export function agirNaConexao(id: string, acao: 'retirada' | 'aceite' | 'recusa' | 'avanco' | 'encerramento', corpo?: object) {
+  return requisitar<{ id: string; situacao: SituacaoDaConexao }>(`/api/v1/conexoes/${id}/${acao}`, { metodo: 'POST', corpo })
+}
+
+export function historicoDaConexao(id: string) {
+  return requisitar<MudancaDaConexao[]>(`/api/v1/conexoes/${id}/historico`)
+}
+
+export function bloqueiosDaStartup(startupId: string) {
+  return requisitar<PainelDeBloqueios>(`/api/v1/startups/${startupId}/bloqueios`)
+}
+
+export function bloquear(startupId: string, tipo: 'PESSOA' | 'ORGANIZACAO', identificador: string) {
+  return requisitar<unknown>(`/api/v1/startups/${startupId}/bloqueios`, { metodo: 'POST', corpo: { tipo, identificador } })
+}
+
+export function desbloquear(startupId: string, tipo: string, alvoId: string) {
+  return requisitar<void>(`/api/v1/startups/${startupId}/bloqueios/${tipo}/${alvoId}`, { metodo: 'DELETE' })
+}
+
+export function definirApenasVerificados(startupId: string, apenasVerificados: boolean) {
+  return requisitar<{ apenasVerificados: boolean }>(`/api/v1/startups/${startupId}/apenas-verificados`, { metodo: 'PUT', corpo: { apenasVerificados } })
+}

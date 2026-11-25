@@ -12,7 +12,10 @@ import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.repository.StartupRepository;
+import br.com.orbithub.empreendimentos.service.BloqueiosDaStartup;
 import br.com.orbithub.empreendimentos.service.StartupsService;
+import br.com.orbithub.investidores.service.AtuacaoService;
+import java.util.Set;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -41,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Decisões: Só entram startups publicadas que aceitam participar de edições; quem deixa de atender (despublicada,
  *           recusada ou que saiu das edições) some da leitura do investidor sem mexer na composição, e volta se voltar a
  *           atender. Sem fim informado, a vigência dura o período de catalogo.frequencia_edicoes. O bloqueio de
- *           investidor pela startup entra com o Match (S7).
+ *           investidor pela startup esconde a startup dele (KAN-67, 25/11/2026).
  */
 @Service
 public class EdicoesService {
@@ -58,6 +61,8 @@ public class EdicoesService {
     private final LeituraDeParametros parametros;
     private final ConsultaDeContas contas;
     private final Clock relogio;
+    private final BloqueiosDaStartup bloqueios;
+    private final AtuacaoService atuacao;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -71,7 +76,9 @@ public class EdicoesService {
     @SuppressWarnings("java:S107")
     public EdicoesService(EdicaoRepository edicoes, MudancaNaEdicaoRepository historico, StartupRepository startups,
                           ApresentacaoService apresentacao, ArmazenamentoArquivos arquivos, LeituraDeParametros parametros,
-                          ConsultaDeContas contas, Clock relogio) {
+                          ConsultaDeContas contas, Clock relogio, BloqueiosDaStartup bloqueios, AtuacaoService atuacao) {
+        this.bloqueios = bloqueios;
+        this.atuacao = atuacao;
         this.edicoes = edicoes;
         this.historico = historico;
         this.startups = startups;
@@ -286,10 +293,11 @@ public class EdicoesService {
      * Decisões: Edição sem nenhuma startup visível some da lista.
      */
     @Transactional(readOnly = true)
-    public List<EdicaoNoCatalogo> vigentes() {
+    public List<EdicaoNoCatalogo> vigentes(UUID eu, String organizacao) {
+        Set<UUID> bloquearam = bloquearam(eu, organizacao);
         List<EdicaoNoCatalogo> lista = new ArrayList<>();
         for (Edicao e : edicoes.findBySituacaoInOrderByInicioDesc(EnumSet.of(Edicao.Situacao.VIGENTE))) {
-            EdicaoNoCatalogo item = noCatalogo(e);
+            EdicaoNoCatalogo item = noCatalogo(e, bloquearam);
             if (!item.startups().isEmpty()) {
                 lista.add(item);
             }
@@ -307,12 +315,12 @@ public class EdicoesService {
      * Decisões: Fora do ar responde 404.
      */
     @Transactional(readOnly = true)
-    public EdicaoNoCatalogo vigente(UUID id) {
+    public EdicaoNoCatalogo vigente(UUID eu, String organizacao, UUID id) {
         Edicao e = edicao(id);
         if (e.getSituacao() != Edicao.Situacao.VIGENTE) {
             throw new RecursoNaoEncontradoException("Edição não encontrada.");
         }
-        return noCatalogo(e);
+        return noCatalogo(e, bloquearam(eu, organizacao));
     }
 
     /**
@@ -346,12 +354,26 @@ public class EdicoesService {
      * Objetivo: Juntar a edição às startups visíveis.
      * Decisões: Ordem do curador.
      */
-    private EdicaoNoCatalogo noCatalogo(Edicao e) {
+    private EdicaoNoCatalogo noCatalogo(Edicao e, Set<UUID> bloquearam) {
         Map<UUID, Startup> porId = carregar(e.getStartups());
         List<ApresentacaoService.Cartao> visiveis = e.getStartups().stream().map(porId::get)
-                .filter(s -> s != null && elegivel(s)).map(apresentacao::cartao).toList();
+                .filter(s -> s != null && elegivel(s) && !bloquearam.contains(s.getId())).map(apresentacao::cartao).toList();
         return new EdicaoNoCatalogo(e.getId(), e.getTitulo(), e.getDescricao(), e.getCapaChave() != null, e.getInicio(), e.getFim(),
                 visiveis);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-67
+     * Título: Startups que bloquearam
+     * Objetivo: Ler as startups que bloquearam quem está atuando.
+     * Decisões: Pela atuação (pessoa ou organização).
+     */
+    private Set<UUID> bloquearam(UUID eu, String organizacao) {
+        AtuacaoService.Atuacao a = atuacao.paraVer(eu, organizacao);
+        return bloqueios.startupsQueBloquearam(a.pessoa(), a.organizacao());
     }
 
     /**

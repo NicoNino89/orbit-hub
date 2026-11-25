@@ -414,6 +414,20 @@ public class OrganizacoesService {
 
     /**
      * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-67
+     * Título: Organização pelo CNPJ
+     * Objetivo: Devolver o identificador e o nome da organização com o CNPJ, para o bloqueio pela startup.
+     * Decisões: Serviço público; CNPJ só com dígitos.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Map.Entry<UUID, String>> porCnpj(String cnpj) {
+        return organizacoes.findByCnpj(cnpj).map(o -> Map.entry(o.getId(), o.getNome()));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
      * Hora: 17:33
      * Cartão Jira: KAN-83

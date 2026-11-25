@@ -16,6 +16,7 @@ import { PainelDeIndicadores } from './PainelDeIndicadores'
 import { PainelDePublicacao } from './PainelDePublicacao'
 import { PainelDeRodada } from './PainelDeRodada'
 import { PainelDeVisibilidade } from './PainelDeVisibilidade'
+import { ConexoesDaStartup } from '../conexoes/Conexoes'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -72,7 +73,7 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
-  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | 'rodada' | 'visibilidade' | SecaoDaStartup>('cadastro')
+  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | 'rodada' | 'visibilidade' | 'conexoes' | SecaoDaStartup>('cadastro')
   const [progresso, setProgresso] = useState<ProgressoDaStartup | null>(null)
   const [revisoes, setRevisoes] = useState<RevisaoParaEquipe[]>([])
   const [versao, setVersao] = useState(0)
@@ -127,8 +128,9 @@ export function PaginaStartup() {
     ['rodada', 'Rodada'],
     ['visibilidade', 'Visibilidade'],
     ['publicacao', 'Publicação'],
+    ['conexoes', 'Conexões'],
   ]
-  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' || aba === 'rodada' || aba === 'visibilidade' ? null : aba
+  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' || aba === 'rodada' || aba === 'visibilidade' || aba === 'conexoes' ? null : aba
   const devolvida = revisoes[0]?.situacao === 'DEVOLVIDA' ? revisoes[0] : null
   const apontamentoDaSecao = (secao: string) => devolvida?.apontamentos.find((a) => a.tipo === 'SECAO' && a.codigo === secao)
   const completa = (chave: typeof aba) => progresso?.secoes.find((s) => (chave === 'cadastro' ? s.secao === 'CADASTRO' : s.secao === chave))?.completa ?? false
@@ -175,6 +177,8 @@ export function PaginaStartup() {
         <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso} revisoes={revisoes}
           aoMudar={() => { recarregar(); lerStartup(id).then(setStartup).catch(() => undefined) }} />
       )}
+
+      {aba === 'conexoes' && <ConexoesDaStartup startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} />}
 
       {aba === 'visibilidade' && <PainelDeVisibilidade startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} />}
 

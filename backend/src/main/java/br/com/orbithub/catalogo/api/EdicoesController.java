@@ -240,8 +240,9 @@ class EdicoesController {
      */
     @GetMapping("/api/v1/catalogo/edicoes")
     @Operation(summary = "Edições temáticas vigentes")
-    List<EdicoesService.EdicaoNoCatalogo> vigentes() {
-        return edicoes.vigentes();
+    List<EdicoesService.EdicaoNoCatalogo> vigentes(@AuthenticationPrincipal Jwt token,
+                                                   @org.springframework.web.bind.annotation.RequestHeader(name = br.com.orbithub.investidores.service.AtuacaoService.CABECALHO, required = false) String organizacao) {
+        return edicoes.vigentes(Autenticado.id(token), organizacao);
     }
 
     /**
@@ -255,8 +256,9 @@ class EdicoesController {
      */
     @GetMapping("/api/v1/catalogo/edicoes/{id}")
     @Operation(summary = "Edição temática vigente")
-    EdicoesService.EdicaoNoCatalogo vigente(@PathVariable UUID id) {
-        return edicoes.vigente(id);
+    EdicoesService.EdicaoNoCatalogo vigente(@PathVariable UUID id, @AuthenticationPrincipal Jwt token,
+                                            @org.springframework.web.bind.annotation.RequestHeader(name = br.com.orbithub.investidores.service.AtuacaoService.CABECALHO, required = false) String organizacao) {
+        return edicoes.vigente(Autenticado.id(token), organizacao, id);
     }
 
     /**

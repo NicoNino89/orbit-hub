@@ -367,6 +367,37 @@ public class StartupsService {
 
     /**
      * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-45, KAN-48
+     * Título: Ler startup
+     * Objetivo: Devolver a startup para os outros módulos (conexões), sem conferir a equipe.
+     * Decisões: 404 se não existir; quem chama decide o que pode ver.
+     */
+    @Transactional(readOnly = true)
+    public Startup ler(UUID startupId) {
+        return startup(startupId);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:25
+     * Cartão Jira: KAN-45, KAN-48
+     * Título: Fundadores da startup
+     * Objetivo: Listar as contas dos membros ativos com papel de fundador (ou só os administradores).
+     * Decisões: Para avisos e contatos das conexões; colaboradores ficam de fora.
+     */
+    @Transactional(readOnly = true)
+    public List<UUID> fundadores(UUID startupId, boolean soAdministradores) {
+        return membros.findByStartupIdAndSaiuEmIsNullOrderByEntrouEm(startupId).stream()
+                .filter(m -> m.getPapel() == PapelNaStartup.FUNDADOR_ADMINISTRADOR
+                        || (!soAdministradores && m.getPapel() == PapelNaStartup.FUNDADOR))
+                .map(MembroDaStartup::getUsuarioId).toList();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
      * Hora: 22:33
      * Cartão Jira: KAN-21

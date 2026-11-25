@@ -5,6 +5,8 @@ import {
   logotipoNoCatalogo, marcacoesDaStartup,
 } from '../api/catalogo'
 import { requisitar } from '../api/cliente'
+import { PainelDeInteresse } from '../conexoes/Conexoes'
+import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
 import { ApresentacaoEmPaginas } from './ApresentacaoEmPaginas'
@@ -24,6 +26,7 @@ export function PaginaStartupNoCatalogo() {
   const [apresentacao, setApresentacao] = useState<Apresentacao | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const logotipo = useCallback(() => logotipoNoCatalogo(id), [id])
+  const { papelAtivo: papel } = useSessao()
   const [marcas, setMarcas] = useState<{ favorito: boolean; descartada: boolean } | null>(null)
   const lerMarcas = useCallback(() => { marcacoesDaStartup(id).then(setMarcas).catch(() => undefined) }, [id])
   useEffect(() => { lerMarcas() }, [lerMarcas])
@@ -50,6 +53,7 @@ export function PaginaStartupNoCatalogo() {
           </button>
         </div>
       )}
+      {papel === 'INVESTIDOR' && <PainelDeInteresse startupId={id} />}
       {!apresentacao.comoVerificado && (
         <p className="rounded-md bg-surface-2 px-3 py-2 text-sm text-muted">
           Verifique sua identidade para ver os dados das rodadas abertas.

@@ -33,6 +33,15 @@ final class CriteriosDoMvp {
     @Component
     @Order(1)
     static class Segmento implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             return c.perfil().segmentos().contains(c.segmento())
@@ -52,11 +61,29 @@ final class CriteriosDoMvp {
     @Component
     @Order(2)
     static class EstagioDaRodada implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: daRodada
+         * Objetivo: Implementar daRodada da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public boolean daRodada() {
             return true;
         }
 
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             String estagio = c.rodada().estagio();
@@ -77,6 +104,15 @@ final class CriteriosDoMvp {
     @Component
     @Order(3)
     static class Maturidade implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             return c.maturidade() != null && c.perfil().maturidades() != null && c.perfil().maturidades().contains(c.maturidade())
@@ -96,11 +132,29 @@ final class CriteriosDoMvp {
     @Component
     @Order(4)
     static class Ticket implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: daRodada
+         * Objetivo: Implementar daRodada da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public boolean daRodada() {
             return true;
         }
 
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             var teto = c.rodada().valorMaximo() != null ? c.rodada().valorMaximo() : c.rodada().valorAlvo();
@@ -122,6 +176,15 @@ final class CriteriosDoMvp {
     @Component
     @Order(5)
     static class Localizacao implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             return c.localizacao() != null && c.perfil().localizacoes().contains(c.localizacao())
@@ -141,6 +204,15 @@ final class CriteriosDoMvp {
     @Component
     @Order(6)
     static class ModeloDeNegocio implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             PerfilDeInvestimento.Complementares comp = c.perfil().complementares();
@@ -161,11 +233,29 @@ final class CriteriosDoMvp {
     @Component
     @Order(7)
     static class Instrumento implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: daRodada
+         * Objetivo: Implementar daRodada da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public boolean daRodada() {
             return true;
         }
 
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             String instrumento = c.rodada().instrumento();
@@ -187,11 +277,29 @@ final class CriteriosDoMvp {
     @Component
     @Order(8)
     static class Lideranca implements CriterioDeCompatibilidade {
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: daRodada
+         * Objetivo: Implementar daRodada da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public boolean daRodada() {
             return true;
         }
 
+        /**
+         * Autor: Nicholas Bruno Pimentel
+         * Data: 25/11/2026
+         * Hora: 11:25
+         * Cartão Jira: KAN-39
+         * Título: avaliar
+         * Objetivo: Implementar avaliar da estratégia ou rotina.
+         * Decisões: Ver a classe.
+         */
         @Override
         public Optional<String> avaliar(Contexto c) {
             PerfilDeInvestimento.Lideranca l = c.perfil().lideranca();
