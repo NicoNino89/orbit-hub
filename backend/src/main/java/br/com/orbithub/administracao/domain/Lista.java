@@ -30,7 +30,8 @@ public enum Lista {
     PERFIL_RISCO("Perfis de risco", false),
     EXPERIENCIA_INVESTIDOR("Experiência como investidor", false),
     INTERESSE_ESTRATEGICO("Interesses estratégicos", false),
-    MOTIVO_DECISAO_VERIFICACAO("Motivos de decisão da verificação", true);
+    MOTIVO_DECISAO_VERIFICACAO("Motivos de decisão da verificação", true),
+    CATEGORIA_DATAROOM("Categorias do Data Room", false);
 
     private final String titulo;
     private final boolean comGrupo;

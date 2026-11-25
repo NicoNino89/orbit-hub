@@ -2,6 +2,8 @@ package br.com.orbithub.empreendimentos.service;
 
 import br.com.orbithub.compartilhado.documentos.Cnpj;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
+import br.com.orbithub.empreendimentos.domain.InvestidorBloqueado;
+import org.springframework.context.ApplicationEventPublisher;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.investidores.service.OrganizacoesService;
 import java.sql.Timestamp;
@@ -39,6 +41,7 @@ public class BloqueiosDaStartup {
     private final ConsultaDeContas contas;
     private final OrganizacoesService organizacoes;
     private final Clock relogio;
+    private final ApplicationEventPublisher eventos;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -50,7 +53,8 @@ public class BloqueiosDaStartup {
      * Decisões: Injeção por construtor.
      */
     public BloqueiosDaStartup(JdbcTemplate jdbc, StartupsService cadastro, ConsultaDeContas contas, OrganizacoesService organizacoes,
-                              Clock relogio) {
+                              Clock relogio, ApplicationEventPublisher eventos) {
+        this.eventos = eventos;
         this.jdbc = jdbc;
         this.cadastro = cadastro;
         this.contas = contas;
@@ -65,7 +69,8 @@ public class BloqueiosDaStartup {
      * Cartão Jira: KAN-67
      * Título: Bloquear
      * Objetivo: Bloquear uma pessoa pelo e-mail ou uma organização pelo CNPJ.
-     * Decisões: Só o fundador administrador. Recusa quem não existe. Idempotente.
+     * Decisões: Só o fundador administrador. Recusa quem não existe. Idempotente. Avisa os outros módulos, para o Nível 2
+     *           terminar na hora (KAN-30, 25/11/2026).
      */
     @Transactional
     public Bloqueio bloquear(UUID eu, UUID startupId, String tipo, String identificador) {
@@ -76,6 +81,7 @@ public class BloqueiosDaStartup {
                 + "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", startupId, alvo.tipo(), alvo.id(), alvo.rotulo(), eu, Timestamp.from(agora));
         if (novos > 0) {
             historico(startupId, "BLOQUEIO", alvo, eu, agora);
+            eventos.publishEvent(new InvestidorBloqueado(startupId, alvo.tipo(), alvo.id()));
         }
         return new Bloqueio(alvo.tipo(), alvo.id(), alvo.rotulo(), agora);
     }

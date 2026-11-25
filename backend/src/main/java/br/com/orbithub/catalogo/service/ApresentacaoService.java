@@ -54,9 +54,10 @@ public class ApresentacaoService {
      * Cartão Jira: KAN-29
      * Título: Modo da apresentação
      * Objetivo: Dizer para quem a apresentação é montada.
-     * Decisões: Ver o objetivo da classe.
+     * Decisões: Ver o objetivo da classe. NIVEL2 (KAN-32, 25/11/2026): só o que é confidencial, com o cap table e os
+     *           termos específicos do instrumento, para o investidor com acesso liberado.
      */
-    public enum Modo { CATALOGO, PREVIA, COMPLETA }
+    public enum Modo { CATALOGO, PREVIA, COMPLETA, NIVEL2 }
 
     static final String AVISO_INDICADORES = "Declarado pelo empreendedor, não auditado pela plataforma.";
     static final String SEM_RODADA = "Sem rodada aberta no momento.";
@@ -183,6 +184,20 @@ public class ApresentacaoService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-32
+     * Título: Informações confidenciais
+     * Objetivo: Montar o Nível 2 da startup: os campos confidenciais, a participação dos fundadores e os termos da rodada.
+     * Decisões: Quem chama (Data Room) já conferiu o acesso liberado.
+     */
+    @Transactional(readOnly = true)
+    public Apresentacao confidencial(UUID startupId) {
+        return montar(startup(startupId), Modo.NIVEL2, true);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
      * Hora: 11:03
      * Cartão Jira: KAN-36
      * Título: Cartão da startup
@@ -255,9 +270,10 @@ public class ApresentacaoService {
     private void itensDo(String codigo, Startup s, Modo modo, boolean verificado, Map<String, Boolean> vis,
                          Map<CampoDaStartup, String> campos, String estagio, List<Item> itens, List<String> avisos) {
         boolean completa = modo == Modo.COMPLETA;
+        boolean nivel2 = modo == Modo.NIVEL2;
         switch (codigo) {
             case INDICADORES -> {
-                if (!completa && !publico(VisibilidadeDaStartup.Extra.INDICADORES.name(), vis)) {
+                if (!completa && publico(VisibilidadeDaStartup.Extra.INDICADORES.name(), vis) == nivel2) {
                     return;
                 }
                 int antes = itens.size();
@@ -268,11 +284,19 @@ public class ApresentacaoService {
                     avisos.add(AVISO_INDICADORES);
                 }
             }
-            case RODADA -> rodada(s, completa || publico(VisibilidadeDaStartup.Extra.DADOS_DA_RODADA.name(), vis), completa || verificado,
-                    itens, avisos);
+            case RODADA -> {
+                if (nivel2) {
+                    termosDaRodada(s, itens);
+                } else {
+                    rodada(s, completa || publico(VisibilidadeDaStartup.Extra.DADOS_DA_RODADA.name(), vis), completa || verificado, itens, avisos);
+                }
+            }
             case FUNDADORES -> {
-                if (completa || publico(VisibilidadeDaStartup.Extra.FUNDADORES.name(), vis)) {
-                    for (Fundador f : s.cadastro().fundadores()) {
+                for (Fundador f : s.cadastro().fundadores()) {
+                    if (nivel2 || completa) {
+                        itens.add(new Item("Fundador", f.nome() + (f.cargo() == null ? "" : " · " + f.cargo())
+                                + (f.participacao() == null ? "" : " · " + numero(f.participacao()) + "% do capital")));
+                    } else if (publico(VisibilidadeDaStartup.Extra.FUNDADORES.name(), vis)) {
                         itens.add(new Item("Fundador", f.nome() + (f.cargo() == null ? "" : " · " + f.cargo())));
                     }
                 }
@@ -280,7 +304,7 @@ public class ApresentacaoService {
             default -> {
                 CampoDaStartup campo = CampoDaStartup.valueOf(codigo);
                 String valor = campo == CampoDaStartup.ESTAGIO ? estagio : campos.get(campo);
-                if (valor != null && (completa || publico(codigo, vis))) {
+                if (valor != null && (completa || publico(codigo, vis) != nivel2)) {
                     itens.add(new Item(campo.getRotulo(), formatar(campo, valor)));
                 }
             }
@@ -320,6 +344,23 @@ public class ApresentacaoService {
         valor(itens, "Valor alvo", t.valorAlvo());
         valor(itens, "Valor mínimo", t.valorMinimo());
         valor(itens, "Valor máximo", t.valorMaximo());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-32
+     * Título: Termos da rodada no Nível 2
+     * Objetivo: Mostrar o valor alvo e os termos específicos do instrumento (valuation, desconto, teto) da rodada aberta.
+     * Decisões: Só para quem tem o Nível 2 liberado.
+     */
+    private void termosDaRodada(Startup s, List<Item> itens) {
+        rodadas.rodadaAberta(s.getId()).ifPresent(r -> {
+            Rodada.Termos t = r.termos();
+            valor(itens, "Valor alvo", t.valorAlvo());
+            t.especificos().forEach((termo, v) -> itens.add(new Item(termo.getRotulo(), v)));
+        });
     }
 
     /**

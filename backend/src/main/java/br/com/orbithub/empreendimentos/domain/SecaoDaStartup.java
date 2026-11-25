@@ -7,7 +7,8 @@ package br.com.orbithub.empreendimentos.domain;
  * Cartão Jira: KAN-65
  * Título: Seções do cadastro da startup
  * Objetivo: Enumerar as partes do cadastro, para autorizar o colaborador a editar só algumas.
- * Decisões: Na ordem das etapas do editor. Cada história do cadastro (KAN-22 a KAN-26) preenche a sua seção.
+ * Decisões: Na ordem das etapas do editor. Cada história do cadastro (KAN-22 a KAN-26) preenche a sua seção. DATA_ROOM
+ *           (KAN-145, 25/11/2026) autoriza o colaborador a enviar documentos confidenciais.
  */
 public enum SecaoDaStartup {
     CADASTRO("Dados cadastrais"),
@@ -19,7 +20,8 @@ public enum SecaoDaStartup {
     EQUIPE_E_ESTRUTURA("Equipe e estrutura"),
     PLANEJAMENTO("Planejamento"),
     NECESSIDADE_DE_INVESTIMENTO("Necessidade de investimento"),
-    MATURIDADE("Estágio do negócio");
+    MATURIDADE("Estágio do negócio"),
+    DATA_ROOM("Data Room");
 
     private final String rotulo;
 

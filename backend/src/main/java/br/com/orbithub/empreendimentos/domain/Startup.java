@@ -122,6 +122,10 @@ public class Startup {
     @Column(name = "apenas_verificados", nullable = false)
     private boolean apenasVerificados = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "regra_confidencialidade", nullable = false, length = 20)
+    private RegraDeConfidencialidade regraConfidencialidade = RegraDeConfidencialidade.TERMO_PLATAFORMA;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "startup_visibilidade", joinColumns = @JoinColumn(name = "startup_id"))
     @MapKeyColumn(name = "item", length = 60)
@@ -712,11 +716,38 @@ public class Startup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 11:25
+     * Hora: 12:04
+     * Cartão Jira: KAN-63
+     * Título: Regra de confidencialidade
+     * Objetivo: Dizer se o Nível 2 exige só o termo da plataforma ou o NDA bilateral.
+     * Decisões: Começa no termo da plataforma.
+     */
+    public RegraDeConfidencialidade getRegraConfidencialidade() {
+        return regraConfidencialidade;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-63
+     * Título: Definir regra de confidencialidade
+     * Objetivo: Trocar a regra de liberação do Nível 2.
+     * Decisões: Vale para as próximas liberações.
+     */
+    public void definirRegraConfidencialidade(RegraDeConfidencialidade regra, Instant agora) {
+        this.regraConfidencialidade = regra;
+        this.atualizadaEm = agora;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 11:15
      * Cartão Jira: KAN-45, KAN-62
-     * Título: Aceita só verificados
-     * Objetivo: Dizer se a startup só aceita manifestações de investidores verificados.
-     * Decisões: Começa ligado (mais seguro perante a CVM); o fundador administrador pode desligar.
+     * Título: Aceita só verificados (leitura)
+     * Objetivo: Ler a preferência.
+     * Decisões: Ver o campo.
      */
     public boolean isApenasVerificados() {
         return apenasVerificados;

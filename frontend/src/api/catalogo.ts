@@ -449,3 +449,112 @@ export function desbloquear(startupId: string, tipo: string, alvoId: string) {
 export function definirApenasVerificados(startupId: string, apenasVerificados: boolean) {
   return requisitar<{ apenasVerificados: boolean }>(`/api/v1/startups/${startupId}/apenas-verificados`, { metodo: 'PUT', corpo: { apenasVerificados } })
 }
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 25/11/2026
+ * Hora: 12:04
+ * Cartão Jira: KAN-30, KAN-31, KAN-32, KAN-33, KAN-63, KAN-145
+ * Título: Nível 2 e Data Room
+ * Objetivo: Tipar e chamar o Data Room, a regra de confidencialidade, as liberações, o histórico, a visão do investidor,
+ *           os links temporários e o NDA.
+ * Decisões: Envios por multipart; arquivos como Blob.
+ */
+export type RegraDeConfidencialidade = 'TERMO_PLATAFORMA' | 'NDA_BILATERAL'
+
+export interface DocumentoDoDataRoom {
+  id: string; categoria: string; categoriaRotulo: string; nome: string; descricao: string | null; tipo: string; tamanho: number
+  versao: number; atual: boolean; enviadoPor: string | null; enviadoEm: string
+}
+
+export interface AcessoNivel2 { id: string; conexaoId: string; liberadoEm: string; validoAte: string }
+
+export interface PainelNivel2 {
+  regra: RegraDeConfidencialidade
+  ndaEnviado: boolean
+  validadePadraoDias: number
+  conexoes: { conexaoId: string; investidor: string; situacao: SituacaoDaConexao; verificado: boolean; termoAceito: boolean;
+    ndaInvestidor: boolean; ndaStartup: boolean; falta: string | null; acesso: AcessoNivel2 | null }[]
+}
+
+export interface EventoDeAcesso { tipo: string; investidor: string | null; por: string | null; detalhe: string | null; em: string; documento: string | null }
+
+export interface Nivel2ParaInvestidor {
+  temAcesso: boolean; validoAte: string | null; regra: RegraDeConfidencialidade; termoAceito: boolean; conexaoId: string | null
+  ndaDisponivel: boolean; ndaConfirmado: boolean
+}
+
+export interface ConteudoNivel2 {
+  informacoes: Apresentacao
+  documentos: { id: string; categoria: string; nome: string; descricao: string | null; tipo: string; tamanho: number; versao: number; enviadoEm: string }[]
+  validoAte: string
+}
+
+export function documentosDoDataRoom(startupId: string) {
+  return requisitar<DocumentoDoDataRoom[]>(`/api/v1/startups/${startupId}/dataroom`)
+}
+
+export function enviarAoDataRoom(startupId: string, arquivo: File, categoria: string, nome: string, descricao: string) {
+  const f = new FormData()
+  f.append('arquivo', arquivo)
+  f.append('categoria', categoria)
+  f.append('nome', nome)
+  if (descricao) f.append('descricao', descricao)
+  return requisitar<DocumentoDoDataRoom>(`/api/v1/startups/${startupId}/dataroom`, { metodo: 'POST', formulario: f })
+}
+
+export function substituirNoDataRoom(startupId: string, documentoId: string, arquivo: File) {
+  const f = new FormData()
+  f.append('arquivo', arquivo)
+  return requisitar<DocumentoDoDataRoom>(`/api/v1/startups/${startupId}/dataroom/${documentoId}/substituicao`, { metodo: 'POST', formulario: f })
+}
+
+export function removerDoDataRoom(startupId: string, documentoId: string) {
+  return requisitar<void>(`/api/v1/startups/${startupId}/dataroom/${documentoId}`, { metodo: 'DELETE' })
+}
+
+export function painelNivel2(startupId: string) {
+  return requisitar<PainelNivel2>(`/api/v1/startups/${startupId}/nivel2`)
+}
+
+export function definirRegraDeConfidencialidade(startupId: string, regra: RegraDeConfidencialidade) {
+  return requisitar<{ regra: RegraDeConfidencialidade }>(`/api/v1/startups/${startupId}/nivel2/regra`, { metodo: 'PUT', corpo: { regra } })
+}
+
+export function liberarNivel2(startupId: string, conexaoId: string, dias: number | null) {
+  return requisitar<AcessoNivel2>(`/api/v1/startups/${startupId}/nivel2/acessos`, { metodo: 'POST', corpo: { conexaoId, dias } })
+}
+
+export function renovarNivel2(startupId: string, acessoId: string, dias: number | null) {
+  return requisitar<AcessoNivel2>(`/api/v1/startups/${startupId}/nivel2/acessos/${acessoId}/renovacao`, { metodo: 'POST', corpo: { dias } })
+}
+
+export function revogarNivel2(startupId: string, acessoId: string) {
+  return requisitar<void>(`/api/v1/startups/${startupId}/nivel2/acessos/${acessoId}/revogacao`, { metodo: 'POST' })
+}
+
+export function historicoNivel2(startupId: string) {
+  return requisitar<EventoDeAcesso[]>(`/api/v1/startups/${startupId}/nivel2/historico`)
+}
+
+export function confirmarNda(conexaoId: string) {
+  return requisitar<void>(`/api/v1/conexoes/${conexaoId}/nda`, { metodo: 'POST' })
+}
+
+export function situacaoNivel2(startupId: string) {
+  return requisitar<Nivel2ParaInvestidor>(`/api/v1/catalogo/startups/${startupId}/nivel2/situacao`)
+}
+
+export function conteudoNivel2(startupId: string) {
+  return requisitar<ConteudoNivel2>(`/api/v1/catalogo/startups/${startupId}/nivel2`)
+}
+
+export async function baixarDocumento(startupId: string, documentoId: string) {
+  const link = await requisitar<{ token: string; expiraEm: string }>(`/api/v1/catalogo/startups/${startupId}/nivel2/documentos/${documentoId}/link`,
+    { metodo: 'POST' })
+  return requisitar<Blob>(`/api/v1/dataroom/links/${link.token}`, { comoArquivo: true })
+}
+
+export function baixarNda(startupId: string) {
+  return requisitar<Blob>(`/api/v1/catalogo/startups/${startupId}/nda`, { comoArquivo: true })
+}

@@ -68,7 +68,7 @@ class ListasIT {
      * Cartão Jira: KAN-83
      * Título: Ciclo de um item
      * Objetivo: Conferir inclusão, renomeação, desativação, reativação, histórico e o que os formulários veem.
-     * Decisões: Lista de segmentos. São 18 listas desde os motivos de decisão da verificação (KAN-83).
+     * Decisões: Lista de segmentos. São 19 listas desde as categorias do Data Room (KAN-145).
      */
     @Test
     void incluiRenomeiaDesativaEReativa() throws Exception {
@@ -82,7 +82,7 @@ class ListasIT {
                 .andExpect(jsonPath("$[-1].codigo").value("OUTROS"));
         mvc.perform(get("/api/v1/admin/listas").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(18))
+                .andExpect(jsonPath("$.length()").value(19))
                 .andExpect(jsonPath("$[?(@.lista == 'LOCALIZACAO')].ativos").value(28));
 
         mvc.perform(post("/api/v1/admin/listas/SEGMENTO").header(HttpHeaders.AUTHORIZATION, bearer)

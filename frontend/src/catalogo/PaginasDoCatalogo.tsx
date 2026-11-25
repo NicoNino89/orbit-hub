@@ -6,6 +6,7 @@ import {
 } from '../api/catalogo'
 import { requisitar } from '../api/cliente'
 import { PainelDeInteresse } from '../conexoes/Conexoes'
+import { AreaConfidencial } from '../dataroom/Nivel2'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
@@ -60,6 +61,7 @@ export function PaginaStartupNoCatalogo() {
         </p>
       )}
       <ApresentacaoEmPaginas apresentacao={apresentacao} carregarLogotipo={logotipo} />
+      {papel === 'INVESTIDOR' && <AreaConfidencial startupId={id} />}
     </section>
   )
 }

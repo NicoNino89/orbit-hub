@@ -6,6 +6,8 @@ import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.conexoes.domain.Conexao;
+import br.com.orbithub.conexoes.domain.ConexaoFinalizada;
+import org.springframework.context.ApplicationEventPublisher;
 import br.com.orbithub.conexoes.repository.ConexaoRepository;
 import br.com.orbithub.empreendimentos.domain.PapelNaStartup;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
@@ -75,6 +77,7 @@ public class ConexoesService {
     private final LeituraDeParametros parametros;
     private final JdbcTemplate jdbc;
     private final Clock relogio;
+    private final ApplicationEventPublisher eventos;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -89,7 +92,8 @@ public class ConexoesService {
     public ConexoesService(ConexaoRepository conexoes, StartupsService startups, BloqueiosDaStartup bloqueios, AtuacaoService atuacao,
                            VerificacoesService verificacoes, PerfilDeInvestimentoService perfis, OrganizacoesService organizacoes,
                            ConsultaDeContas contas, ListasService listas, NotificacoesService notificacoes,
-                           LeituraDeParametros parametros, JdbcTemplate jdbc, Clock relogio) {
+                           LeituraDeParametros parametros, JdbcTemplate jdbc, Clock relogio, ApplicationEventPublisher eventos) {
+        this.eventos = eventos;
         this.conexoes = conexoes;
         this.startups = startups;
         this.bloqueios = bloqueios;
@@ -324,6 +328,61 @@ public class ConexoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-30
+     * Título: Ler conexão
+     * Objetivo: Devolver a conexão para outros módulos (Nível 2), sem conferir quem chama.
+     * Decisões: 404 se não existir.
+     */
+    @Transactional(readOnly = true)
+    public Conexao ler(UUID conexaoId) {
+        return conexao(conexaoId);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-30
+     * Título: Conexões abertas da startup
+     * Objetivo: Listar as conexões da startup em Match, em análise ou em negociação, que podem receber o Nível 2.
+     * Decisões: Sem conferir quem chama; o Data Room confere.
+     */
+    @Transactional(readOnly = true)
+    public List<Conexao> abertasDaStartup(UUID startupId) {
+        return conexoes.findByStartupIdOrderByAtualizadaEmDesc(startupId).stream()
+                .filter(c -> COM_CONTATO.contains(c.getSituacao()) && c.getSituacao() != Conexao.Situacao.INVESTIU).toList();
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-30
+     * Título: Nome do investidor da conexão
+     * Objetivo: Escrever o investidor da conexão para outros módulos.
+     * Decisões: "Organização (por Pessoa)" ou a pessoa.
+     */
+    public String investidor(Conexao c) {
+        return nomeDoInvestidor(c);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 12:04
+     * Cartão Jira: KAN-30
+     * Título: Investidor verificado da conexão
+     * Objetivo: Dizer se o investidor da conexão tem o selo.
+     * Decisões: Para o empreendedor ver antes de liberar.
+     */
+    public boolean investidorVerificado(Conexao c) {
+        return verificado(c.getPessoaId(), c.getOrganizacaoId());
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
      * Hora: 11:25
      * Cartão Jira: KAN-105
      * Título: Expirar pela rotina
@@ -451,11 +510,15 @@ public class ConexoesService {
      * Cartão Jira: KAN-49
      * Título: Gravar histórico
      * Objetivo: Registrar a mudança de situação.
-     * Decisões: Autor nulo para a rotina.
+     * Decisões: Autor nulo para a rotina. Estado final avisa os outros módulos (ConexaoFinalizada), para o Nível 2
+     *           terminar na hora (KAN-30, 25/11/2026).
      */
     private void historico(Conexao c, Conexao.Situacao de, UUID por, Conexao.Lado lado) {
         jdbc.update("INSERT INTO conexao_historico (id, conexao_id, de, para, por, lado, em) VALUES (?, ?, ?, ?, ?, ?, ?)", UUID.randomUUID(),
                 c.getId(), de == null ? null : de.name(), c.getSituacao().name(), por, lado.name(), Timestamp.from(relogio.instant()));
+        if (c.getSituacao().finalizada()) {
+            eventos.publishEvent(new ConexaoFinalizada(c.getId()));
+        }
     }
 
     /**
