@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FORMATO_DATA_HORA } from '../admin/datas'
+import { RecorrerDaDecisao } from '../ajuda/Ajuda'
 import {
   cancelarEnvio, despublicar, enviarParaPublicacao, historicoDeSituacoes, type MudancaDeSituacao, type ProgressoDaStartup,
 } from '../api/publicacao'
@@ -15,7 +16,7 @@ const EXPLICACAO: Record<SituacaoDaStartup, string> = {
   PUBLICADA: 'A startup está no catálogo. Alterações relevantes passam por nova revisão.',
   DEVOLVIDA: 'A curadoria pediu ajustes. Faça as correções e envie de novo.',
   DESPUBLICADA: 'A startup saiu do catálogo. Conexões e rodadas em andamento continuam visíveis para as partes. Envie de novo para voltar.',
-  RECUSADA: 'A curadoria recusou a startup por indício de fraude, com segunda aprovação. Fale com o atendimento se discordar.',
+  RECUSADA: 'A curadoria recusou a startup por indício de fraude, com segunda aprovação. Se discordar, você pode recorrer uma vez.',
 }
 
 /**
@@ -119,6 +120,9 @@ export function PainelDePublicacao({ startupId, admin, progresso, revisoes = [],
         </div>
       ) : <p className="text-sm text-muted">Só o fundador administrador envia para publicação ou despublica.</p>}
 
+      {admin && situacao === 'RECUSADA' && revisoes[0]?.situacao === 'RECUSADA' && (
+        <RecorrerDaDecisao origemTipo="CURADORIA" origemId={revisoes[0].id} />
+      )}
       <RevisoesDaCuradoria revisoes={revisoes} />
 
       {historico.length > 0 && (

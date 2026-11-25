@@ -1,5 +1,6 @@
 package br.com.orbithub.identidade.service;
 
+import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
 import br.com.orbithub.compartilhado.parametros.Chaves;
 import br.com.orbithub.compartilhado.parametros.LeituraDeParametros;
 import br.com.orbithub.identidade.domain.BloqueioDeLogin;
@@ -111,6 +112,12 @@ public class LoginService {
         Usuario conta = usuario.get();
         if (conta.getStatus() == StatusUsuario.PENDENTE_CONFIRMACAO) {
             throw new ContaPendenteException();
+        }
+        if (conta.suspensaEm(agora)) {
+            throw new RegraDeNegocioException("conta_suspensa", Usuario.BANIDA.equals(conta.getSuspensaAte())
+                    ? "Sua conta foi banida da plataforma. Você pode recorrer pela central de ajuda."
+                    : "Sua conta está suspensa até " + java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(java.time.ZoneId.of("America/Sao_Paulo")).format(conta.getSuspensaAte())
+                    + ". Você pode recorrer pela central de ajuda.");
         }
         if (conta.isInterna()) {
             return new ResultadoLogin(null, segundoFator.emitir(conta));

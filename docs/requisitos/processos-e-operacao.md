@@ -486,10 +486,11 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R17 – Envio dos avisos por e-mail | A cada minuto | Envia os e-mails da central de notificações e tenta de novo os que falharam (1, 5, 15, 60 minutos, depois de 6 em 6 horas), até desistir (KAN-146) | `notificacoes.max_tentativas_email` |
 | R18 – Resumo diário dos avisos | Diária, às 7h | Junta num único e-mail os avisos de quem escolheu o resumo; avisos obrigatórios não entram (KAN-146) | — |
 | R19 – Limpeza das notificações | Diária, às 3h30 | Apaga as notificações mais antigas que a retenção (KAN-146) | `notificacoes.retencao_dias` |
+| R20 – Chamados parados | Diária, às 4h | Fecha os chamados que esperam o usuário ou foram resolvidos há mais que o prazo (KAN-89) | `suporte.prazo_aguardando_dias` |
 
 O mecanismo comum (agendamento no horário de Brasília, trava entre instâncias, registro de cada execução, pausa, execução manual e alertas de falha e de atraso) está em `compartilhado.rotinas` (KAN-104). Em produção, as rotinas só rodam com a API ligada: com escala a zero, nenhuma réplica fica no ar para disparar o horário.
 
-A central de notificações (KAN-146) é o único caminho de aviso para as pessoas: os módulos chamam `NotificacoesService.notificar`, na mesma transação do evento, e o serviço grava o aviso no sino e/ou põe o e-mail na fila conforme a preferência da pessoa. O envio é feito pela R17, então a ação nunca espera nem falha por causa do e-mail. Avisos obrigatórios (segurança da conta, termos atualizados, prazos que encerram conexão e avisos à equipe) chegam sempre pelos dois canais, na hora. As rotinas dos serviços e do conhecimento (fase futura) continuam a numeração a partir da R20.
+A central de notificações (KAN-146) é o único caminho de aviso para as pessoas: os módulos chamam `NotificacoesService.notificar`, na mesma transação do evento, e o serviço grava o aviso no sino e/ou põe o e-mail na fila conforme a preferência da pessoa. O envio é feito pela R17, então a ação nunca espera nem falha por causa do e-mail. Avisos obrigatórios (segurança da conta, termos atualizados, prazos que encerram conexão e avisos à equipe) chegam sempre pelos dois canais, na hora. As rotinas dos serviços e do conhecimento (fase futura) continuam a numeração a partir da R21.
 
 ---
 

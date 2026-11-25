@@ -12,6 +12,7 @@ import br.com.orbithub.conexoes.domain.Conexao;
 import br.com.orbithub.conexoes.domain.ConexaoFinalizada;
 import br.com.orbithub.conexoes.service.ConexoesService;
 import br.com.orbithub.empreendimentos.domain.InvestidorBloqueado;
+import br.com.orbithub.identidade.domain.ContaSuspensa;
 import br.com.orbithub.empreendimentos.domain.PapelNaStartup;
 import br.com.orbithub.empreendimentos.domain.RegraDeConfidencialidade;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
@@ -434,6 +435,21 @@ public class AcessosNivel2Service {
         jdbc.query("SELECT a.id FROM acesso_nivel2 a JOIN conexao c ON c.id = a.conexao_id WHERE a.startup_id = ? AND a.encerrado_em IS NULL "
                         + "AND (a.investidor_chave = ? OR (? = 'PESSOA' AND c.pessoa_id = ?))", (rs, i) -> rs.getObject(1, UUID.class),
                 evento.startupId(), evento.alvoId(), evento.alvoTipo(), evento.alvoId()).forEach(id -> encerrar(acesso(id), "BLOQUEIO", null));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101, KAN-102
+     * Título: Ao suspender a conta
+     * Objetivo: Encerrar todos os acessos ao Nível 2 da pessoa, em todas as startups.
+     * Decisões: Vale para a suspensão, o banimento e a medida preventiva de violação de confidencialidade (KAN-102).
+     */
+    @EventListener
+    public void aoSuspenderConta(ContaSuspensa evento) {
+        jdbc.queryForList("SELECT a.id FROM acesso_nivel2 a JOIN conexao c ON c.id = a.conexao_id WHERE a.encerrado_em IS NULL AND c.pessoa_id = ?",
+                UUID.class, evento.usuarioId()).forEach(id -> encerrar(acesso(id), "MODERACAO", null));
     }
 
     /**

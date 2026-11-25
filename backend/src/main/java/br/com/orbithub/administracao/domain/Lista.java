@@ -21,7 +21,7 @@ public enum Lista {
     MODELO_NEGOCIO("Modelos de negócio", false),
     MOTIVO_ENCERRAMENTO("Motivos de encerramento de conexão", false),
     MOTIVO_RECUSA("Motivos de recusa de interesse", false),
-    CATEGORIA_DENUNCIA("Categorias de denúncia", false),
+    CATEGORIA_DENUNCIA("Categorias de denúncia", true),
     CATEGORIA_CHAMADO("Categorias de chamado", false),
     DOCUMENTO_VERIFICACAO("Documentos de verificação por tipo de usuário", true),
     CHECKLIST_CURADORIA("Itens do checklist de curadoria", false),
@@ -32,7 +32,8 @@ public enum Lista {
     INTERESSE_ESTRATEGICO("Interesses estratégicos", false),
     MOTIVO_DECISAO_VERIFICACAO("Motivos de decisão da verificação", true),
     CATEGORIA_DATAROOM("Categorias do Data Room", false),
-    MOTIVO_RECUSA_REUNIAO("Motivos de recusa de reunião", false);
+    MOTIVO_RECUSA_REUNIAO("Motivos de recusa de reunião", false),
+    MOTIVO_DECISAO_MODERACAO("Motivos de decisão da moderação", true);
 
     private final String titulo;
     private final boolean comGrupo;

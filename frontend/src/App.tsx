@@ -13,6 +13,9 @@ import { PaginaVinculos } from './admin/PaginaVinculos'
 import { PaginaCatalogo, PaginaMinhasDoCatalogo } from './catalogo/PaginaCatalogo'
 import { PaginaConexoes } from './conexoes/Conexoes'
 import { PaginaAgenda } from './agenda/Agenda'
+import { PaginaAjuda, PaginaChamado, PaginaConfirmarChamado, PaginaMeusPedidos } from './ajuda/Ajuda'
+import { PaginaAtendimento, PaginaChamadoDaEquipe } from './admin/PaginaAtendimento'
+import { PaginaCasoDeModeracao, PaginaFilaDeModeracao, PaginaRecursos } from './admin/PaginaModeracao'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -72,6 +75,8 @@ export function Rotas() {
         <Route path="/equipe/convite" element={<PaginaConviteEquipe />} />
         <Route path="/termos" element={<PaginaTermos />} />
         <Route path="/termos/:endereco" element={<PaginaTermos />} />
+        <Route path="/ajuda" element={<PaginaAjuda />} />
+        <Route path="/ajuda/confirmar" element={<PaginaConfirmarChamado />} />
         <Route element={<RotaProtegida />}>
           <Route element={<AreaLogada />}>
             <Route path="/painel" element={<Painel />} />
@@ -81,6 +86,11 @@ export function Rotas() {
             <Route path="/startups/convite" element={<PaginaConviteStartup />} />
             <Route path="/catalogo" element={<PaginaCatalogo />} />
             <Route path="/agenda" element={<PaginaAgenda />} />
+            <Route path="/ajuda/chamados" element={<PaginaMeusPedidos />} />
+            <Route path="/ajuda/chamados/:id" element={<PaginaChamado />} />
+            <Route path="/ajuda/denuncias" element={<PaginaMeusPedidos />} />
+            <Route path="/ajuda/sancoes" element={<PaginaMeusPedidos />} />
+            <Route path="/ajuda/recursos" element={<PaginaMeusPedidos />} />
             <Route path="/catalogo/minhas" element={<PaginaMinhasDoCatalogo />} />
             <Route path="/catalogo/edicoes" element={<PaginaEdicoesDoCatalogo />} />
             <Route path="/catalogo/edicoes/:id" element={<PaginaEdicaoDoCatalogo />} />
@@ -119,6 +129,17 @@ export function Rotas() {
                   <Route path="curadoria/:id" element={<PaginaRevisaoDaCuradoria />} />
                   <Route path="edicoes" element={<PaginaEdicoes />} />
                   <Route path="edicoes/:id" element={<PaginaEdicao />} />
+                </Route>
+                <Route element={<RotaInterna papeis={['ADMIN', 'MODERADOR', 'JURIDICO']} />}>
+                  <Route path="moderacao" element={<PaginaFilaDeModeracao />} />
+                  <Route path="moderacao/:id" element={<PaginaCasoDeModeracao />} />
+                </Route>
+                <Route element={<RotaInterna papeis={['ADMIN', 'MODERADOR', 'CURADOR', 'ANALISTA_VERIFICACAO']} />}>
+                  <Route path="recursos" element={<PaginaRecursos />} />
+                </Route>
+                <Route element={<RotaInterna papeis={['ADMIN', 'SUPORTE_N1', 'SUPORTE_N2', 'MODERADOR', 'ENCARREGADO_DADOS', 'JURIDICO']} />}>
+                  <Route path="atendimento" element={<PaginaAtendimento />} />
+                  <Route path="atendimento/:id" element={<PaginaChamadoDaEquipe />} />
                 </Route>
                 <Route element={<RotaInterna papeis={['ADMIN', 'ENCARREGADO_DADOS']} />}>
                   <Route path="auditoria" element={<PaginaAuditoria />} />

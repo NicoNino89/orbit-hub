@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { Denunciar } from '../ajuda/Denunciar'
 import {
   type Apresentacao, apresentacaoNoCatalogo, type CartaoDeStartup, descartar, edicaoVigente, type EdicaoNoCatalogo, edicoesVigentes, favoritar,
   logotipoNoCatalogo, marcacoesDaStartup,
@@ -64,6 +65,7 @@ export function PaginaStartupNoCatalogo() {
       <ApresentacaoEmPaginas apresentacao={apresentacao} carregarLogotipo={logotipo} />
       {papel === 'INVESTIDOR' && <RodadaDoInvestidor startupId={id} />}
       {papel === 'INVESTIDOR' && <AreaConfidencial startupId={id} />}
+      <Denunciar objetoTipo="STARTUP" objetoId={id} rotulo="Denunciar esta startup" />
     </section>
   )
 }

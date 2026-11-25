@@ -46,20 +46,20 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableConfigurationProperties(SegurancaProperties.class)
 public class SegurancaConfig {
 
-    /** Envios abertos sem login: cadastro e confirmação (KAN-12), recuperação de senha (KAN-14) e novo e-mail (KAN-16). */
+    /** Envios abertos sem login: cadastro e confirmação (KAN-12), recuperação de senha (KAN-14), novo e-mail (KAN-16) e chamado sem conta (KAN-89). */
     static final String[] ROTAS_PUBLICAS_ENVIO = {
         "/api/v1/contas", "/api/v1/contas/confirmacao", "/api/v1/contas/confirmacao/reenvio",
         "/api/v1/contas/senha/esqueci", "/api/v1/contas/senha/redefinir", "/api/v1/contas/email/confirmacao",
-        "/api/v1/equipe/convite"
+        "/api/v1/equipe/convite", "/api/v1/ajuda/chamados-publicos", "/api/v1/ajuda/chamados-publicos/confirmacao"
     };
 
     /** Papéis que abrem o backoffice (/api/v1/admin/**): todos os papéis internos (KAN-75). */
     static final String[] PAPEIS_DA_EQUIPE = Arrays.stream(Papel.values())
             .filter(Papel::interno).map(Enum::name).toArray(String[]::new);
 
-    /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92) e opções das listas (KAN-79). */
+    /** Rotas só de leitura abertas sem login: termos e políticas (KAN-92), opções das listas (KAN-79) e central de ajuda (KAN-88, KAN-89). */
     static final String[] ROTAS_PUBLICAS_LEITURA = {"/api/v1/documentos-legais/**", "/api/v1/documentos-legais",
-        "/api/v1/listas/**"};
+        "/api/v1/listas/**", "/api/v1/ajuda/artigos", "/api/v1/ajuda/servicos"};
 
     /** Rotas abertas sem login: saúde, métricas, contrato da API e autenticação. */
     static final String[] ROTAS_PUBLICAS = {

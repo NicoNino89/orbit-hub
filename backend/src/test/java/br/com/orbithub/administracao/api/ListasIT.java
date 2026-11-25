@@ -82,7 +82,7 @@ class ListasIT {
                 .andExpect(jsonPath("$[-1].codigo").value("OUTROS"));
         mvc.perform(get("/api/v1/admin/listas").header(HttpHeaders.AUTHORIZATION, bearer))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(20))
+                .andExpect(jsonPath("$.length()").value(21))
                 .andExpect(jsonPath("$[?(@.lista == 'LOCALIZACAO')].ativos").value(28));
 
         mvc.perform(post("/api/v1/admin/listas/SEGMENTO").header(HttpHeaders.AUTHORIZATION, bearer)

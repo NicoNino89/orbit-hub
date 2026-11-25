@@ -47,6 +47,7 @@ export function AreaLogada() {
             )}
             {papelAtivo === 'INVESTIDOR' && <SeletorDeAtuacao usuario={estado.usuario.id} />}
             {daEquipe && <Link to="/admin" className="font-semibold text-primary underline-offset-2 hover:underline">Backoffice</Link>}
+            <Link to="/ajuda/chamados" className="text-muted underline-offset-2 hover:underline">Ajuda</Link>
             <Sino />
             <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
             <button type="button" onClick={() => void sair()} className="rounded-md border border-line px-3 py-1 font-semibold">

@@ -25,6 +25,8 @@ public enum TipoDeNotificacao {
     REUNIAO_LEMBRETE("Reuniões", "Lembrete de reunião", false, Canal.AMBOS),
     REUNIAO_ALTERADA("Reuniões", "Reunião alterada ou cancelada", false, Canal.AMBOS),
     VERIFICACAO_RESULTADO("Análises", "Resultado da verificação", false, Canal.AMBOS),
+    MODERACAO("Moderação", "Denúncias, decisões da moderação e recursos", true, Canal.AMBOS),
+    ATENDIMENTO("Atendimento", "Respostas aos seus chamados", false, Canal.AMBOS),
     CURADORIA_RESULTADO("Análises", "Resultado da curadoria", false, Canal.AMBOS),
     NOVA_OPORTUNIDADE("Oportunidades", "Nova startup compatível com a sua tese", false, Canal.PLATAFORMA),
     RODADA_AVISO("Oportunidades", "Avisos de rodada", false, Canal.PLATAFORMA),

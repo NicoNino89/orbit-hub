@@ -11,6 +11,7 @@ import br.com.orbithub.conexoes.service.ConducaoDaRodadaService;
 import br.com.orbithub.conexoes.service.ConexoesService;
 import br.com.orbithub.empreendimentos.domain.InvestidorBloqueado;
 import br.com.orbithub.empreendimentos.service.StartupsService;
+import br.com.orbithub.identidade.domain.ContaSuspensa;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.service.ConsultaDeContas;
 import br.com.orbithub.investidores.service.AtuacaoService;
@@ -481,6 +482,24 @@ public class AgendaService {
         cancelarFuturas(jdbc.queryForList("SELECT r.id FROM reuniao r JOIN conexao c ON c.id = r.conexao_id WHERE c.startup_id = ? AND "
                 + "r.situacao IN ('PROPOSTA', 'CONFIRMADA') AND (c.investidor_chave = ? OR c.pessoa_id = ?)", UUID.class, evento.startupId(),
                 evento.alvoId(), evento.alvoId()), "A reunião foi cancelada.");
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 16:19
+     * Cartão Jira: KAN-101
+     * Título: Ao suspender a conta
+     * Objetivo: Cancelar as reuniões futuras de que a pessoa participa.
+     * Decisões: A medida só do Nível 2 não cancela reuniões. O aviso não diz o motivo.
+     */
+    @EventListener
+    public void aoSuspenderConta(ContaSuspensa evento) {
+        if (evento.apenasNivel2()) {
+            return;
+        }
+        cancelarFuturas(jdbc.queryForList("SELECT DISTINCT r.id FROM reuniao r JOIN reuniao_participante p ON p.reuniao_id = r.id "
+                + "WHERE p.usuario_id = ? AND r.situacao IN ('PROPOSTA', 'CONFIRMADA')", UUID.class, evento.usuarioId()), "A reunião foi cancelada.");
     }
 
     /**
