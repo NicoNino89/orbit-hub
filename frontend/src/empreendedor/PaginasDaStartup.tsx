@@ -13,6 +13,7 @@ import { FormularioCadastral } from './FormularioCadastral'
 import { FormularioDaSecao } from './FormularioDaSecao'
 import { PainelDeIndicadores } from './PainelDeIndicadores'
 import { PainelDePublicacao } from './PainelDePublicacao'
+import { PainelDeRodada } from './PainelDeRodada'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -52,14 +53,14 @@ export function PaginaNovaStartup() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 23:40
- * Cartão Jira: KAN-27
+ * Hora: 23:51
+ * Cartão Jira: KAN-59
  * Título: Editor da startup
  * Objetivo: Mostrar a startup com a situação, o selo de empresa não constituída, o logotipo e a etapa dos dados
  *           cadastrais.
  * Decisões: Navegação por etapas: dados cadastrais, as seções que o catálogo do servidor descreve (KAN-22 em diante),
- *           a equipe (KAN-65) e a publicação, com a barra de progresso dos obrigatórios e a marca nas etapas completas
- *           (KAN-27).
+ *           a equipe (KAN-65), a rodada (KAN-59) e a publicação, com a barra de progresso dos obrigatórios e a marca nas
+ *           etapas completas (KAN-27).
  *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele.
  */
 export function PaginaStartup() {
@@ -68,7 +69,7 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
-  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | SecaoDaStartup>('cadastro')
+  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | 'rodada' | SecaoDaStartup>('cadastro')
   const [progresso, setProgresso] = useState<ProgressoDaStartup | null>(null)
   const [versao, setVersao] = useState(0)
   const recarregar = () => setVersao((v) => v + 1)
@@ -118,9 +119,10 @@ export function PaginaStartup() {
     ['cadastro', 'Dados cadastrais'],
     ...secoesComCampos.map((secao): [SecaoDaStartup, string] => [secao, NOMES_DAS_SECOES[secao]]),
     ['equipe', 'Equipe'],
+    ['rodada', 'Rodada'],
     ['publicacao', 'Publicação'],
   ]
-  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' ? null : aba
+  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' || aba === 'rodada' ? null : aba
   const completa = (chave: typeof aba) => progresso?.secoes.find((s) => (chave === 'cadastro' ? s.secao === 'CADASTRO' : s.secao === chave))?.completa ?? false
 
   return (
@@ -158,6 +160,8 @@ export function PaginaStartup() {
           </button>
         ))}
       </nav>
+
+      {aba === 'rodada' && <PainelDeRodada startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} constituida={startup.constituida} />}
 
       {aba === 'publicacao' && progresso && (
         <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso}
