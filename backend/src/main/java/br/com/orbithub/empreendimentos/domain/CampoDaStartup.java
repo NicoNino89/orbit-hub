@@ -58,7 +58,18 @@ public enum CampoDaStartup {
     RECEITAS_RECORRENTES(SecaoDaStartup.MODELO_DE_NEGOCIO, "Receitas recorrentes", Tipo.TEXTO, 1000, null,
             "Assinaturas, contratos ou compras repetidas, se houver."),
     ESTRUTURA_CUSTOS(SecaoDaStartup.MODELO_DE_NEGOCIO, "Estrutura de custos", Tipo.TEXTO, 1000, null, null),
-    CANAIS_DISTRIBUICAO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Canais de distribuição", Tipo.TEXTO, 1000, null, null);
+    CANAIS_DISTRIBUICAO(SecaoDaStartup.MODELO_DE_NEGOCIO, "Canais de distribuição", Tipo.TEXTO, 1000, null, null),
+
+    OUTROS_INDICADORES(SecaoDaStartup.TRACAO, "Outros indicadores de desempenho", Tipo.TEXTO, 1000, null,
+            "Métricas próprias do negócio (CAC, LTV, ticket médio...), com o mês de referência."),
+
+    EXPERIENCIA(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Experiência dos fundadores", Tipo.TEXTO, 2000, null,
+            "Os fundadores e a participação de cada um ficam nos dados cadastrais; aqui, a trajetória."),
+    FORMACAO(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Formação", Tipo.TEXTO, 1000, null, null),
+    COMPOSICAO_EQUIPE(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Composição da equipe", Tipo.TEXTO, 1000, null,
+            "Quantas pessoas, em quais áreas, dedicação integral ou parcial."),
+    ESTRUTURA_OPERACIONAL(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Estrutura operacional", Tipo.TEXTO, 1000, null, null),
+    PARCEIROS_ESTRATEGICOS(SecaoDaStartup.EQUIPE_E_ESTRUTURA, "Parceiros estratégicos", Tipo.TEXTO, 1000, null, null);
 
     /**
      * Autor: Nicholas Bruno Pimentel

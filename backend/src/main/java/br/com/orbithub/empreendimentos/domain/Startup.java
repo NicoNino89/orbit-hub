@@ -14,6 +14,7 @@ import jakarta.persistence.MapKeyEnumerated;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -87,6 +88,9 @@ public class Startup {
     @MapKeyColumn(name = "campo", length = 60)
     @Column(name = "valor", nullable = false, columnDefinition = "TEXT")
     private Map<CampoDaStartup, String> campos = new EnumMap<>(CampoDaStartup.class);
+
+    @Column(name = "lembrete_indicadores_em")
+    private Instant lembreteIndicadoresEm;
 
     @Column(name = "criada_por", nullable = false)
     private UUID criadaPor;
@@ -333,6 +337,32 @@ public class Startup {
      */
     public Instant getAtualizadaEm() {
         return atualizadaEm;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:11
+     * Cartão Jira: KAN-24
+     * Título: Lembrar dos indicadores
+     * Objetivo: Dizer se a R8 deve avisar a equipe dos indicadores desatualizados agora.
+     * Decisões: Avisa de novo só depois do intervalo informado, para não repetir todo dia.
+     */
+    public boolean deveLembrarIndicadores(Instant agora, Duration intervalo) {
+        return lembreteIndicadoresEm == null || !lembreteIndicadoresEm.plus(intervalo).isAfter(agora);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:11
+     * Cartão Jira: KAN-24
+     * Título: Registrar lembrete
+     * Objetivo: Guardar quando a equipe foi lembrada dos indicadores.
+     * Decisões: Não muda a data de atualização da startup.
+     */
+    public void registrarLembreteDeIndicadores(Instant agora) {
+        this.lembreteIndicadoresEm = agora;
     }
 
     /**

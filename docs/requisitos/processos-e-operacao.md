@@ -474,7 +474,7 @@ Toda rotina deve ser **idempotente** (rodar duas vezes não causa efeito duplica
 | R5 – Lembretes de reunião | A cada 15 minutos | Envia lembretes e expira propostas sem resposta | `reuniao.lembretes` |
 | R6 – Rodadas vencidas | Diária | Passa rodadas vencidas para "aguardando resultado" e cobra o registro | `rodada.prazo_registro_resultado_dias` |
 | R7 – Confirmação de participação | Diária | Cobra confirmações e marca as não confirmadas no prazo | `rodada.prazo_confirmacao_dias` |
-| R8 – Qualidade das startups | Diária | Marca indicadores desatualizados e trata startups inativas | `startup.*` |
+| R8 – Qualidade das startups | Diária, às 6h15 | Lembra a equipe dos indicadores de tração desatualizados, no máximo uma vez a cada 30 dias (KAN-24); a parte das startups inativas chega com a publicação (KAN-27) | `startup.indicador_desatualizado_meses`, `startup.inatividade_meses` |
 | R9 – Revalidação de verificação | Diária, às 6h | Encerra pedidos sem complemento no prazo, avisa antes do vencimento, vence verificações e apaga os documentos depois da guarda (KAN-83) | `verificacao.validade_meses`, `verificacao.aviso_revalidacao_dias`, `verificacao.prazo_complemento_dias`, `verificacao.retencao_documentos_meses` |
 | R10 – Edições do catálogo | Diária | Publica e arquiva edições conforme a vigência | — |
 | R11 – Contas inativas | Semanal | Avisa e desativa contas inativas; alerta organizações sem administrador | `conta.inatividade_meses` |

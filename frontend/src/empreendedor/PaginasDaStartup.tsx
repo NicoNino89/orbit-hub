@@ -10,6 +10,7 @@ import { CLASSE_LINK } from '../ui/estilos'
 import { EquipeDaStartup } from './EquipeDaStartup'
 import { FormularioCadastral } from './FormularioCadastral'
 import { FormularioDaSecao } from './FormularioDaSecao'
+import { PainelDeIndicadores } from './PainelDeIndicadores'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -134,6 +135,8 @@ export function PaginaStartup() {
           </button>
         ))}
       </nav>
+
+      {secaoAberta === 'TRACAO' && <PainelDeIndicadores startupId={id} podeEditar={podeEditar(startup, 'TRACAO')} />}
 
       {secaoAberta && valores && (
         <FormularioDaSecao key={secaoAberta} titulo={NOMES_DAS_SECOES[secaoAberta]} inicial={valores}
