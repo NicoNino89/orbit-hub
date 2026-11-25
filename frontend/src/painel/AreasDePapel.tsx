@@ -109,6 +109,7 @@ export function AreaInvestidor() {
               <p className="text-muted">
                 A tese de investimento está cadastrada. <Link to="/investidor/perfil" className={CLASSE_LINK}>Editar o perfil</Link>
                 {' · '}<Link to="/catalogo" className={CLASSE_LINK}>Abrir o catálogo</Link>
+                {' · '}<Link to="/conexoes" className={CLASSE_LINK}>Minhas conexões</Link>
               </p>
               {perfil && <ResumoDoPerfil perfil={perfil} />}
             </>

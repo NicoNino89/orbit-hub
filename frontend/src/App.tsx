@@ -11,6 +11,7 @@ import { PaginaRotinas } from './admin/PaginaRotinas'
 import { PaginaFilaDeVerificacao, PaginaPedidoDeVerificacao } from './admin/PaginaVerificacaoAdmin'
 import { PaginaVinculos } from './admin/PaginaVinculos'
 import { PaginaCatalogo, PaginaMinhasDoCatalogo } from './catalogo/PaginaCatalogo'
+import { PaginaConexoes } from './conexoes/Conexoes'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -84,6 +85,7 @@ export function Rotas() {
             <Route path="/catalogo/startups/:id" element={<PaginaStartupNoCatalogo />} />
             <Route element={<RotaDePapel papel="INVESTIDOR" />}>
               <Route path="/investidor" element={<AreaInvestidor />} />
+              <Route path="/conexoes" element={<PaginaConexoes />} />
               <Route path="/investidor/onboarding" element={<PaginaPerfilDeInvestimento onboarding />} />
               <Route path="/investidor/perfil" element={<PaginaPerfilDeInvestimento />} />
               <Route path="/investidor/verificacao" element={<PaginaVerificacao />} />

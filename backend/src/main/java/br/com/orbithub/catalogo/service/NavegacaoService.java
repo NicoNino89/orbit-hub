@@ -10,6 +10,7 @@ import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
 import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.repository.StartupRepository;
+import br.com.orbithub.empreendimentos.service.BloqueiosDaStartup;
 import br.com.orbithub.investidores.domain.PerfilDeInvestimento;
 import br.com.orbithub.investidores.service.AtuacaoService;
 import br.com.orbithub.investidores.service.PerfilDeInvestimentoService;
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  *           recente e pelo identificador (determinística); sem perfil, só pela data. Descartadas saem da seleção
  *           personalizada. Novas oportunidades: publicadas nos últimos catalogo.novas_dias, da mais recente. Filtros de
  *           rodada (estágio, instrumento, faixa) e critérios da rodada só valem para investidor verificado. Nunca há
- *           percentual. O bloqueio pela startup (KAN-67) entra com o Match (S7).
+ *           percentual. Startups que bloquearam quem atua nunca aparecem (KAN-67, 25/11/2026).
  */
 @Service
 public class NavegacaoService {
@@ -52,6 +53,7 @@ public class NavegacaoService {
     private final PerfilDeInvestimentoService perfis;
     private final AtuacaoService atuacao;
     private final MarcacoesDoInvestidor marcacoes;
+    private final BloqueiosDaStartup bloqueios;
     private final List<CriterioDeCompatibilidade> criterios;
     private final LeituraDeParametros parametros;
     private final Clock relogio;
@@ -68,7 +70,9 @@ public class NavegacaoService {
     @SuppressWarnings("java:S107")
     public NavegacaoService(StartupRepository startups, ApresentacaoService apresentacao, RodadasService rodadas, ListasService listas,
                             PerfilDeInvestimentoService perfis, AtuacaoService atuacao, MarcacoesDoInvestidor marcacoes,
-                            List<CriterioDeCompatibilidade> criterios, LeituraDeParametros parametros, Clock relogio) {
+                            List<CriterioDeCompatibilidade> criterios, LeituraDeParametros parametros, Clock relogio,
+                            BloqueiosDaStartup bloqueios) {
+        this.bloqueios = bloqueios;
         this.startups = startups;
         this.apresentacao = apresentacao;
         this.rodadas = rodadas;
@@ -96,11 +100,13 @@ public class NavegacaoService {
         Optional<PerfilDeInvestimento.Dados> perfil = perfil(eu, organizacao);
         Set<UUID> descartadas = marcacoes.ids(eu, MarcacoesDoInvestidor.Tipo.DESCARTADAS);
         Set<UUID> favoritas = marcacoes.ids(eu, MarcacoesDoInvestidor.Tipo.FAVORITOS);
+        AtuacaoService.Atuacao quem = atuacao.paraVer(eu, organizacao);
+        Set<UUID> bloquearam = bloqueios.startupsQueBloquearam(quem.pessoa(), quem.organizacao());
         Instant desde = relogio.instant().minus(Duration.ofDays(parametros.inteiro(NOVAS)));
         Filtros f = verificado ? filtros : filtros.semRodada();
         List<Item> itens = new ArrayList<>();
         for (Startup s : startups.findBySituacaoOrderByNomeAprovadoAsc(SituacaoDaStartup.PUBLICADA)) {
-            if (lista == ListaDoCatalogo.PERSONALIZADA && descartadas.contains(s.getId())) {
+            if (bloquearam.contains(s.getId()) || (lista == ListaDoCatalogo.PERSONALIZADA && descartadas.contains(s.getId()))) {
                 continue;
             }
             if (lista == ListaDoCatalogo.NOVAS && (s.getPublicadaEm() == null || s.getPublicadaEm().isBefore(desde))) {
