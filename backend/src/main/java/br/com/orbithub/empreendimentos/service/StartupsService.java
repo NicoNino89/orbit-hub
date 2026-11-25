@@ -12,6 +12,7 @@ import br.com.orbithub.empreendimentos.domain.MembroDaStartup;
 import br.com.orbithub.empreendimentos.domain.PapelNaStartup;
 import br.com.orbithub.empreendimentos.domain.RedeSocial;
 import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
+import br.com.orbithub.empreendimentos.domain.SituacaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
 import br.com.orbithub.empreendimentos.domain.Startup.Cadastro;
 import br.com.orbithub.empreendimentos.repository.MembroDaStartupRepository;
@@ -57,6 +58,7 @@ public class StartupsService {
     private final ArmazenamentoArquivos arquivos;
     private final LeituraDeParametros parametros;
     private final Clock relogio;
+    private final RevisoesDaStartup revisoes;
 
     /**
      * Autor: Nicholas Bruno Pimentel
@@ -64,11 +66,13 @@ public class StartupsService {
      * Hora: 22:33
      * Cartão Jira: KAN-21
      * Título: Criação do serviço
-     * Objetivo: Receber repositórios, listas, armazenamento, parâmetros e relógio.
-     * Decisões: Injeção por construtor.
+     * Objetivo: Receber repositórios, listas, armazenamento, parâmetros, relógio e as revisões da curadoria.
+     * Decisões: Injeção por construtor. As revisões entram no KAN-66 (25/11/2026), para a edição abrir a revisão da alteração.
      */
     public StartupsService(StartupRepository startups, MembroDaStartupRepository membros, ListasService listas,
-                           ArmazenamentoArquivos arquivos, LeituraDeParametros parametros, Clock relogio) {
+                           ArmazenamentoArquivos arquivos, LeituraDeParametros parametros, Clock relogio,
+                           RevisoesDaStartup revisoes) {
+        this.revisoes = revisoes;
         this.startups = startups;
         this.membros = membros;
         this.listas = listas;
@@ -140,6 +144,7 @@ public class StartupsService {
         exigirEditor(eu, startupId, SecaoDaStartup.CADASTRO);
         Startup startup = startup(startupId);
         startup.atualizarCadastro(conferir(pedido, startupId), relogio.instant());
+        revisoes.conferirAlteracao(startup, eu);
         return startup;
     }
 
@@ -183,7 +188,51 @@ public class StartupsService {
     @Transactional(readOnly = true)
     public Logotipo lerLogotipo(UUID eu, UUID startupId) {
         papel(eu, startupId);
+        return logotipo(startup(startupId));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-36
+     * Título: Logotipo no catálogo
+     * Objetivo: Ler o logotipo de uma startup publicada, para qualquer usuário cadastrado.
+     * Decisões: Startup fora do catálogo responde 404.
+     */
+    @Transactional(readOnly = true)
+    public Logotipo lerLogotipoPublicado(UUID startupId) {
         Startup startup = startup(startupId);
+        if (startup.getSituacao() != SituacaoDaStartup.PUBLICADA) {
+            throw new RecursoNaoEncontradoException("Startup não encontrada.");
+        }
+        return logotipo(startup);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-84
+     * Título: Logotipo para a equipe interna
+     * Objetivo: Ler o logotipo de qualquer startup, para a curadoria conferir.
+     * Decisões: A rota é do backoffice; aqui não há conferência de equipe.
+     */
+    @Transactional(readOnly = true)
+    public Logotipo lerLogotipoParaEquipeInterna(UUID startupId) {
+        return logotipo(startup(startupId));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-21
+     * Título: Abrir logotipo
+     * Objetivo: Abrir o arquivo do logotipo da startup.
+     * Decisões: 404 quando não há logotipo.
+     */
+    private Logotipo logotipo(Startup startup) {
         if (startup.getLogotipoChave() == null) {
             throw new RecursoNaoEncontradoException("A startup ainda não tem logotipo.");
         }
@@ -325,7 +374,7 @@ public class StartupsService {
      * Objetivo: Reconhecer PNG, JPEG e WebP pelos primeiros bytes.
      * Decisões: Não confia na extensão.
      */
-    static Optional<String> formatoDaImagem(byte[] b) {
+    public static Optional<String> formatoDaImagem(byte[] b) {
         if (b.length >= 4 && (b[0] & 0xFF) == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G') {
             return Optional.of("image/png");
         }

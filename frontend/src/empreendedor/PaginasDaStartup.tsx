@@ -4,6 +4,7 @@ import {
   CADASTRO_VAZIO, criarStartup, lerLogotipo, lerStartup, NOMES_DA_SITUACAO_DA_STARTUP, NOMES_DO_PAPEL_NA_STARTUP,
   NOMES_DAS_SECOES, podeEditar, salvarCadastro, type SecaoDaStartup, type Startup, trocarLogotipo,
 } from '../api/startups'
+import { revisoesDaStartup, type RevisaoParaEquipe } from '../api/catalogo'
 import { progressoDaStartup, type ProgressoDaStartup } from '../api/publicacao'
 import { type CampoDoCatalogo, catalogoDeCampos, salvarSecao, type ValoresDasSecoes, valoresDasSecoes } from '../api/secoes'
 import { AlertaErro } from '../ui/Campo'
@@ -14,6 +15,7 @@ import { FormularioDaSecao } from './FormularioDaSecao'
 import { PainelDeIndicadores } from './PainelDeIndicadores'
 import { PainelDePublicacao } from './PainelDePublicacao'
 import { PainelDeRodada } from './PainelDeRodada'
+import { PainelDeVisibilidade } from './PainelDeVisibilidade'
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -61,7 +63,8 @@ export function PaginaNovaStartup() {
  * Decisões: Navegação por etapas: dados cadastrais, as seções que o catálogo do servidor descreve (KAN-22 em diante),
  *           a equipe (KAN-65), a rodada (KAN-59) e a publicação, com a barra de progresso dos obrigatórios e a marca nas
  *           etapas completas (KAN-27).
- *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele.
+ *           Colaborador vê bloqueadas as seções que não foram autorizadas a ele. Etapa Visibilidade com a pré-visualização
+ *           (KAN-28/29) e os comentários da curadoria na seção devolvida (KAN-84), em 25/11/2026.
  */
 export function PaginaStartup() {
   const { id = '' } = useParams()
@@ -69,14 +72,16 @@ export function PaginaStartup() {
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [logo, setLogo] = useState<string | null>(null)
-  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | 'rodada' | SecaoDaStartup>('cadastro')
+  const [aba, setAba] = useState<'cadastro' | 'equipe' | 'publicacao' | 'rodada' | 'visibilidade' | SecaoDaStartup>('cadastro')
   const [progresso, setProgresso] = useState<ProgressoDaStartup | null>(null)
+  const [revisoes, setRevisoes] = useState<RevisaoParaEquipe[]>([])
   const [versao, setVersao] = useState(0)
   const recarregar = () => setVersao((v) => v + 1)
 
   useEffect(() => {
     let ativo = true
     progressoDaStartup(id).then((p) => { if (ativo) setProgresso(p) }).catch(() => undefined)
+    revisoesDaStartup(id).then((r) => { if (ativo) setRevisoes(r) }).catch(() => undefined)
     return () => { ativo = false }
   }, [id, versao])
   const [catalogo, setCatalogo] = useState<CampoDoCatalogo[]>([])
@@ -120,9 +125,12 @@ export function PaginaStartup() {
     ...secoesComCampos.map((secao): [SecaoDaStartup, string] => [secao, NOMES_DAS_SECOES[secao]]),
     ['equipe', 'Equipe'],
     ['rodada', 'Rodada'],
+    ['visibilidade', 'Visibilidade'],
     ['publicacao', 'Publicação'],
   ]
-  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' || aba === 'rodada' ? null : aba
+  const secaoAberta = aba === 'cadastro' || aba === 'equipe' || aba === 'publicacao' || aba === 'rodada' || aba === 'visibilidade' ? null : aba
+  const devolvida = revisoes[0]?.situacao === 'DEVOLVIDA' ? revisoes[0] : null
+  const apontamentoDaSecao = (secao: string) => devolvida?.apontamentos.find((a) => a.tipo === 'SECAO' && a.codigo === secao)
   const completa = (chave: typeof aba) => progresso?.secoes.find((s) => (chave === 'cadastro' ? s.secao === 'CADASTRO' : s.secao === chave))?.completa ?? false
 
   return (
@@ -164,8 +172,16 @@ export function PaginaStartup() {
       {aba === 'rodada' && <PainelDeRodada startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} constituida={startup.constituida} />}
 
       {aba === 'publicacao' && progresso && (
-        <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso}
+        <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso} revisoes={revisoes}
           aoMudar={() => { recarregar(); lerStartup(id).then(setStartup).catch(() => undefined) }} />
+      )}
+
+      {aba === 'visibilidade' && <PainelDeVisibilidade startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} />}
+
+      {(secaoAberta ?? (aba === 'cadastro' ? 'CADASTRO' : null)) && apontamentoDaSecao(secaoAberta ?? 'CADASTRO') && (
+        <p role="note" className="rounded-md border border-warn bg-warn-soft px-3 py-2 text-sm text-warn">
+          <span className="font-semibold">Comentário da curadoria:</span> {apontamentoDaSecao(secaoAberta ?? 'CADASTRO')?.comentario}
+        </p>
       )}
 
       {secaoAberta === 'TRACAO' && <PainelDeIndicadores startupId={id} podeEditar={podeEditar(startup, 'TRACAO')} />}

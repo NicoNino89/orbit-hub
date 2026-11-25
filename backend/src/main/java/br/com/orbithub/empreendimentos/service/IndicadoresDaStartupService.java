@@ -75,6 +75,20 @@ public class IndicadoresDaStartupService {
     @Transactional(readOnly = true)
     public List<Indicador> listar(UUID eu, UUID startupId) {
         cadastro.papel(eu, startupId);
+        return atuais(startupId);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-36
+     * Título: Indicadores da startup
+     * Objetivo: Montar os indicadores com o valor atual, a marcação de desatualizado e o histórico, sem conferir a equipe.
+     * Decisões: Usado pela apresentação no catálogo, que decide o que mostrar pela visibilidade (KAN-28).
+     */
+    @Transactional(readOnly = true)
+    public List<Indicador> atuais(UUID startupId) {
         Map<IndicadorDaStartup, List<Valor>> porIndicador = new EnumMap<>(IndicadorDaStartup.class);
         for (ValorDeIndicador v : valores.findByStartupIdOrderByReferenciaDescRegistradoEmDesc(startupId)) {
             porIndicador.computeIfAbsent(v.getIndicador(), k -> new ArrayList<>())

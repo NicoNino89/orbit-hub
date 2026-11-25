@@ -50,4 +50,15 @@ public interface StartupRepository extends JpaRepository<Startup, UUID> {
      * Decisões: Usado pela R8 para limpar o aviso ou despublicar.
      */
     List<Startup> findBySituacaoAndAvisoInatividadeEmIsNotNull(SituacaoDaStartup situacao);
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 10:40
+     * Cartão Jira: KAN-85
+     * Título: Startups na situação
+     * Objetivo: Listar as startups numa situação, pelo nome aprovado.
+     * Decisões: Usado para o curador escolher as startups das edições.
+     */
+    List<Startup> findBySituacaoOrderByNomeAprovadoAsc(SituacaoDaStartup situacao);
 }

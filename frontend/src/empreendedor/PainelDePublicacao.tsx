@@ -3,9 +3,11 @@ import { FORMATO_DATA_HORA } from '../admin/datas'
 import {
   cancelarEnvio, despublicar, enviarParaPublicacao, historicoDeSituacoes, type MudancaDeSituacao, type ProgressoDaStartup,
 } from '../api/publicacao'
+import type { RevisaoParaEquipe } from '../api/catalogo'
 import { NOMES_DA_SITUACAO_DA_STARTUP, type SituacaoDaStartup } from '../api/startups'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
+import { RevisoesDaCuradoria } from './RevisoesDaCuradoria'
 
 const EXPLICACAO: Record<SituacaoDaStartup, string> = {
   RASCUNHO: 'Só a equipe vê. Preencha os obrigatórios e envie para a revisão da plataforma.',
@@ -13,6 +15,7 @@ const EXPLICACAO: Record<SituacaoDaStartup, string> = {
   PUBLICADA: 'A startup está no catálogo. Alterações relevantes passam por nova revisão.',
   DEVOLVIDA: 'A curadoria pediu ajustes. Faça as correções e envie de novo.',
   DESPUBLICADA: 'A startup saiu do catálogo. Conexões e rodadas em andamento continuam visíveis para as partes. Envie de novo para voltar.',
+  RECUSADA: 'A curadoria recusou a startup por indício de fraude, com segunda aprovação. Fale com o atendimento se discordar.',
 }
 
 /**
@@ -23,12 +26,14 @@ const EXPLICACAO: Record<SituacaoDaStartup, string> = {
  * Título: Painel de publicação
  * Objetivo: Mostrar a situação da startup com a explicação, o que falta para enviar e o histórico, e oferecer ao
  *           fundador administrador enviar, cancelar o envio e despublicar.
- * Decisões: Despublicar pede confirmação, com motivo opcional. Os demais membros só acompanham.
+ * Decisões: Despublicar pede confirmação, com motivo opcional. Os demais membros só acompanham. Mostra as revisões da
+ *           curadoria e, na startup publicada com alteração devolvida, permite reenviar a alteração (KAN-66, 25/11/2026).
  */
-export function PainelDePublicacao({ startupId, admin, progresso, aoMudar }: {
+export function PainelDePublicacao({ startupId, admin, progresso, revisoes = [], aoMudar }: {
   startupId: string
   admin: boolean
   progresso: ProgressoDaStartup
+  revisoes?: RevisaoParaEquipe[]
   aoMudar: () => void
 }) {
   const [historico, setHistorico] = useState<MudancaDeSituacao[]>([])
@@ -91,6 +96,12 @@ export function PainelDePublicacao({ startupId, admin, progresso, aoMudar }: {
           {situacao === 'EM_REVISAO' && (
             <button type="button" className={CLASSE_LINK} onClick={() => void agir(() => cancelarEnvio(startupId))}>Cancelar envio</button>
           )}
+          {situacao === 'PUBLICADA' && revisoes[0]?.tipo === 'ALTERACAO' && revisoes[0].situacao === 'DEVOLVIDA' && (
+            <button type="button" disabled={!progresso.podeEnviar} className={CLASSE_BOTAO_PRIMARIO}
+              onClick={() => void agir(() => enviarParaPublicacao(startupId))}>
+              Reenviar alteração para a curadoria
+            </button>
+          )}
           {situacao === 'PUBLICADA' && !confirmar && (
             <button type="button" className={CLASSE_LINK} onClick={() => setConfirmar(true)}>Despublicar</button>
           )}
@@ -107,6 +118,8 @@ export function PainelDePublicacao({ startupId, admin, progresso, aoMudar }: {
           )}
         </div>
       ) : <p className="text-sm text-muted">Só o fundador administrador envia para publicação ou despublica.</p>}
+
+      <RevisoesDaCuradoria revisoes={revisoes} />
 
       {historico.length > 0 && (
         <section aria-label="Histórico de situações" className="flex flex-col gap-1 text-sm">
