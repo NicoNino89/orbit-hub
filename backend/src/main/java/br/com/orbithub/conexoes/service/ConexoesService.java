@@ -328,6 +328,109 @@ public class ConexoesService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Entrar na rodada
+     * Objetivo: Pôr a conexão em negociação quando o investidor entra na rodada e devolver a situação anterior.
+     * Decisões: Registra no histórico com o lado de quem entrou.
+     */
+    @Transactional
+    public Conexao.Situacao entrarNaRodada(Conexao c, UUID por, Conexao.Lado lado) {
+        Conexao.Situacao anterior = c.entrarNaRodada(relogio.instant());
+        if (anterior != Conexao.Situacao.EM_NEGOCIACAO) {
+            historico(c, anterior, por, lado);
+        }
+        return anterior;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-109
+     * Título: Voltar depois da rodada
+     * Objetivo: Devolver a conexão à situação de antes da rodada cancelada.
+     * Decisões: Sem efeito se a conexão já mudou (por exemplo, foi encerrada).
+     */
+    @Transactional
+    public void voltarAntesDaRodada(Conexao c, Conexao.Situacao anterior, UUID por) {
+        if (c.getSituacao() == Conexao.Situacao.EM_NEGOCIACAO && anterior != null && anterior != Conexao.Situacao.EM_NEGOCIACAO) {
+            Conexao.Situacao atual = c.voltarAntesDaRodada(anterior, relogio.instant());
+            historico(c, atual, por, Conexao.Lado.STARTUP);
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-64
+     * Título: Marcar investimento
+     * Objetivo: Passar a conexão em negociação para "investiu" quando o investimento é confirmado pelas duas partes.
+     * Decisões: Sem efeito em conexão fora de negociação.
+     */
+    @Transactional
+    public void marcarInvestimento(Conexao c, UUID por) {
+        if (c.getSituacao() == Conexao.Situacao.EM_NEGOCIACAO) {
+            mudar(c, Conexao.Situacao.INVESTIU, por, Conexao.Lado.INVESTIDOR);
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-64
+     * Título: Encerrar pela rodada
+     * Objetivo: Encerrar a conexão de quem participou da rodada concluída sem investir.
+     * Decisões: Motivo "rodada já fechada", pela plataforma.
+     */
+    @Transactional
+    public void encerrarPelaRodada(Conexao c) {
+        if (COM_CONTATO.contains(c.getSituacao()) && c.getSituacao() != Conexao.Situacao.INVESTIU) {
+            Conexao.Situacao anterior = c.encerrar("RODADA_FECHADA", Conexao.Lado.PLATAFORMA, relogio.instant());
+            historico(c, anterior, null, Conexao.Lado.PLATAFORMA);
+        }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Match pelo convite do líder
+     * Objetivo: Criar (ou reaproveitar) a conexão do co-investidor aprovado pelo empreendedor, já em Match.
+     * Decisões: Conexão ativa existente é reaproveitada.
+     */
+    @Transactional
+    public Conexao matchPorConvite(UUID startupId, UUID pessoa, UUID organizacao, UUID aprovadoPor) {
+        UUID chave = organizacao != null ? organizacao : pessoa;
+        Optional<Conexao> ativa = conexoes.findFirstByStartupIdAndInvestidorChaveAndSituacaoIn(startupId, chave, ATIVAS);
+        if (ativa.isPresent()) {
+            return ativa.get();
+        }
+        Conexao c = conexoes.saveAndFlush(Conexao.porConviteDoLider(startupId, pessoa, organizacao, relogio.instant()));
+        historico(c, null, aprovadoPor, Conexao.Lado.STARTUP);
+        return c;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 14:23
+     * Cartão Jira: KAN-59
+     * Título: Conexão ativa do investidor
+     * Objetivo: Achar a conexão não final do investidor (pessoa ou organização) com a startup.
+     * Decisões: Para entrar na rodada.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Conexao> ativaDe(UUID startupId, UUID investidorChave) {
+        return conexoes.findFirstByStartupIdAndInvestidorChaveAndSituacaoIn(startupId, investidorChave, ATIVAS);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
      * Hora: 12:04
      * Cartão Jira: KAN-30
      * Título: Ler conexão

@@ -12,6 +12,7 @@ import { PaginaFilaDeVerificacao, PaginaPedidoDeVerificacao } from './admin/Pagi
 import { PaginaVinculos } from './admin/PaginaVinculos'
 import { PaginaCatalogo, PaginaMinhasDoCatalogo } from './catalogo/PaginaCatalogo'
 import { PaginaConexoes } from './conexoes/Conexoes'
+import { PaginaAgenda } from './agenda/Agenda'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -79,6 +80,7 @@ export function Rotas() {
             <Route path="/organizacoes/convite" element={<PaginaConviteOrganizacao />} />
             <Route path="/startups/convite" element={<PaginaConviteStartup />} />
             <Route path="/catalogo" element={<PaginaCatalogo />} />
+            <Route path="/agenda" element={<PaginaAgenda />} />
             <Route path="/catalogo/minhas" element={<PaginaMinhasDoCatalogo />} />
             <Route path="/catalogo/edicoes" element={<PaginaEdicoesDoCatalogo />} />
             <Route path="/catalogo/edicoes/:id" element={<PaginaEdicaoDoCatalogo />} />

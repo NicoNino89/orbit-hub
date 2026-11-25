@@ -6,6 +6,7 @@ import {
   NOMES_DA_SITUACAO_DA_CONEXAO, NOMES_DO_PEDIDO, type PainelDeBloqueios, type PedidoDaConexao, type SituacaoDaConexao,
 } from '../api/catalogo'
 import { opcoesDaLista } from '../api/organizacoes'
+import { ProporReuniao } from '../agenda/Agenda'
 import { FORMATO_DATA_HORA } from '../admin/datas'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
@@ -149,6 +150,7 @@ function AcoesDaConexao({ c, aoMudar }: { c: ConexaoDoPainel; aoMudar: (erro: st
           </span>
         )}
         <button type="button" className={CLASSE_LINK} onClick={() => void historicoDaConexao(c.id).then(setHistorico).catch(() => undefined)}>Histórico</button>
+        {podeEncerrar && <ProporReuniao conexaoId={c.id} aoPropor={aoMudar} />}
       </div>
       {historico && (
         <ol aria-label="Histórico da conexão" className="text-xs text-muted">

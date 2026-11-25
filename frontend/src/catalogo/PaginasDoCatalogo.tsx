@@ -7,6 +7,7 @@ import {
 import { requisitar } from '../api/cliente'
 import { PainelDeInteresse } from '../conexoes/Conexoes'
 import { AreaConfidencial } from '../dataroom/Nivel2'
+import { RodadaDoInvestidor } from '../rodada/Conducao'
 import { useSessao } from '../sessao/contexto'
 import { AlertaErro } from '../ui/Campo'
 import { CLASSE_LINK } from '../ui/estilos'
@@ -61,6 +62,7 @@ export function PaginaStartupNoCatalogo() {
         </p>
       )}
       <ApresentacaoEmPaginas apresentacao={apresentacao} carregarLogotipo={logotipo} />
+      {papel === 'INVESTIDOR' && <RodadaDoInvestidor startupId={id} />}
       {papel === 'INVESTIDOR' && <AreaConfidencial startupId={id} />}
     </section>
   )

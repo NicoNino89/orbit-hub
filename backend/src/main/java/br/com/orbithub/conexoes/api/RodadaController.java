@@ -238,7 +238,7 @@ class RodadaController {
      * Cartão Jira: KAN-59
      * Título: Rodada na resposta
      * Objetivo: Expor a rodada com os termos, a situação e as datas.
-     * Decisões: "semLider" verdadeiro até os participantes e o líder chegarem (S7).
+     * Decisões: "semLider" enquanto nenhum participante aceitou liderar (KAN-59).
      */
     record RodadaResponse(UUID id, SituacaoDaRodada situacao, ResultadoDaRodada resultado, String estagio, String instrumento,
                           BigDecimal valorAlvo, BigDecimal valorMinimo, BigDecimal valorMaximo, LocalDate prazo,
@@ -257,7 +257,7 @@ class RodadaController {
         static RodadaResponse de(Rodada r) {
             Rodada.Termos t = r.termos();
             return new RodadaResponse(r.getId(), r.getSituacao(), r.getResultado(), t.estagio(), t.instrumento(), t.valorAlvo(),
-                    t.valorMinimo(), t.valorMaximo(), t.prazo(), t.especificos(), true, r.getAbertaEm(), r.getEncerradaEm(),
+                    t.valorMinimo(), t.valorMaximo(), t.prazo(), t.especificos(), r.semLider(), r.getAbertaEm(), r.getEncerradaEm(),
                     r.getAtualizadaEm());
         }
     }
