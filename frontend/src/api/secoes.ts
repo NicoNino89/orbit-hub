@@ -14,10 +14,12 @@ export interface CampoDoCatalogo {
   campo: string
   secao: SecaoDaStartup
   rotulo: string
-  tipo: 'TEXTO' | 'SIM_NAO' | 'LISTA' | 'PERCENTUAL' | 'INTEIRO'
+  tipo: 'TEXTO' | 'SIM_NAO' | 'LISTA' | 'PERCENTUAL' | 'INTEIRO' | 'ESCALA'
   limite: number | null
   lista: string | null
   ajuda: string | null
+  /** Níveis da escala com a explicação (só no tipo ESCALA, KAN-26). */
+  opcoes?: { codigo: string; rotulo: string; explicacao: string }[] | null
 }
 
 export type ValoresDasSecoes = Record<string, string>

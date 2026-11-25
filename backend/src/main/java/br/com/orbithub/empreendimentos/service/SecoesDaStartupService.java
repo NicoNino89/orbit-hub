@@ -3,6 +3,7 @@ package br.com.orbithub.empreendimentos.service;
 import br.com.orbithub.administracao.service.ListasService;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
+import br.com.orbithub.compartilhado.escalas.MaturidadeDoNegocio;
 import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
 import br.com.orbithub.empreendimentos.domain.SecaoDaStartup;
 import br.com.orbithub.empreendimentos.domain.Startup;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +106,20 @@ public class SecoesDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
+     * Título: Estágio da startup
+     * Objetivo: Devolver o estágio do negócio escolhido, para o envio à publicação (KAN-27) e a compatibilidade com a tese do investidor.
+     * Decisões: Vazio quando ainda não foi escolhido. Serviço público, sem conferir a equipe.
+     */
+    @Transactional(readOnly = true)
+    public Optional<MaturidadeDoNegocio> estagio(UUID startupId) {
+        return Optional.ofNullable(startup(startupId).campos().get(CampoDaStartup.ESTAGIO)).map(MaturidadeDoNegocio::valueOf);
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
      * Hora: 22:56
      * Cartão Jira: KAN-22
      * Título: Campo da seção
@@ -125,12 +141,12 @@ public class SecoesDaStartupService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:26
-     * Cartão Jira: KAN-25
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
      * Título: Conferir valor
      * Objetivo: Validar o valor conforme o tipo do campo e devolvê-lo normalizado.
      * Decisões: Texto pelo limite; sim/não; opção ativa da lista (KAN-23); percentual de 0 a 100 e inteiro de 1 ao limite
-     *           (KAN-25). Vírgula decimal aceita.
+     *           (KAN-25); nível da escala de maturidade (KAN-26). Vírgula decimal aceita.
      */
     String conferir(CampoDaStartup campo, String valor) {
         return switch (campo.getTipo()) {
@@ -162,6 +178,13 @@ public class SecoesDaStartupService {
                             "Informe um número inteiro de 1 a " + campo.getLimite() + " em \"" + campo.getRotulo() + "\".");
                 }
                 yield n.toBigInteger().toString();
+            }
+            case ESCALA -> {
+                try {
+                    yield MaturidadeDoNegocio.valueOf(valor).name();
+                } catch (IllegalArgumentException e) {
+                    throw new RegraDeNegocioException("opcao_indisponivel", "Escolha um dos estágios da escala.");
+                }
             }
         };
     }

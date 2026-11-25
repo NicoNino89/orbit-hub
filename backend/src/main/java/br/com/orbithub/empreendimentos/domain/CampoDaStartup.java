@@ -87,19 +87,23 @@ public enum CampoDaStartup {
     DESTINO_OPERACAO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Destinação para operação e infraestrutura (%)", Tipo.PERCENTUAL, 0, null, null),
     DESTINO_OUTROS(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Outras destinações (%)", Tipo.PERCENTUAL, 0, null, null),
     PRAZO_USO_MESES(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Prazo estimado de uso dos recursos (meses)", Tipo.INTEIRO, 120, null, null),
-    METAS_DO_INVESTIMENTO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Metas que o investimento deve viabilizar", Tipo.TEXTO, 1000, null, null);
+    METAS_DO_INVESTIMENTO(SecaoDaStartup.NECESSIDADE_DE_INVESTIMENTO, "Metas que o investimento deve viabilizar", Tipo.TEXTO, 1000, null, null),
+
+    ESTAGIO(SecaoDaStartup.MATURIDADE, "Estágio do negócio", Tipo.ESCALA, 0, null,
+            "Obrigatório para publicar. Escolha o que descreve a startup hoje, não onde ela quer chegar.");
 
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:26
-     * Cartão Jira: KAN-25
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
      * Título: Tipo do campo
      * Objetivo: Dizer como o valor é escrito e conferido.
      * Decisões: TEXTO com limite; SIM_NAO "SIM" ou "NAO"; LISTA com o código de uma opção ativa da lista gerenciável
-     *           (KAN-23); PERCENTUAL de 0 a 100, com até duas casas; INTEIRO de 1 até o limite (KAN-25).
+     *           (KAN-23); PERCENTUAL de 0 a 100, com até duas casas; INTEIRO de 1 até o limite (KAN-25); ESCALA com um nível
+     *           da maturidade do negócio (KAN-26).
      */
-    public enum Tipo { TEXTO, SIM_NAO, LISTA, PERCENTUAL, INTEIRO }
+    public enum Tipo { TEXTO, SIM_NAO, LISTA, PERCENTUAL, INTEIRO, ESCALA }
 
     private final SecaoDaStartup secao;
     private final String rotulo;

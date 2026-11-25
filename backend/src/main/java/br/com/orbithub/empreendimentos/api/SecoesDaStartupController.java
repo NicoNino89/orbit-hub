@@ -1,6 +1,7 @@
 package br.com.orbithub.empreendimentos.api;
 
 import br.com.orbithub.administracao.domain.Lista;
+import br.com.orbithub.compartilhado.escalas.MaturidadeDoNegocio;
 import br.com.orbithub.compartilhado.seguranca.Autenticado;
 import br.com.orbithub.compartilhado.seguranca.Permissoes.SomenteEmpreendedor;
 import br.com.orbithub.empreendimentos.domain.CampoDaStartup;
@@ -100,20 +101,20 @@ class SecoesDaStartupController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 24/11/2026
-     * Hora: 23:26
-     * Cartão Jira: KAN-25
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
      * Título: Campo na resposta
      * Objetivo: Expor um campo do catálogo para a tela montar o formulário.
-     * Decisões: Lista só para o tipo LISTA; limite só para texto e inteiro.
+     * Decisões: Lista só para o tipo LISTA; limite só para texto e inteiro; opções com explicação só para a escala (KAN-26).
      */
     record CampoResponse(CampoDaStartup campo, SecaoDaStartup secao, String rotulo, CampoDaStartup.Tipo tipo, Integer limite,
-                         Lista lista, String ajuda) {
+                         Lista lista, String ajuda, List<Opcao> opcoes) {
 
         /**
          * Autor: Nicholas Bruno Pimentel
          * Data: 24/11/2026
-         * Hora: 23:26
-         * Cartão Jira: KAN-25
+         * Hora: 23:30
+         * Cartão Jira: KAN-26
          * Título: Conversão
          * Objetivo: Montar a resposta a partir do catálogo.
          * Decisões: Limite de caracteres no texto e máximo no inteiro (KAN-25); nulo nos outros.
@@ -121,7 +122,21 @@ class SecoesDaStartupController {
         static CampoResponse de(CampoDaStartup c) {
             return new CampoResponse(c, c.getSecao(), c.getRotulo(), c.getTipo(),
                     c.getTipo() == CampoDaStartup.Tipo.TEXTO || c.getTipo() == CampoDaStartup.Tipo.INTEIRO ? c.getLimite() : null,
-                    c.getLista(), c.getAjuda());
+                    c.getLista(), c.getAjuda(), c.getTipo() == CampoDaStartup.Tipo.ESCALA
+                    ? Arrays.stream(MaturidadeDoNegocio.values()).map(m -> new Opcao(m.name(), m.getRotulo(), m.getExplicacao())).toList()
+                    : null);
         }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
+     * Título: Opção da escala
+     * Objetivo: Levar um nível da escala com o nome e a explicação.
+     * Decisões: Na ordem da escala.
+     */
+    record Opcao(String codigo, String rotulo, String explicacao) {
     }
 }

@@ -25,6 +25,8 @@ const CATALOGO = [
   { campo: 'DESTINO_PRODUTO', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Destinação para produto (%)', tipo: 'PERCENTUAL', limite: null, lista: null, ajuda: 'Valores ficam só na rodada.' },
   { campo: 'DESTINO_EQUIPE', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Destinação para equipe (%)', tipo: 'PERCENTUAL', limite: null, lista: null, ajuda: null },
   { campo: 'PRAZO_USO_MESES', secao: 'NECESSIDADE_DE_INVESTIMENTO', rotulo: 'Prazo de uso (meses)', tipo: 'INTEIRO', limite: 120, lista: null, ajuda: null },
+  { campo: 'ESTAGIO', secao: 'MATURIDADE', rotulo: 'Estágio do negócio', tipo: 'ESCALA', limite: null, lista: null, ajuda: 'Obrigatório para publicar.',
+    opcoes: [{ codigo: 'IDEACAO', rotulo: 'Ideação', explicacao: 'Há a ideia.' }, { codigo: 'MVP', rotulo: 'MVP', explicacao: 'Uma primeira versão está em uso.' }] },
   { campo: 'MODELO', secao: 'MODELO_DE_NEGOCIO', rotulo: 'Classificação do modelo de negócio', tipo: 'LISTA', limite: null, lista: 'MODELO_NEGOCIO', ajuda: 'Usada nos filtros.' },
 ]
 
@@ -172,5 +174,31 @@ describe('Seções da startup (KAN-22)', () => {
     expect(await screen.findByText('Necessidade de investimento: salvo.')).toBeInTheDocument()
     expect(chamadas.find((c) => c.chave === 'PUT /api/v1/startups/s1/secoes/NECESSIDADE_DE_INVESTIMENTO')?.corpo)
       .toEqual({ DESTINO_PRODUTO: '70', DESTINO_EQUIPE: '29,5', PRAZO_USO_MESES: '18' })
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 24/11/2026
+   * Hora: 23:30
+   * Cartão Jira: KAN-26
+   * Título: Escolher o estágio
+   * Objetivo: Conferir que cada nível mostra a explicação e que a escolha é salva.
+   * Decisões: Dois níveis simulados.
+   */
+  it('mostra os estágios com a explicação e salva a escolha', async () => {
+    const { chamadas } = abrir('/empreendedor/startups/s1', {
+      'GET /api/v1/startups/s1': () => ({ corpo: STARTUP }),
+      'GET /api/v1/startups/campos': () => ({ corpo: CATALOGO }),
+      'GET /api/v1/startups/s1/secoes': () => ({ corpo: {} }),
+      'PUT /api/v1/startups/s1/secoes/MATURIDADE': ({ corpo }) => ({ corpo }),
+    })
+    await userEvent.click(await screen.findByRole('button', { name: 'Estágio do negócio' }))
+    const form = await screen.findByRole('form', { name: 'Estágio do negócio' })
+    expect(within(form).getByText('Uma primeira versão está em uso.')).toBeInTheDocument()
+    expect(within(form).getByText('Obrigatório para publicar.')).toBeInTheDocument()
+    await userEvent.click(within(form).getByRole('radio', { name: /MVP/ }))
+    await userEvent.click(within(form).getByRole('button', { name: 'Salvar estágio do negócio' }))
+    expect(await screen.findByText('Estágio do negócio: salvo.')).toBeInTheDocument()
+    expect(chamadas.find((c) => c.chave === 'PUT /api/v1/startups/s1/secoes/MATURIDADE')?.corpo).toEqual({ ESTAGIO: 'MVP' })
   })
 })

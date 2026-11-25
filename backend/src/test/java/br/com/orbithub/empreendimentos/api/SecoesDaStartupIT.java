@@ -1,5 +1,6 @@
 package br.com.orbithub.empreendimentos.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +13,8 @@ import br.com.orbithub.TestcontainersConfiguration;
 import br.com.orbithub.administracao.domain.DocumentoLegal;
 import br.com.orbithub.administracao.service.AceiteService;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
+import br.com.orbithub.compartilhado.escalas.MaturidadeDoNegocio;
+import br.com.orbithub.empreendimentos.service.SecoesDaStartupService;
 import br.com.orbithub.identidade.domain.Papel;
 import br.com.orbithub.identidade.domain.Usuario;
 import br.com.orbithub.identidade.repository.UsuarioRepository;
@@ -59,6 +62,9 @@ class SecoesDaStartupIT {
 
     @Autowired
     AceiteService aceites;
+
+    @Autowired
+    SecoesDaStartupService secoes;
 
     @MockitoBean
     EnvioDeEmail email;
@@ -158,6 +164,31 @@ class SecoesDaStartupIT {
                 .andExpect(jsonPath("$.DESTINO_EQUIPE").value("24.5")).andExpect(jsonPath("$.PRAZO_USO_MESES").value("18"));
         secao(eva, id, "PLANEJAMENTO", "{\"RISCOS\":\"Sazonalidade da safra\",\"MITIGACAO\":\"Clientes em duas regiões\"}")
                 .andExpect(jsonPath("$.RISCOS").value("Sazonalidade da safra")).andExpect(jsonPath("$.PRAZO_USO_MESES").value("18"));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 24/11/2026
+     * Hora: 23:30
+     * Cartão Jira: KAN-26
+     * Título: Estágio do negócio
+     * Objetivo: Conferir a escala no catálogo com as explicações, a recusa de nível inexistente, o salvamento e a leitura pelo serviço público.
+     * Decisões: MVP; ESPACIAL não existe.
+     */
+    @Test
+    void estagioDoNegocio() throws Exception {
+        Usuario eva = conta(Papel.EMPREENDEDOR);
+        String id = startup(eva);
+        mvc.perform(get("/api/v1/startups/campos").header(HttpHeaders.AUTHORIZATION, bearer(eva)))
+                .andExpect(jsonPath("$[?(@.campo == 'ESTAGIO')].opcoes[0].codigo").value(org.hamcrest.Matchers.contains("IDEACAO")))
+                .andExpect(jsonPath("$[?(@.campo == 'ESTAGIO')].opcoes.length()").value(org.hamcrest.Matchers.contains(7)))
+                .andExpect(jsonPath("$[?(@.campo == 'ESTAGIO')].opcoes[2].explicacao").value(org.hamcrest.Matchers.contains(
+                        org.hamcrest.Matchers.containsString("primeira versão"))))
+                .andExpect(jsonPath("$[0].opcoes").doesNotExist());
+        assertThat(secoes.estagio(UUID.fromString(id))).isEmpty();
+        secao(eva, id, "MATURIDADE", "{\"ESTAGIO\":\"ESPACIAL\"}").andExpect(jsonPath("$.codigo").value("opcao_indisponivel"));
+        secao(eva, id, "MATURIDADE", "{\"ESTAGIO\":\"MVP\"}").andExpect(status().isOk()).andExpect(jsonPath("$.ESTAGIO").value("MVP"));
+        assertThat(secoes.estagio(UUID.fromString(id))).contains(MaturidadeDoNegocio.MVP);
     }
 
     /**

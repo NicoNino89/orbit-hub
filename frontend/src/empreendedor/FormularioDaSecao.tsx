@@ -6,12 +6,13 @@ import { CLASSE_BOTAO_PRIMARIO } from '../ui/estilos'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
- * Hora: 23:26
- * Cartão Jira: KAN-25
+ * Hora: 23:30
+ * Cartão Jira: KAN-26
  * Título: Formulário de uma seção
  * Objetivo: Montar, a partir do catálogo, os campos de uma seção do cadastro, com o contador de caracteres visível.
  * Decisões: Texto vira área de texto com limite; sim/não vira escolha única; lista vira seleção (KAN-23); percentual e
- *           inteiro viram campo numérico, com a soma das destinações à vista (KAN-25). Bloqueado para quem não pode editar a
+ *           inteiro viram campo numérico, com a soma das destinações à vista (KAN-25); a escala vira uma lista de opções com
+ *           a explicação de cada nível (KAN-26). Bloqueado para quem não pode editar a
  *           seção. Nada é obrigatório para salvar o rascunho.
  */
 export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar }: {
@@ -37,6 +38,7 @@ export function FormularioDaSecao({ titulo, campos, inicial, bloqueado, aoSalvar
           if (c.tipo === 'SIM_NAO') return <SimOuNao key={c.campo} {...props} />
           if (c.tipo === 'LISTA') return <OpcaoDaLista key={c.campo} {...props} />
           if (c.tipo === 'PERCENTUAL' || c.tipo === 'INTEIRO') return <Numero key={c.campo} {...props} />
+          if (c.tipo === 'ESCALA') return <Escala key={c.campo} {...props} />
           return <Texto key={c.campo} {...props} />
         })}
         {percentuais.length > 0 && (
@@ -151,5 +153,29 @@ function Numero({ campo, valor, aoMudar }: { campo: CampoDoCatalogo; valor: stri
         aria-describedby={campo.ajuda ? `${id}-ajuda` : undefined} className="max-w-40 rounded-md border border-line bg-surface px-3 py-2" />
       {campo.ajuda && <p id={`${id}-ajuda`} className="text-xs text-muted">{campo.ajuda}</p>}
     </div>
+  )
+}
+
+/**
+ * Autor: Nicholas Bruno Pimentel
+ * Data: 24/11/2026
+ * Hora: 23:30
+ * Cartão Jira: KAN-26
+ * Título: Escala
+ * Objetivo: Mostrar os níveis da escala, cada um com a breve explicação, para a escolha de um só.
+ * Decisões: A ajuda do campo lembra que o estágio é obrigatório para publicar.
+ */
+function Escala({ campo, valor, aoMudar }: { campo: CampoDoCatalogo; valor: string; aoMudar: (v: string) => void }) {
+  return (
+    <fieldset className="flex flex-col gap-2 text-sm">
+      <legend className="font-semibold">{campo.rotulo}</legend>
+      {campo.ajuda && <p className="text-xs text-muted">{campo.ajuda}</p>}
+      {(campo.opcoes ?? []).map((o) => (
+        <label key={o.codigo} className={`flex items-start gap-2 rounded-md border p-2 ${valor === o.codigo ? 'border-primary' : 'border-line'}`}>
+          <input type="radio" name={campo.campo} checked={valor === o.codigo} onChange={() => aoMudar(o.codigo)} className="mt-1" />
+          <span><span className="font-semibold">{o.rotulo}</span><span className="block text-xs text-muted">{o.explicacao}</span></span>
+        </label>
+      ))}
+    </fieldset>
   )
 }
