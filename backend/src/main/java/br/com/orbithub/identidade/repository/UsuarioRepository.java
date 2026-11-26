@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.Instant;
 
 /**
  * Autor: Nicholas Bruno Pimentel
@@ -97,4 +100,18 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
             select u.id from Usuario u
             where u.interna = false and u.status = br.com.orbithub.identidade.domain.StatusUsuario.ATIVO""")
     List<UUID> idsPublicosAtivos();
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-107
+     * Título: Registrar acesso
+     * Objetivo: Guardar o último acesso da conta e limpar o aviso de inatividade.
+     * Decisões: Atualização direta, sem carregar a conta; a coluna não fica na entidade para não ser sobrescrita.
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE usuario SET ultimo_acesso_em = :agora, aviso_inatividade_em = NULL WHERE id = :id", nativeQuery = true)
+    int registrarAcesso(@Param("id") UUID id, @Param("agora") Instant agora);
 }

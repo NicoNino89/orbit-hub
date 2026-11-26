@@ -2,7 +2,9 @@ package br.com.orbithub.atendimento.service;
 
 import br.com.orbithub.administracao.domain.ItemDeLista;
 import br.com.orbithub.administracao.domain.Lista;
+import br.com.orbithub.administracao.service.ConflitosDeInteresse;
 import br.com.orbithub.administracao.service.ListasService;
+import br.com.orbithub.administracao.service.TimesService;
 import br.com.orbithub.compartilhado.convites.TokensDeConvite;
 import br.com.orbithub.compartilhado.email.EnvioDeEmail;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
@@ -43,7 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
  *           prazo é o da primeira resposta no N1 e o do nível nos demais; horas úteis contadas em dias úteis de 24 h.
  *           A outra parte da disputa vê o chamado e responde, sem ver as notas internas. A plataforma media e registra
  *           e não arbitra: sem acordo, a participação na rodada fica "em disputa" e não conta como investimento. O
- *           atendimento não tem acesso ao Nível 2 (KAN-80).
+ *           atendimento não tem acesso ao Nível 2 (KAN-80). Chamado novo ou escalado para N1/N2 ganha responsável por rodízio
+ *           (equipe.distribuicao_atendimento, KAN-76).
  */
 @Service
 public class AtendimentoService {
@@ -155,6 +158,7 @@ public class AtendimentoService {
     private final ConsultaDeContas contas;
     private final EnvioDeEmail email;
     private final ContaProperties conta;
+    private final TimesService times;
     private final Clock relogio;
 
     /**
@@ -168,7 +172,7 @@ public class AtendimentoService {
      */
     @SuppressWarnings("java:S107")
     public AtendimentoService(JdbcTemplate jdbc, ListasService listas, LeituraDeParametros parametros, NotificacoesService notificacoes,
-                              ConsultaDeContas contas, EnvioDeEmail email, ContaProperties conta, Clock relogio) {
+                              ConsultaDeContas contas, EnvioDeEmail email, ContaProperties conta, TimesService times, Clock relogio) {
         this.jdbc = jdbc;
         this.listas = listas;
         this.parametros = parametros;
@@ -176,6 +180,7 @@ public class AtendimentoService {
         this.contas = contas;
         this.email = email;
         this.conta = conta;
+        this.times = times;
         this.relogio = relogio;
     }
 
@@ -639,6 +644,15 @@ public class AtendimentoService {
                 (rs, i) -> new Indicador(Servico.valueOf(rs.getString(1)), rs.getInt(2), rs.getInt(3), rs.getObject(4) == null ? null : rs.getDouble(4), rs.getInt(5)));
     }
 
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-17, KAN-76, KAN-77, KAN-82, KAN-90, KAN-91, KAN-93, KAN-107, KAN-108
+     * Título: outraParteDoRegistro
+     * Objetivo: Rotina auxiliar outraParteDoRegistro.
+     * Decisões: Ver a documentação da classe.
+     */
     private UUID outraParteDoRegistro(UUID eu, String tipo, UUID id) {
         if (!"RODADA_INVESTIMENTO".equals(tipo) || id == null) {
             return null;
@@ -744,8 +758,13 @@ public class AtendimentoService {
      */
     private void avisarEquipe(UUID id, Nivel nivel, String titulo) {
         Set<Papel> papeis = nivel == Nivel.N1 ? Set.of(Papel.SUPORTE_N1) : nivel == Nivel.N2 ? Set.of(Papel.SUPORTE_N2) : Set.of(Papel.SUPORTE_N2, Papel.ADMIN);
-        notificacoes.notificarTodos(contas.equipeAtivaComPapeis(papeis), TipoDeNotificacao.EQUIPE_ENCAMINHAMENTO, titulo, "Chamado no nível " + nivel + ".",
-                "/admin/atendimento/" + id);
+        UUID responsavel = nivel == Nivel.ESPECIALISTA ? null : times.distribuir(TimesService.Time.ATENDIMENTO, papeis, "CHAMADO", id,
+                new ConflitosDeInteresse.Envolvidos(Set.of(), Set.of())).orElse(null);
+        if (responsavel != null) {
+            jdbc.update("UPDATE chamado SET responsavel_id = ? WHERE id = ?", responsavel, id);
+        }
+        notificacoes.notificarTodos(responsavel != null ? List.of(responsavel) : contas.equipeAtivaComPapeis(papeis), TipoDeNotificacao.EQUIPE_ENCAMINHAMENTO,
+                titulo, "Chamado no nível " + nivel + ".", "/admin/atendimento/" + id);
     }
 
     /**

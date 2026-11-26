@@ -27,6 +27,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -410,6 +411,27 @@ public class StartupsService {
             s.republicar(relogio.instant());
             startups.save(s);
         }
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-77
+     * Título: Transferir a titularidade
+     * Objetivo: Tornar fundador administrador um membro ativo da startup, depois da segunda aprovação.
+     * Decisões: Os administradores anteriores ainda ativos passam a fundadores.
+     */
+    @Transactional
+    public void transferirTitularidade(UUID startupId, UUID novoTitular) {
+        MembroDaStartup novo = membros.findByStartupIdAndUsuarioIdAndSaiuEmIsNull(startupId, novoTitular)
+                .orElseThrow(() -> new RegraDeNegocioException("fora_da_startup", "O novo titular precisa ser membro ativo da startup."));
+        for (UUID id : fundadores(startupId, true)) {
+            if (!id.equals(novoTitular)) {
+                membros.findByStartupIdAndUsuarioIdAndSaiuEmIsNull(startupId, id).ifPresent(m -> m.trocarPapel(PapelNaStartup.FUNDADOR, Set.of()));
+            }
+        }
+        novo.trocarPapel(PapelNaStartup.FUNDADOR_ADMINISTRADOR, Set.of());
     }
 
     @Transactional(readOnly = true)

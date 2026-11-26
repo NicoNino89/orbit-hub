@@ -219,6 +219,7 @@ public class SessaoService implements VerificadorDeSessao {
         RefreshToken novo = RefreshToken.emitir(usuario.getId(), familia, hash(refreshBruto), agora,
                 parametros.duracao(Chaves.SESSAO_INATIVIDADE), limiteDaFamilia);
         tokens.save(novo);
+        usuarios.registrarAcesso(usuario.getId(), agora);
         TokenAcessoService.TokenAcesso acesso = tokenAcesso.gerar(usuario, familia);
         return new SessaoEmitida(acesso.valor(), acesso.expiraEm(), refreshBruto, novo.getExpiraEm(), usuario,
                 acesso.termosPendentes());

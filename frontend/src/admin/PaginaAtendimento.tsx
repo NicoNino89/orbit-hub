@@ -9,6 +9,7 @@ import { useSessao } from '../sessao/contexto'
 import { AlertaErro, Campo } from '../ui/Campo'
 import { CLASSE_BOTAO_PRIMARIO, CLASSE_LINK } from '../ui/estilos'
 import { FORMATO_DATA_HORA } from './datas'
+import { TitularidadeNoAtendimento } from './PaginaOperacao'
 
 const CAIXA = 'rounded-md border border-line bg-surface px-3 py-2'
 
@@ -128,6 +129,7 @@ export function PaginaAtendimento() {
           <button type="submit" className={`${CLASSE_BOTAO_PRIMARIO} self-start`}>{artigo.id ? 'Salvar artigo' : 'Incluir artigo'}</button>
         </form>
       </section>
+      {lider && <TitularidadeNoAtendimento />}
     </section>
   )
 }

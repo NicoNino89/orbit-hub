@@ -6,6 +6,7 @@ import br.com.orbithub.administracao.domain.Lista;
 import br.com.orbithub.administracao.service.ConflitosDeInteresse;
 import br.com.orbithub.administracao.service.ListasService;
 import br.com.orbithub.administracao.service.SegundaAprovacaoService;
+import br.com.orbithub.administracao.service.TimesService;
 import br.com.orbithub.auditoria.service.ContextoDeAuditoria;
 import br.com.orbithub.compartilhado.erro.RecursoNaoEncontradoException;
 import br.com.orbithub.compartilhado.erro.RegraDeNegocioException;
@@ -48,7 +49,8 @@ import org.springframework.transaction.annotation.Transactional;
  *           grupo da categoria (CRITICA, ALTA, NORMAL); denúncia nova de prioridade maior sobe o caso e encurta o prazo.
  *           Caso crítico avisa os administradores (líder do time) na hora. Na escala automática conta cada sanção
  *           não revogada do alvo. Medidas preventivas são desfeitas na decisão, salvo quando a sanção as mantém. O
- *           moderador com vínculo declarado com o denunciado não assume nem decide o caso (KAN-87).
+ *           moderador com vínculo declarado com o denunciado não assume nem decide o caso (KAN-87). O caso novo ganha
+ *           responsável por rodízio (equipe.distribuicao_moderacao, KAN-76).
  */
 @Service
 public class ModeracaoService {
@@ -88,6 +90,7 @@ public class ModeracaoService {
     private final SuspensaoDeContas suspensao;
     private final ConflitosDeInteresse conflitos;
     private final SegundaAprovacaoService aprovacoes;
+    private final TimesService times;
     private final Clock relogio;
 
     /**
@@ -102,7 +105,7 @@ public class ModeracaoService {
     @SuppressWarnings("java:S107")
     public ModeracaoService(JdbcTemplate jdbc, ListasService listas, LeituraDeParametros parametros, NotificacoesService notificacoes,
                             ConsultaDeContas contas, StartupsService startups, SuspensaoDeContas suspensao, ConflitosDeInteresse conflitos,
-                            SegundaAprovacaoService aprovacoes, Clock relogio) {
+                            SegundaAprovacaoService aprovacoes, TimesService times, Clock relogio) {
         this.jdbc = jdbc;
         this.listas = listas;
         this.parametros = parametros;
@@ -112,6 +115,7 @@ public class ModeracaoService {
         this.suspensao = suspensao;
         this.conflitos = conflitos;
         this.aprovacoes = aprovacoes;
+        this.times = times;
         this.relogio = relogio;
     }
 
@@ -149,6 +153,9 @@ public class ModeracaoService {
             jdbc.update("INSERT INTO caso_moderacao (id, objeto_tipo, objeto_id, prioridade, categoria, origem, situacao, prazo, criado_em, atualizado_em) "
                     + "VALUES (?, ?, ?, ?, ?, 'DENUNCIA', 'ABERTO', ?, ?, ?)", caso, d.objetoTipo().name(), d.objetoId(), prioridade, categoria.getCodigo(),
                     Timestamp.from(prazo(prioridade, agora)), Timestamp.from(agora), Timestamp.from(agora));
+            UUID novoCaso = caso;
+            times.distribuir(TimesService.Time.MODERACAO, Set.of(Papel.MODERADOR), CASO, caso, envolvidos(d.objetoTipo(), d.objetoId()))
+                    .ifPresent(m -> jdbc.update("UPDATE caso_moderacao SET responsavel_id = ? WHERE id = ?", m, novoCaso));
         } else {
             Integer repetida = jdbc.queryForObject("SELECT count(*) FROM denuncia WHERE caso_id = ? AND denunciante_id = ?", Integer.class, caso, eu);
             if (repetida != null && repetida > 0) {
@@ -705,15 +712,26 @@ public class ModeracaoService {
      * Decisões: Ver a documentação da classe.
      */
     private void semConflito(UUID eu, UUID id, Map<String, Object> c) {
-        Set<UUID> envolvidos = new HashSet<>();
-        Objeto objeto = Objeto.valueOf((String) c.get("objeto_tipo"));
-        UUID objetoId = (UUID) c.get("objeto_id");
+        conflitos.exigirSemConflito(eu, CASO, id, envolvidos(Objeto.valueOf((String) c.get("objeto_tipo")), (UUID) c.get("objeto_id")));
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-17, KAN-76, KAN-77, KAN-82, KAN-90, KAN-91, KAN-93, KAN-107, KAN-108
+     * Título: envolvidos
+     * Objetivo: Rotina auxiliar envolvidos.
+     * Decisões: Ver a documentação da classe.
+     */
+    private ConflitosDeInteresse.Envolvidos envolvidos(Objeto objeto, UUID objetoId) {
+        Set<UUID> pessoas = new HashSet<>();
         if (objeto == Objeto.PERFIL) {
-            envolvidos.add(objetoId);
+            pessoas.add(objetoId);
         } else if (objeto == Objeto.STARTUP) {
-            envolvidos.addAll(startups.fundadores(objetoId, false));
+            pessoas.addAll(startups.fundadores(objetoId, false));
         }
-        conflitos.exigirSemConflito(eu, CASO, id, new ConflitosDeInteresse.Envolvidos(Set.of(), envolvidos));
+        return new ConflitosDeInteresse.Envolvidos(Set.of(), pessoas);
     }
 
     /**

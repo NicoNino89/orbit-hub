@@ -702,4 +702,28 @@ public class Usuario {
     public Instant getSuspensaAte() {
         return suspensaAte;
     }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 20:54
+     * Cartão Jira: KAN-17
+     * Título: Anonimizar
+     * Objetivo: Apagar os dados pessoais da conta excluída, mantendo a linha para as referências.
+     * Decisões: Nome e e-mail genéricos e únicos; senha impossível; telefone, foto e segundo fator apagados; conta desativada. Os papéis ficam para o histórico.
+     */
+    public String anonimizar(Instant agora) {
+        String foto = this.fotoChave;
+        this.nome = "Conta excluída";
+        this.email = "excluida-" + id + "@anonimo.orbithub.com.br";
+        this.senhaHash = "{noop}" + UUID.randomUUID() + UUID.randomUUID();
+        this.telefone = null;
+        this.fotoChave = null;
+        this.totpSegredo = null;
+        this.totpPendente = null;
+        this.totpUltimoPasso = null;
+        this.status = StatusUsuario.DESATIVADO;
+        this.atualizadoEm = agora;
+        return foto;
+    }
 }

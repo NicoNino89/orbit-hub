@@ -48,7 +48,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
  * Decisões: Executor de teste para transferência de titularidade, registrado só neste contexto (o real chega
  *           com o atendimento, S10). As propostas nascem pelo serviço, como fará o módulo dono da ação.
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class, AprovacaoIT.ExecutorDeTeste.class})
 class AprovacaoIT {
@@ -79,7 +79,7 @@ class AprovacaoIT {
      * Objetivo: Conferir proposta, recusa de autoaprovação e de papel errado, aprovação pela segunda pessoa com
      *           execução única e o registro na trilha.
      * Decisões: O suporte N2 vê a fila, mas não decide (o executor de teste exige administrador). O banimento ganhou
-     *           executor na moderação (KAN-101); a ação de dados pessoais ainda não tem.
+     *           executor na moderação (KAN-101); a de dados pessoais, na privacidade (KAN-90).
      */
     @Test
     void soASegundaPessoaComPapelCertoAprovaEExecuta() throws Exception {
@@ -99,7 +99,7 @@ class AprovacaoIT {
                 .andExpect(jsonPath("$.propostas[?(@.id == '" + proposta.getId() + "')].propostoPor").value("Bia Admin"))
                 .andExpect(jsonPath("$.acoes[?(@.acao == 'TRANSFERENCIA_TITULARIDADE')].disponivel").value(true))
                 .andExpect(jsonPath("$.acoes[?(@.acao == 'BANIMENTO_DEFINITIVO')].disponivel").value(true))
-                .andExpect(jsonPath("$.acoes[?(@.acao == 'DADOS_PESSOAIS_FORA_DO_FLUXO')].disponivel").value(false));
+                .andExpect(jsonPath("$.acoes[?(@.acao == 'DADOS_PESSOAIS_FORA_DO_FLUXO')].disponivel").value(true));
 
         mvc.perform(decisao(proposta, "aprovacao", bia, "Eu mesma aprovo"))
                 .andExpect(status().isUnprocessableContent())
@@ -243,7 +243,7 @@ class AprovacaoIT {
          * Objetivo: Criar o executor que anota as execuções.
          * Decisões: Classe anônima simples.
          */
-        @Bean
+        @Bean("executorDeTransferencia")
         ExecutorDeAcaoGrave transferenciaDeTeste() {
             return new ExecutorDeAcaoGrave() {
                 @Override
