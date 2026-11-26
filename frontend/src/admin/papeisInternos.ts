@@ -40,5 +40,6 @@ export const MENU_BACKOFFICE: { caminho: string; rotulo: string; papeis: Papel[]
   { caminho: '/admin/parametros', rotulo: 'Parâmetros', papeis: ['ADMIN'] },
   { caminho: '/admin/listas', rotulo: 'Listas', papeis: ['ADMIN'] },
   { caminho: '/admin/rotinas', rotulo: 'Rotinas', papeis: ['ADMIN'] },
+  { caminho: '/admin/banners', rotulo: 'Banners', papeis: ['ADMIN'] },
   { caminho: '/admin/auditoria', rotulo: 'Auditoria', papeis: ['ADMIN', 'ENCARREGADO_DADOS'] },
 ]

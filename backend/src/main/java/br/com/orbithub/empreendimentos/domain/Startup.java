@@ -72,6 +72,12 @@ public class Startup {
     @Column(name = "logotipo_tipo", length = 40)
     private String logotipoTipo;
 
+    @Column(name = "capa_chave", length = 512, insertable = false, updatable = false)
+    private String capaChave;
+
+    @Column(length = 120, insertable = false, updatable = false)
+    private String chamada;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private SituacaoDaStartup situacao;
@@ -364,6 +370,32 @@ public class Startup {
      */
     public String getLogotipoTipo() {
         return logotipoTipo;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 22:40
+     * Cartão Jira: KAN-170
+     * Título: Tem capa
+     * Objetivo: Dizer se a startup tem imagem de capa.
+     * Decisões: Só leitura; gravada pela VitrineDaStartup.
+     */
+    public boolean temCapa() {
+        return capaChave != null;
+    }
+
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 22:40
+     * Cartão Jira: KAN-170
+     * Título: Chamada
+     * Objetivo: Expor a frase curta do cartão.
+     * Decisões: Só leitura; gravada pela VitrineDaStartup.
+     */
+    public String getChamada() {
+        return chamada;
     }
 
     /**

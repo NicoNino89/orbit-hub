@@ -94,7 +94,7 @@ describe('Sessão (login, área logada e logout)', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Investidor' }))
     expect(screen.getByRole('button', { name: 'Investidor' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText(/Defina sua tese de investimento/)).toBeInTheDocument()
+    expect(await screen.findByText(/Defina sua tese de investimento/)).toBeInTheDocument()
   })
 
   /**
