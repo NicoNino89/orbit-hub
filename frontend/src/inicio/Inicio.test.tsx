@@ -164,4 +164,59 @@ describe('Novo visual (S12)', () => {
     await userEvent.upload(screen.getByLabelText(/Imagem de capa/), new File(['x'], 'c.png', { type: 'image/png' }))
     expect(await screen.findByText('A startup tem capa.')).toBeInTheDocument()
   })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 25/11/2026
+   * Hora: 22:55
+   * Cartão Jira: KAN-170, KAN-171, KAN-166
+   * Título: Imagens e menu do empreendedor
+   * Objetivo: Trocar de destaque no banner com imagem, ver a capa no cartão, enviar imagem de banner e abrir o menu no celular.
+   * Decisões: URL.createObjectURL simulado.
+   */
+  it('mostra imagens do banner e da capa e o menu do empreendedor', async () => {
+    vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: vi.fn(() => 'blob:x'), revokeObjectURL: vi.fn() }))
+    const banner = (id: string, titulo: string) => ({ id, tipo: 'BANNER', titulo, destaque: null, texto: null, botao: null, link: null, publico: 'TODOS',
+      inicio: '2026-01-01', fim: null, ordem: 1, temImagem: true, textoAlt: 'Aperto de mãos', ativo: true })
+    abrir('/painel', ['INVESTIDOR'], {
+      'GET /api/v1/inicio/banners': () => ({ corpo: [banner('b1', 'Primeiro'), banner('b2', 'Segundo')] }),
+      'GET /api/v1/inicio/banners/b1/imagem': () => ({ corpo: {} }),
+      'GET /api/v1/inicio/banners/b2/imagem': () => ({ corpo: {} }),
+      'GET /api/v1/investidores/perfil': () => ({ corpo: { daOrganizacao: false, podeEditar: true, tipoFixo: null, perfil: null, atualizadoPor: null, atualizadoEm: null } }),
+      'GET /api/v1/catalogo/startups': () => ({ corpo: { lista: 'PERSONALIZADA', verificado: true, comPerfil: true,
+        itens: [{ ...ITEM, startup: { ...ITEM.startup, temCapa: true } }] } }),
+      'GET /api/v1/catalogo/startups/s1/capa': () => ({ corpo: {} }),
+    })
+    expect(await screen.findByText('Primeiro')).toBeInTheDocument()
+    expect(await screen.findByAltText('Capa da AgroTech')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Destaque 2' }))
+    expect(await screen.findByText('Segundo')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Próximos' }))
+  })
+
+  /**
+   * Autor: Nicholas Bruno Pimentel
+   * Data: 25/11/2026
+   * Hora: 22:55
+   * Cartão Jira: KAN-166, KAN-171
+   * Título: Empreendedor e imagem de banner
+   * Objetivo: Abrir e fechar o menu no celular do empreendedor e enviar a imagem de um banner.
+   * Decisões: Duas telas.
+   */
+  it('abre o menu do empreendedor e envia imagem de banner', async () => {
+    const { chamadas } = abrir('/painel', ['EMPREENDEDOR', 'ADMIN'], {
+      'GET /api/v1/startups': () => ({ corpo: [] }),
+      'GET /api/v1/admin/banners': () => ({ corpo: [{ id: 'b1', tipo: 'BANNER', titulo: 'Empresas', destaque: null, texto: null, botao: null, link: null,
+        publico: 'TODOS', inicio: '2026-01-01', fim: null, ordem: 1, temImagem: false, textoAlt: 'x', ativo: false }] }),
+      'PUT /api/v1/admin/banners/b1/imagem': () => ({ corpo: {} }),
+    })
+    expect(await screen.findByText(/Cadastre sua startup/)).toBeInTheDocument()
+    expect(await screen.findByRole('region', { name: 'Comece agora' })).toHaveTextContent('Cadastrar startup')
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir menu' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Fechar menu' }))
+    await userEvent.click(screen.getByRole('link', { name: /Backoffice/ }))
+    await userEvent.click(await screen.findByRole('link', { name: 'Banners' }))
+    await userEvent.upload(await screen.findByLabelText('Imagem de Empresas'), new File(['x'], 'b.png', { type: 'image/png' }))
+    expect(chamadas.some((c) => c.chave === 'PUT /api/v1/admin/banners/b1/imagem')).toBe(true)
+  })
 })

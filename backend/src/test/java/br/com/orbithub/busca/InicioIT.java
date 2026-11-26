@@ -121,6 +121,10 @@ class InicioIT {
         corpo(post("/api/v1/admin/banners"), adm, "{\"tipo\":\"X\"}").andExpect(jsonPath("$.codigo").value("banner_invalido"));
         String id = JsonPath.read(corpo(post("/api/v1/admin/banners"), adm, String.format(corpo, "/empreendedor")).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(), "$.id");
+        pedir(get("/api/v1/inicio/banners/" + id + "/imagem"), leo).andExpect(status().isNotFound());
+        corpo(put("/api/v1/admin/banners/" + UUID.randomUUID()), adm, String.format(corpo, "/x")).andExpect(status().isNotFound());
+        corpo(post("/api/v1/admin/banners"), adm, String.format(corpo, "/x").replace("\"inicio\":\"2026-01-01\"", "\"inicio\":\"2026-02-01\",\"fim\":\"2026-01-01\""))
+                .andExpect(jsonPath("$.codigo").value("periodo_invalido"));
         mvc.perform(multipart(HttpMethod.PUT, "/api/v1/admin/banners/" + id + "/imagem").file(new MockMultipartFile("arquivo", "b.png", "image/png", PNG))
                 .header(HttpHeaders.AUTHORIZATION, bearer(adm))).andExpect(jsonPath("$.codigo").value("texto_alt_obrigatorio"));
         corpo(put("/api/v1/admin/banners/" + id), adm, String.format(corpo.replace("\"ordem\":9", "\"ordem\":9,\"textoAlt\":\"Foguete\""), "/empreendedor"))
