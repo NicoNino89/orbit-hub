@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ErroApi } from '../api/cliente'
 import {
   ativarPapel, buscarConta, buscarFoto, buscarHistorico, desativarPapel, enviarFoto, pedirTrocaDeEmail, salvarPerfil,
@@ -33,6 +33,22 @@ function mensagemDe(erro: unknown) {
 
 /**
  * Autor: Nicholas Bruno Pimentel
+ * Data: 25/11/2026
+ * Hora: 22:58
+ * Cartão Jira: KAN-180
+ * Título: Âncora da seção
+ * Objetivo: Gerar o endereço interno de cada seção para o menu das configurações.
+ * Decisões: Minúsculas, sem acentos, com hífens.
+ */
+function ancora(titulo: string) {
+  return titulo.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+}
+
+const SECOES = [['Dados do perfil', 'dados-do-perfil'], ['Papéis', 'papeis'], ['E-mail', 'trocar-e-mail'], ['Senha', 'trocar-senha'],
+  ['Privacidade', 'privacidade'], ['Histórico', 'historico-da-conta']]
+
+/**
+ * Autor: Nicholas Bruno Pimentel
  * Data: 24/11/2026
  * Hora: 01:40
  * Cartão Jira: KAN-16
@@ -42,7 +58,7 @@ function mensagemDe(erro: unknown) {
  */
 function Secao({ titulo, children }: { titulo: string; children: ReactNode }) {
   return (
-    <section aria-label={titulo} className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
+    <section id={ancora(titulo)} aria-label={titulo} className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-line bg-surface p-5">
       <h2 className="text-lg font-semibold">{titulo}</h2>
       {children}
     </section>
@@ -96,7 +112,11 @@ export function PaginaConta() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">Minha conta</h1>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Configurações</h1>
+      <nav aria-label="Seções das configurações" className="flex flex-wrap gap-2 text-sm">
+        {SECOES.map(([rotulo, id]) => <a key={id} href={`#${id}`} className="rounded-full bg-surface-2 px-3 py-1 font-medium">{rotulo}</a>)}
+        <Link to="/notificacoes" className="rounded-full bg-surface-2 px-3 py-1 font-medium">Notificações</Link>
+      </nav>
       <SecaoPerfil conta={conta} aoMudar={setConta} />
       <SecaoPapeis conta={conta} aoMudar={recarregar} />
       <SecaoEmail emailAtual={conta.email} />

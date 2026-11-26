@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { ConversaDaConexao } from '../rede/Rede'
 import {
   agirNaConexao, bloquear, bloqueiosDaStartup, type ConexaoDoPainel, type ConexaoParaInvestidor, conexaoComAStartup, conexoesDaStartup,
   definirApenasVerificados, demonstrarInteresse, desbloquear, historicoDaConexao, minhasConexoes, type MudancaDaConexao,
@@ -130,8 +131,14 @@ function AcoesDaConexao({ c, aoMudar }: { c: ConexaoDoPainel; aoMudar: (erro: st
     opcoesDaLista('MOTIVO_ENCERRAMENTO').then(setMotivos).catch(() => undefined)
   }, [podeEncerrar])
   const para = proxima[c.situacao]
+  const [conversa, setConversa] = useState(false)
+  const temConversa = podeEncerrar || c.situacao === 'INVESTIU'
   return (
     <div className="flex flex-col gap-2">
+      {temConversa && (
+        <button type="button" className={`${CLASSE_LINK} self-start`} onClick={() => setConversa(!conversa)}>{conversa ? 'Fechar conversa' : 'Mensagens'}</button>
+      )}
+      {conversa && <ConversaDaConexao conexaoId={c.id} />}
       <div className="flex flex-wrap items-center gap-3">
         {para && (
           <button type="button" className={CLASSE_LINK} onClick={() => void tentar(() => agirNaConexao(c.id, 'avanco', { para })).then(aoMudar)}>

@@ -250,7 +250,8 @@ const ABAS: { lista: ListaDoCatalogo; rotulo: string }[] = [{ lista: 'PERSONALIZ
  * Decisões: Abas de módulos futuros (Investidores, Consultorias, Educação, Tendências) só entram quando existirem.
  */
 export function PaginaInicialDoInvestidor() {
-  const { papelAtivo } = useSessao()
+  const { papelAtivo, estado } = useSessao()
+  const nome = estado.status === 'autenticado' ? estado.usuario.nome.split(' ')[0] : ''
   const [banners, setBanners] = useState<Banner[]>([])
   const [aba, setAba] = useState<ListaDoCatalogo>('PERSONALIZADA')
   const [itens, setItens] = useState<ItemDoCatalogo[] | null>(null)
@@ -267,6 +268,7 @@ export function PaginaInicialDoInvestidor() {
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex min-w-0 flex-col gap-6">
+        <h1 className="font-display text-3xl font-bold tracking-tight">Olá, {nome}</h1>
         <BannerRotativo banners={principais} />
         <div role="tablist" aria-label="Seções" className="flex flex-wrap gap-2">
           {ABAS.map((a) => (

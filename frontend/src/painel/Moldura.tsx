@@ -14,14 +14,15 @@ interface ItemDoMenu { caminho: string; rotulo: string; icone: string }
 const ITENS: Record<'INVESTIDOR' | 'EMPREENDEDOR', ItemDoMenu[]> = {
   INVESTIDOR: [
     { caminho: '/painel', rotulo: 'Início', icone: '⌂' }, { caminho: '/catalogo', rotulo: 'Explorar', icone: '◎' },
-    { caminho: '/conexoes', rotulo: 'Minha Rede', icone: '⚇' }, { caminho: '/agenda', rotulo: 'Agenda', icone: '▦' },
+    { caminho: '/rede', rotulo: 'Minha Rede', icone: '⚇' }, { caminho: '/investidor/carteira', rotulo: 'Minha Carteira', icone: '▣' },
+    { caminho: '/agenda', rotulo: 'Agenda', icone: '▦' },
     { caminho: '/notificacoes', rotulo: 'Notificações', icone: '◔' }, { caminho: '/investidor', rotulo: 'Meu perfil', icone: '◐' },
     { caminho: '/ajuda/chamados', rotulo: 'Ajuda', icone: '?' }, { caminho: '/conta', rotulo: 'Configurações', icone: '⚙' },
   ],
   EMPREENDEDOR: [
     { caminho: '/painel', rotulo: 'Início', icone: '⌂' }, { caminho: '/empreendedor', rotulo: 'Minha Startup', icone: '◆' },
-    { caminho: '/catalogo', rotulo: 'Explorar', icone: '◎' }, { caminho: '/agenda', rotulo: 'Agenda', icone: '▦' },
-    { caminho: '/notificacoes', rotulo: 'Notificações', icone: '◔' }, { caminho: '/ajuda/chamados', rotulo: 'Ajuda', icone: '?' },
+    { caminho: '/catalogo', rotulo: 'Explorar', icone: '◎' }, { caminho: '/rede', rotulo: 'Minha Rede', icone: '⚇' },
+    { caminho: '/agenda', rotulo: 'Agenda', icone: '▦' }, { caminho: '/notificacoes', rotulo: 'Notificações', icone: '◔' }, { caminho: '/ajuda/chamados', rotulo: 'Ajuda', icone: '?' },
     { caminho: '/conta', rotulo: 'Configurações', icone: '⚙' },
   ],
 }
@@ -73,6 +74,10 @@ function useProximoPasso(papel: Papel | null) {
 export function MenuLateral({ aberto, aoNavegar }: { aberto: boolean; aoNavegar: () => void }) {
   const { estado, papelAtivo } = useSessao()
   const passo = useProximoPasso(papelAtivo)
+  const [mensagens, setMensagens] = useState(0)
+  useEffect(() => {
+    requisitar<{ naoLidas: number }>('/api/v1/mensagens/contagem').then((r) => setMensagens(r.naoLidas)).catch(() => setMensagens(0))
+  }, [papelAtivo])
   if (estado.status !== 'autenticado') return null
   const daEquipe = estado.usuario.papeis.some((p) => !ehPapelPublico(p))
   const itens = papelAtivo === 'INVESTIDOR' || papelAtivo === 'EMPREENDEDOR' ? ITENS[papelAtivo] : []
@@ -90,6 +95,9 @@ export function MenuLateral({ aberto, aoNavegar }: { aberto: boolean; aoNavegar:
           <NavLink key={i.caminho} to={i.caminho} end={i.caminho === '/painel'} onClick={aoNavegar}
             className={({ isActive }) => `flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium ${isActive ? 'bg-primary-soft text-fg' : 'text-fg hover:bg-surface-2'}`}>
             <span aria-hidden="true" className="w-5 text-center text-lg">{i.icone}</span>{i.rotulo}
+            {i.caminho === '/rede' && mensagens > 0 && (
+              <span aria-label={`${mensagens} mensagens não lidas`} className="ml-auto rounded-full bg-crit px-2 text-xs font-bold text-white">{mensagens}</span>
+            )}
           </NavLink>
         ))}
         {daEquipe && <NavLink to="/admin" onClick={aoNavegar} className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold text-fg hover:bg-surface-2">

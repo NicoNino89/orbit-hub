@@ -210,7 +210,7 @@ describe('Novo visual (S12)', () => {
         publico: 'TODOS', inicio: '2026-01-01', fim: null, ordem: 1, temImagem: false, textoAlt: 'x', ativo: false }] }),
       'PUT /api/v1/admin/banners/b1/imagem': () => ({ corpo: {} }),
     })
-    expect(await screen.findByText(/Cadastre sua startup/)).toBeInTheDocument()
+    expect((await screen.findAllByText(/Cadastre sua startup/)).length).toBeGreaterThan(0)
     expect(await screen.findByRole('region', { name: 'Comece agora' })).toHaveTextContent('Cadastrar startup')
     await userEvent.click(screen.getByRole('button', { name: 'Abrir menu' }))
     await userEvent.click(screen.getByRole('button', { name: 'Fechar menu' }))

@@ -37,7 +37,7 @@ async function abrirConta(extras: Parameters<typeof simularApi>[0] = {}) {
       <Rotas />
     </MemoryRouter>,
   )
-  await screen.findByRole('heading', { name: 'Minha conta' })
+  await screen.findByRole('heading', { name: 'Configurações' })
   return api
 }
 

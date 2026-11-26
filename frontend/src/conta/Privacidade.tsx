@@ -109,7 +109,7 @@ export function SecaoPrivacidade() {
   }
 
   return (
-    <section aria-label="Privacidade" className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
+    <section id="privacidade" aria-label="Privacidade" className="scroll-mt-24 flex flex-col gap-4 rounded-lg border border-line bg-surface p-5">
       <h2 className="text-lg font-semibold">Privacidade e meus dados</h2>
       <p className="text-sm text-muted">Para cada ação, confirme a sua identidade com a senha. O encarregado de dados responde em até 15 dias.</p>
       <Campo rotulo="Senha da conta" type="password" value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="current-password" />

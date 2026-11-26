@@ -14,6 +14,7 @@ package br.com.orbithub.notificacoes.domain;
 public enum TipoDeNotificacao {
     INTERESSE_RECEBIDO("Conexões", "Nova manifestação de interesse", false, Canal.AMBOS),
     MATCH("Conexões", "Match confirmado", false, Canal.AMBOS),
+    MENSAGEM("Conexões", "Nova mensagem numa conexão", false, Canal.AMBOS),
     INTERESSE_RECUSADO("Conexões", "Interesse recusado", false, Canal.PLATAFORMA),
     INTERESSE_EXPIRADO("Conexões", "Interesse expirado", false, Canal.PLATAFORMA),
     INTERESSE_RETIRADO("Conexões", "Interesse retirado", false, Canal.PLATAFORMA),

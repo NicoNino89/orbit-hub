@@ -30,7 +30,7 @@ describe('App (rotas)', () => {
   it('abre a página inicial na raiz e em endereço desconhecido', () => {
     vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
     render(<App />)
-    expect(screen.getByRole('heading', { name: 'A plataforma está sendo construída' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /Empresas que inspiram/ })).toBeInTheDocument()
   })
 
   /**
