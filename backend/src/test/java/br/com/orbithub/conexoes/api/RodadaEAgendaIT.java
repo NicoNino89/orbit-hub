@@ -371,8 +371,8 @@ class RodadaEAgendaIT {
         UUID id = UUID.randomUUID();
         jdbc.update("UPDATE rodada SET situacao = 'ENCERRADA', resultado = 'CANCELADA' WHERE startup_id = ?::uuid AND situacao <> 'ENCERRADA'", startup);
         jdbc.update("INSERT INTO rodada (id, startup_id, situacao, estagio, instrumento, valor_alvo, valor_minimo, valor_maximo, prazo, criada_por, criada_em, "
-                + "atualizada_em, aberta_em) VALUES (?, ?::uuid, 'ABERTA', 'SEED', 'MUTUO_CONVERSIVEL', 250000, 100000, 300000, current_date + ?, ?, now(), now(), now())",
-                id, startup, diasDePrazo, dono.getId());
+                + "atualizada_em, aberta_em) VALUES (?, ?::uuid, 'ABERTA', 'SEED', 'MUTUO_CONVERSIVEL', 250000, 100000, 300000, ?, ?, now(), now(), now())",
+                id, startup, java.sql.Date.valueOf(LocalDate.now(ZoneId.of("America/Sao_Paulo")).plusDays(diasDePrazo)), dono.getId());
         return id.toString();
     }
 
