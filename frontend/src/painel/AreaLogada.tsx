@@ -8,7 +8,7 @@ import { BarraSuperior, MenuLateral } from './Moldura'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:35
+ * Hora: 22:40
  * Cartão Jira: KAN-166, KAN-167, KAN-165
  * Título: Área logada
  * Objetivo: Montar a moldura da área logada: menu lateral, barra superior e o conteúdo.
@@ -35,7 +35,7 @@ export function AreaLogada() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:35
+ * Hora: 22:40
  * Cartão Jira: KAN-168, KAN-18
  * Título: Página inicial
  * Objetivo: Mostrar a página inicial do papel ativo.

@@ -12,7 +12,7 @@ const CARTAO = 'rounded-2xl border border-line bg-surface p-5 shadow-sm'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-170, KAN-171
  * Título: Imagem protegida
  * Objetivo: Baixar uma imagem com o token e mostrá-la por um endereço local.
@@ -37,7 +37,7 @@ function useImagem(chave: string | null, carregar: () => Promise<Blob>) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-170, KAN-41, KAN-62
  * Título: Cartão de oportunidade
  * Objetivo: Mostrar a startup com capa, nome, chamada, localização e o favorito, como no mockup.
@@ -70,7 +70,7 @@ export function CartaoDeOportunidade({ item, aoFavoritar }: { item: ItemDoCatalo
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-165, KAN-183
  * Título: Carrossel
  * Objetivo: Rolar cartões na horizontal com setas, toque ou teclado.
@@ -91,7 +91,7 @@ export function Carrossel({ rotulo, children }: { rotulo: string; children: Reac
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-171
  * Título: Banner rotativo
  * Objetivo: Mostrar os banners institucionais vigentes, com troca automática, pausa e indicadores.
@@ -131,7 +131,7 @@ export function BannerRotativo({ banners }: { banners: Banner[] }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-172, KAN-39
  * Título: Painel do perfil de investidor
  * Objetivo: Mostrar o tipo, o perfil de risco e os interesses (segmentos da tese) como etiquetas removíveis, com
@@ -155,7 +155,7 @@ export function PainelDoPerfil({ aoMudar }: { aoMudar: () => void }) {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:40
+   * Hora: 22:40
    * Cartão Jira: KAN-172
    * Título: Gravar interesses
    * Objetivo: Salvar os segmentos novos e atualizar a seleção.
@@ -220,7 +220,7 @@ export function PainelDoPerfil({ aoMudar }: { aoMudar: () => void }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-171
  * Título: Chamada lateral
  * Objetivo: Mostrar uma chamada institucional (como "Conquiste seu espaço – Participe!").
@@ -243,7 +243,7 @@ const ABAS: { lista: ListaDoCatalogo; rotulo: string }[] = [{ lista: 'PERSONALIZ
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:40
+ * Hora: 22:40
  * Cartão Jira: KAN-168
  * Título: Página inicial do investidor
  * Objetivo: Reunir banner, abas (Para você, Empresas), carrossel de empresas em destaque, painel do perfil e chamadas.

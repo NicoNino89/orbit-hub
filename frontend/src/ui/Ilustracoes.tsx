@@ -1,7 +1,7 @@
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Ilustrações próprias
  * Objetivo: Desenhar em SVG as ilustrações da nova interface (capa padrão por segmento, foguete, alvo, troféu, gráfico
@@ -16,7 +16,7 @@ const PALETAS: [string, string][] = [
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Paleta do segmento
  * Objetivo: Escolher sempre a mesma cor para o mesmo segmento.
@@ -31,7 +31,7 @@ function paleta(chave: string) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182, KAN-170
  * Título: Capa padrão
  * Objetivo: Mostrar uma capa com degradê e a inicial quando a startup não enviou capa.
@@ -54,7 +54,7 @@ export function CapaPadrao({ segmento, nome }: { segmento: string; nome: string 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Foguete
  * Objetivo: Ilustração do cartão "Comece agora".
@@ -74,7 +74,7 @@ export function Foguete({ className = 'h-12 w-12' }: { className?: string }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Alvo
  * Objetivo: Ilustração do cartão "Seu perfil, seu foco".
@@ -92,7 +92,7 @@ export function Alvo({ className = 'h-12 w-12' }: { className?: string }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Troféu
  * Objetivo: Ilustração da chamada "Participe!".
@@ -111,7 +111,7 @@ export function Trofeu({ className = 'h-12 w-12' }: { className?: string }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182
  * Título: Gráfico de crescimento
  * Objetivo: Marca e ilustração de crescimento (barras em degraus).
@@ -129,7 +129,7 @@ export function Grafico({ className = 'h-8 w-8' }: { className?: string }) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-182, KAN-171
  * Título: Fundo padrão do banner
  * Objetivo: Desenhar o fundo do banner quando ele não tem imagem.

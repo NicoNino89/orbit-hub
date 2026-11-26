@@ -375,7 +375,7 @@ public class Startup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:50
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Tem capa
      * Objetivo: Dizer se a startup tem imagem de capa.
@@ -388,7 +388,7 @@ public class Startup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:50
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Chamada
      * Objetivo: Expor a frase curta do cartão.

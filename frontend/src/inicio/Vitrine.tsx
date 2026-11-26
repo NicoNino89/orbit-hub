@@ -8,7 +8,7 @@ const CAIXA = 'rounded-lg border border-line bg-surface px-3 py-2'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:50
+ * Hora: 22:40
  * Cartão Jira: KAN-170
  * Título: Vitrine da startup
  * Objetivo: Deixar os fundadores definir a chamada (frase curta) e a imagem de capa do cartão no catálogo.
@@ -26,7 +26,7 @@ export function SecaoVitrine({ startupId, podeEditar }: { startupId: string; pod
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:50
+   * Hora: 22:40
    * Cartão Jira: KAN-170
    * Título: Agir
    * Objetivo: Executar a ação e mostrar o resultado.
@@ -73,7 +73,7 @@ const NOVO: DadosDoBanner = { tipo: 'BANNER', titulo: '', destaque: '', texto: '
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:50
+ * Hora: 22:40
  * Cartão Jira: KAN-171
  * Título: Banners no backoffice
  * Objetivo: Listar, criar e alterar os banners e as chamadas institucionais e enviar a imagem.
@@ -92,7 +92,7 @@ export function PaginaBanners() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:50
+   * Hora: 22:40
    * Cartão Jira: KAN-171
    * Título: Salvar
    * Objetivo: Criar ou alterar e recarregar.

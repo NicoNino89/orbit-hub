@@ -20,7 +20,7 @@ const ITEM = { startup: { id: 's1', nome: 'AgroTech', segmento: 'Agro', estagio:
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:55
+ * Hora: 22:40
  * Cartão Jira: KAN-166, KAN-167, KAN-168, KAN-170, KAN-171, KAN-172
  * Título: Abrir com papel
  * Objetivo: Renderizar o endereço com a sessão e as rotas simuladas.
@@ -58,7 +58,7 @@ describe('Novo visual (S12)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:55
+   * Hora: 22:40
    * Cartão Jira: KAN-168, KAN-170, KAN-171, KAN-172
    * Título: Página inicial do investidor
    * Objetivo: Ver banner, destaques, chamada, painel do perfil; favoritar, trocar de aba e editar interesses.
@@ -92,7 +92,7 @@ describe('Novo visual (S12)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:55
+   * Hora: 22:40
    * Cartão Jira: KAN-166, KAN-167
    * Título: Menu, busca e "Comece agora"
    * Objetivo: Ver o menu lateral, o cartão de primeiro passo sem tese e os resultados da busca global.
@@ -119,7 +119,7 @@ describe('Novo visual (S12)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:55
+   * Hora: 22:40
    * Cartão Jira: KAN-171
    * Título: Banners no backoffice
    * Objetivo: Listar e incluir um banner.
@@ -145,7 +145,7 @@ describe('Novo visual (S12)', () => {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:55
+   * Hora: 22:40
    * Cartão Jira: KAN-170
    * Título: Vitrine da startup
    * Objetivo: Salvar a chamada e enviar a capa.

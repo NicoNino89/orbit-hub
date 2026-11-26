@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:00
+ * Hora: 22:40
  * Cartão Jira: KAN-167
  * Título: Busca global
  * Objetivo: Buscar, de qualquer tela, startups publicadas, organizações investidoras e artigos da central de ajuda.
@@ -32,7 +32,7 @@ public class BuscaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:00
+     * Hora: 22:40
      * Cartão Jira: KAN-167
      * Título: Criação
      * Objetivo: Receber os serviços.
@@ -47,7 +47,7 @@ public class BuscaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:00
+     * Hora: 22:40
      * Cartão Jira: KAN-167
      * Título: Buscar
      * Objetivo: Devolver os resultados agrupados por tipo.
@@ -75,7 +75,7 @@ public class BuscaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:00
+     * Hora: 22:40
      * Cartão Jira: KAN-167
      * Título: Dados da busca
      * Objetivo: Tipar os resultados.
@@ -87,7 +87,7 @@ public class BuscaService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: Resultado
      * Objetivo: Rotina auxiliar Resultado.

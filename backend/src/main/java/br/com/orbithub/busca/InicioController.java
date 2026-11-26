@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:05
+ * Hora: 22:40
  * Cartão Jira: KAN-167, KAN-170, KAN-171
  * Título: Página inicial e vitrine
  * Objetivo: Expor a busca global, os banners vigentes (e o cadastro deles ao administrador), a vitrine da startup (capa
@@ -50,7 +50,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-167
      * Título: Criação
      * Objetivo: Receber os serviços.
@@ -66,7 +66,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-167
      * Título: Buscar
      * Objetivo: Busca global.
@@ -87,7 +87,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Banners vigentes
      * Objetivo: Listar os banners do papel.
@@ -102,7 +102,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Imagem do banner
      * Objetivo: Servir a imagem do banner.
@@ -119,7 +119,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Todos os banners
      * Objetivo: Listar para o administrador.
@@ -135,7 +135,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Criar banner
      * Objetivo: Criar banner ou chamada.
@@ -151,7 +151,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Alterar banner
      * Objetivo: Alterar banner ou chamada.
@@ -167,7 +167,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Imagem do banner
      * Objetivo: Enviar a imagem.
@@ -183,7 +183,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Vitrine
      * Objetivo: Ler a chamada e se há capa.
@@ -198,7 +198,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Chamada
      * Objetivo: Gravar a chamada da startup.
@@ -214,7 +214,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Trocar capa
      * Objetivo: Enviar a capa da startup.
@@ -230,7 +230,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Capa para a equipe
      * Objetivo: Servir a capa à equipe da startup.
@@ -245,7 +245,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:05
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Capa no catálogo
      * Objetivo: Servir a capa da startup publicada.
@@ -260,7 +260,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: capa
      * Objetivo: Rotina auxiliar capa.
@@ -274,7 +274,7 @@ class InicioController {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: bytes
      * Objetivo: Rotina auxiliar bytes.

@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 22:45
+ * Hora: 22:40
  * Cartão Jira: KAN-170
  * Título: Vitrine da startup
  * Objetivo: Guardar a imagem de capa e a chamada (frase curta) que aparecem no cartão da startup, e servir a capa à
@@ -39,7 +39,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Criação
      * Objetivo: Receber os serviços.
@@ -55,7 +55,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Trocar capa
      * Objetivo: Gravar a nova capa e apagar a anterior.
@@ -82,7 +82,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Definir chamada
      * Objetivo: Gravar a frase curta do cartão (até 120 caracteres).
@@ -102,7 +102,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Capa para a equipe
      * Objetivo: Ler a capa para quem é da startup.
@@ -117,7 +117,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Capa publicada
      * Objetivo: Ler a capa de startup publicada para o catálogo.
@@ -131,7 +131,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Vitrine
      * Objetivo: Devolver a chamada e se há capa, para a tela da equipe.
@@ -147,7 +147,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: capa
      * Objetivo: Rotina auxiliar capa.
@@ -164,7 +164,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: exigirFundador
      * Objetivo: Rotina auxiliar exigirFundador.
@@ -179,7 +179,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:45
+     * Hora: 22:40
      * Cartão Jira: KAN-170
      * Título: Dados da vitrine
      * Objetivo: Tipar a capa e a vitrine.
@@ -191,7 +191,7 @@ public class VitrineDaStartup {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: Vitrine
      * Objetivo: Rotina auxiliar Vitrine.

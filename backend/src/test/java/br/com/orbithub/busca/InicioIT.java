@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:10
+ * Hora: 22:40
  * Cartão Jira: KAN-167, KAN-170, KAN-171
  * Título: Testes de integração da página inicial
  * Objetivo: Conferir a busca global (sem acentos e sem startups bloqueadas), os banners (vigentes e administração), a
@@ -66,7 +66,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:10
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170
      * Título: Busca e vitrine
      * Objetivo: Achar a startup pelo nome sem acento, esconder a bloqueada e manter a capa e a chamada.
@@ -105,7 +105,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:10
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Banners
      * Objetivo: Criar, validar, enviar imagem e listar os vigentes por papel.
@@ -137,7 +137,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: startup
      * Objetivo: Rotina auxiliar startup.
@@ -151,7 +151,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: pedir
      * Objetivo: Rotina auxiliar pedir.
@@ -164,7 +164,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: corpo
      * Objetivo: Rotina auxiliar corpo.
@@ -177,7 +177,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: conta
      * Objetivo: Rotina auxiliar conta.
@@ -194,7 +194,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: interna
      * Objetivo: Rotina auxiliar interna.
@@ -209,7 +209,7 @@ class InicioIT {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: bearer
      * Objetivo: Rotina auxiliar bearer.

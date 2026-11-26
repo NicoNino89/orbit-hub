@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 22:55
+ * Hora: 22:40
  * Cartão Jira: KAN-171
  * Título: Banners e chamadas institucionais
  * Objetivo: Deixar o administrador manter os banners rotativos e as chamadas laterais da página inicial, com público,
@@ -44,7 +44,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Criação
      * Objetivo: Receber os serviços.
@@ -59,7 +59,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Vigentes
      * Objetivo: Listar os banners e chamadas ativos, no período, para o papel ativo.
@@ -75,7 +75,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Todos
      * Objetivo: Listar todos os banners para o administrador.
@@ -89,7 +89,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Salvar
      * Objetivo: Criar ou alterar um banner ou chamada.
@@ -112,7 +112,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: vazio
      * Objetivo: Rotina auxiliar vazio.
@@ -127,7 +127,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Trocar imagem
      * Objetivo: Gravar a imagem do banner e apagar a anterior.
@@ -158,7 +158,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Imagem
      * Objetivo: Ler a imagem do banner.
@@ -177,7 +177,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: ler
      * Objetivo: Rotina auxiliar ler.
@@ -191,7 +191,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: conferir
      * Objetivo: Rotina auxiliar conferir.
@@ -216,7 +216,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: banner
      * Objetivo: Rotina auxiliar banner.
@@ -233,7 +233,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: vazio
      * Objetivo: Rotina auxiliar vazio.
@@ -246,7 +246,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 22:55
+     * Hora: 22:40
      * Cartão Jira: KAN-171
      * Título: Dados do banner
      * Objetivo: Tipar o pedido e a resposta.
@@ -263,7 +263,7 @@ public class BannersService {
     /**
      * Autor: Nicholas Bruno Pimentel
      * Data: 25/11/2026
-     * Hora: 23:59
+     * Hora: 22:40
      * Cartão Jira: KAN-167, KAN-170, KAN-171
      * Título: Imagem
      * Objetivo: Rotina auxiliar Imagem.

@@ -3,7 +3,7 @@ import { requisitar } from './cliente'
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:20
+ * Hora: 22:40
  * Cartão Jira: KAN-167, KAN-170, KAN-171
  * Título: Página inicial
  * Objetivo: Tipar e chamar a busca global, os banners, a vitrine da startup e as capas.

@@ -36,7 +36,7 @@ const CRIACAO: Record<'INVESTIDOR' | 'EMPREENDEDOR', { caminho: string; rotulo: 
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:30
+ * Hora: 22:40
  * Cartão Jira: KAN-166
  * Título: Próximo passo do perfil
  * Objetivo: Descobrir se falta a tese (investidor) ou a startup (empreendedor), para o cartão "Comece agora".
@@ -64,7 +64,7 @@ function useProximoPasso(papel: Papel | null) {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:30
+ * Hora: 22:40
  * Cartão Jira: KAN-166
  * Título: Menu lateral
  * Objetivo: Mostrar as áreas do papel ativo, o item atual destacado, o atalho da equipe e o cartão "Comece agora".
@@ -110,7 +110,7 @@ export function MenuLateral({ aberto, aoNavegar }: { aberto: boolean; aoNavegar:
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:30
+ * Hora: 22:40
  * Cartão Jira: KAN-167
  * Título: Busca global
  * Objetivo: Buscar startups, organizações e artigos enquanto a pessoa digita, com os resultados agrupados.
@@ -131,7 +131,7 @@ export function BuscaGlobal() {
   /**
    * Autor: Nicholas Bruno Pimentel
    * Data: 25/11/2026
-   * Hora: 23:30
+   * Hora: 22:40
    * Cartão Jira: KAN-167
    * Título: Ir ao resultado
    * Objetivo: Abrir o resultado e limpar a busca.
@@ -176,7 +176,7 @@ export function BuscaGlobal() {
 /**
  * Autor: Nicholas Bruno Pimentel
  * Data: 25/11/2026
- * Hora: 23:30
+ * Hora: 22:40
  * Cartão Jira: KAN-166, KAN-167
  * Título: Barra superior
  * Objetivo: Mostrar a busca, a criação rápida, o papel ativo, a atuação, o sino, a conta e o botão de sair.
