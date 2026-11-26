@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink } from 'react-router'
+import { CartaoDeOportunidade } from '../inicio/Inicio'
 import {
   descartar, favoritar, type FiltrosDoCatalogo, type ItemDoCatalogo, limparHistorico, type ListaDoCatalogo, type Marcada,
   minhasMarcacoes, navegarNoCatalogo, type ResultadoDoCatalogo, SEM_FILTROS, consultaDosFiltros, type TipoDeMarcacao,
@@ -190,6 +191,7 @@ export function PaginaCatalogo() {
   const [resultado, setResultado] = useState<ResultadoDoCatalogo | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [versao, setVersao] = useState(0)
+  const [grade, setGrade] = useState(false)
   const chave = useMemo(() => consultaDosFiltros(lista, filtros), [lista, filtros])
 
   useEffect(() => {
@@ -204,7 +206,7 @@ export function PaginaCatalogo() {
     <section className="flex flex-col gap-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="font-display text-3xl font-semibold tracking-tight">Catálogo</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Explorar</h1>
           <nav aria-label="Listas do catálogo" className="flex flex-wrap gap-2 text-sm">
             {([['PERSONALIZADA', 'Seleção personalizada'], ['NOVAS', 'Novas oportunidades']] as const).map(([valor, nome]) => (
               <button key={valor} type="button" aria-pressed={lista === valor} onClick={() => setLista(valor)}
@@ -215,7 +217,13 @@ export function PaginaCatalogo() {
             <Link to="/catalogo/edicoes" className="rounded-md border border-line px-3 py-1">Edições temáticas</Link>
           </nav>
         </div>
-        <Link to="/catalogo/minhas" className={`${CLASSE_LINK} text-sm`}>Favoritos, histórico e descartadas</Link>
+        <div className="flex items-center gap-3 text-sm">
+          <div role="group" aria-label="Visualização" className="flex rounded-full bg-surface-2 p-1">
+            <button type="button" aria-pressed={!grade} onClick={() => setGrade(false)} className={`rounded-full px-3 py-1 ${!grade ? 'bg-primary text-on-primary' : ''}`}>Página a página</button>
+            <button type="button" aria-pressed={grade} onClick={() => setGrade(true)} className={`rounded-full px-3 py-1 ${grade ? 'bg-primary text-on-primary' : ''}`}>Grade</button>
+          </div>
+          <Link to="/catalogo/minhas" className={CLASSE_LINK}>Favoritos, histórico e descartadas</Link>
+        </div>
       </header>
       {resultado && lista === 'PERSONALIZADA' && !resultado.comPerfil && (
         <p className="rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">
@@ -227,7 +235,12 @@ export function PaginaCatalogo() {
       {resultado && paginas.length === 0 && (
         <p className="rounded-lg border border-line bg-surface p-5 text-muted">Nenhuma startup encontrada. Ajuste ou limpe os filtros.</p>
       )}
-      {paginas.length > 0 && (
+      {grade && paginas.length > 0 && (
+        <div role="list" aria-label="Grade de startups" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+          {resultado?.itens.map((i) => <div role="listitem" key={i.startup.id}><CartaoDeOportunidade item={i} aoFavoritar={() => setVersao((v) => v + 1)} /></div>)}
+        </div>
+      )}
+      {!grade && paginas.length > 0 && (
         <Folheador key={`${chave}-${paginas.length}`} paginas={paginas} rotulo="Startups do catálogo" comProgresso
           inicial={posicaoSalva(chave)} aoMudar={(i) => salvarPosicao(chave, i)}
           renderizar={(p) => <PaginaDeStartup item={p} aoMudar={() => setVersao((v) => v + 1)} />} />

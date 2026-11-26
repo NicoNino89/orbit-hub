@@ -18,6 +18,7 @@ import { PaginaAtendimento, PaginaChamadoDaEquipe } from './admin/PaginaAtendime
 import { PaginaCasoDeModeracao, PaginaFilaDeModeracao, PaginaRecursos } from './admin/PaginaModeracao'
 import { PaginaPrivacidade, PaginaTimes } from './admin/PaginaOperacao'
 import { PaginaBanners } from './inicio/Vitrine'
+import { PaginaCarteira, PaginaMinhaRede } from './rede/Rede'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -88,6 +89,7 @@ export function Rotas() {
             <Route path="/startups/convite" element={<PaginaConviteStartup />} />
             <Route path="/catalogo" element={<PaginaCatalogo />} />
             <Route path="/agenda" element={<PaginaAgenda />} />
+            <Route path="/rede" element={<PaginaMinhaRede />} />
             <Route path="/ajuda/chamados" element={<PaginaMeusPedidos />} />
             <Route path="/ajuda/chamados/:id" element={<PaginaChamado />} />
             <Route path="/ajuda/denuncias" element={<PaginaMeusPedidos />} />
@@ -100,6 +102,7 @@ export function Rotas() {
             <Route element={<RotaDePapel papel="INVESTIDOR" />}>
               <Route path="/investidor" element={<AreaInvestidor />} />
               <Route path="/conexoes" element={<PaginaConexoes />} />
+              <Route path="/investidor/carteira" element={<PaginaCarteira />} />
               <Route path="/investidor/onboarding" element={<PaginaPerfilDeInvestimento onboarding />} />
               <Route path="/investidor/perfil" element={<PaginaPerfilDeInvestimento />} />
               <Route path="/investidor/verificacao" element={<PaginaVerificacao />} />

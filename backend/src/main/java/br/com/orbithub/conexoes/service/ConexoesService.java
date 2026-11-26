@@ -596,6 +596,19 @@ public class ConexoesService {
      * Objetivo: Dizer se quem chama é o investidor da conexão ou um fundador da startup.
      * Decisões: Quem não é parte recebe 404.
      */
+    /**
+     * Autor: Nicholas Bruno Pimentel
+     * Data: 25/11/2026
+     * Hora: 22:58
+     * Cartão Jira: KAN-176
+     * Título: Lado de quem age
+     * Objetivo: Dizer de que lado da conexão a pessoa está (startup ou investidor), para outros serviços.
+     * Decisões: 404 para quem não faz parte.
+     */
+    public Conexao.Lado ladoDe(UUID eu, String organizacao, Conexao c) {
+        return lado(eu, organizacao, c);
+    }
+
     private Conexao.Lado lado(UUID eu, String organizacao, Conexao c) {
         if (startups.fundadores(c.getStartupId(), false).contains(eu)) {
             return Conexao.Lado.STARTUP;

@@ -90,7 +90,7 @@ describe('Sessão (login, área logada e logout)', () => {
 
     const empreendedor = await screen.findByRole('button', { name: 'Empreendedor' })
     expect(empreendedor).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText(/Cadastre sua startup/)).toBeInTheDocument()
+    expect(await screen.findByText(/Cadastre sua startup/)).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Investidor' }))
     expect(screen.getByRole('button', { name: 'Investidor' })).toHaveAttribute('aria-pressed', 'true')
