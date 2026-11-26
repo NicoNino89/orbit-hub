@@ -1,63 +1,32 @@
+import { useState } from 'react'
 import { Link, Outlet } from 'react-router'
-import { ehPapelPublico, NOMES_DOS_PAPEIS } from '../api/contas'
-import { SeletorDeAtuacao } from '../investidor/SeletorDeAtuacao'
-import { Sino } from '../notificacoes/Sino'
+import { ehPapelPublico } from '../api/contas'
+import { PaginaInicialDoInvestidor } from '../inicio/Inicio'
 import { useSessao } from '../sessao/contexto'
-
+import { BarraSuperior, MenuLateral } from './Moldura'
 
 /**
  * Autor: Nicholas Bruno Pimentel
- * Data: 24/11/2026
- * Hora: 14:05
- * Cartão Jira: KAN-60
- * Título: Moldura da área logada
- * Objetivo: Cabeçalho comum com a marca, o papel em que a pessoa está atuando, o nome e o botão de sair.
- * Decisões: Com os dois papéis, um seletor deixa claro e troca o papel ativo (critério do KAN-12); com um só,
- *           o papel aparece como etiqueta. Sair encerra a sessão no servidor. Contas da equipe veem o link
- *           do backoffice (KAN-80). O sino leva à central de notificações (KAN-146).
- *           Atuando como investidor, o seletor escolhe em nome de quem a pessoa age (ela ou uma organização, KAN-60).
+ * Data: 25/11/2026
+ * Hora: 23:35
+ * Cartão Jira: KAN-166, KAN-167, KAN-165
+ * Título: Área logada
+ * Objetivo: Montar a moldura da área logada: menu lateral, barra superior e o conteúdo.
+ * Decisões: Menu fixo em telas largas; no celular abre como gaveta sobre o conteúdo.
  */
 export function AreaLogada() {
-  const { estado, papelAtivo, escolherPapel, sair } = useSessao()
+  const { estado } = useSessao()
+  const [menu, setMenu] = useState(false)
   if (estado.status !== 'autenticado') return null
-  const papeis = estado.usuario.papeis.filter(ehPapelPublico)
-  const daEquipe = estado.usuario.papeis.some((p) => !ehPapelPublico(p))
-
   return (
-    <div className="min-h-svh">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <Link to="/painel" className="flex items-center gap-2 font-bold tracking-tight">
-            <img src="/favicon.svg" alt="" width={28} height={28} />
-            Orbit Hub
-          </Link>
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            {papeis.length > 1 ? (
-              <div role="group" aria-label="Atuando como" className="flex items-center gap-1 rounded-md bg-surface-2 p-1">
-                <span className="px-2 text-muted">Atuando como</span>
-                {papeis.map((p) => (
-                  <button key={p} type="button" aria-pressed={p === papelAtivo} onClick={() => escolherPapel(p)}
-                    className={`rounded px-3 py-1 font-semibold ${p === papelAtivo ? 'bg-primary text-on-primary' : ''}`}>
-                    {NOMES_DOS_PAPEIS[p]}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              papelAtivo && <span className="rounded bg-primary-soft px-2 py-1 font-semibold text-primary">{NOMES_DOS_PAPEIS[papelAtivo]}</span>
-            )}
-            {papelAtivo === 'INVESTIDOR' && <SeletorDeAtuacao usuario={estado.usuario.id} />}
-            {daEquipe && <Link to="/admin" className="font-semibold text-primary underline-offset-2 hover:underline">Backoffice</Link>}
-            <Link to="/ajuda/chamados" className="text-muted underline-offset-2 hover:underline">Ajuda</Link>
-            <Sino />
-            <Link to="/conta" className="text-muted underline-offset-2 hover:underline">{estado.usuario.nome}</Link>
-            <button type="button" onClick={() => void sair()} className="rounded-md border border-line px-3 py-1 font-semibold">
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <Outlet />
+    <div className="flex min-h-svh bg-bg">
+      <MenuLateral aberto={menu} aoNavegar={() => setMenu(false)} />
+      {menu && <button type="button" aria-label="Fechar menu" onClick={() => setMenu(false)} className="fixed inset-0 z-20 bg-overlay lg:hidden" />}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <BarraSuperior aoAbrirMenu={() => setMenu(true)} />
+        <main className="mx-auto w-full max-w-7xl px-4 py-6">
+          <Outlet />
+        </main>
       </div>
     </div>
   )
@@ -65,33 +34,27 @@ export function AreaLogada() {
 
 /**
  * Autor: Nicholas Bruno Pimentel
- * Data: 24/11/2026
- * Hora: 14:25
- * Cartão Jira: KAN-18
- * Título: Painel inicial
- * Objetivo: Dar as boas-vindas e indicar o próximo passo do papel ativo.
- * Decisões: O investidor é levado ao onboarding da tese (KAN-18); o cadastro da startup (KAN-21) chega na S4.
- *           Conta só da equipe é levada ao backoffice (KAN-80).
+ * Data: 25/11/2026
+ * Hora: 23:35
+ * Cartão Jira: KAN-168, KAN-18
+ * Título: Página inicial
+ * Objetivo: Mostrar a página inicial do papel ativo.
+ * Decisões: Investidor tem a página nova (KAN-168); o empreendedor ganha a dele na S13 (KAN-169). Conta só da equipe é
+ *           levada ao backoffice.
  */
 export function Painel() {
   const { estado, papelAtivo } = useSessao()
   if (estado.status !== 'autenticado') return null
+  if (papelAtivo === 'INVESTIDOR') return <PaginaInicialDoInvestidor />
   const primeiroNome = estado.usuario.nome.split(' ')[0]
-
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">Olá, {primeiroNome}</h1>
-      <div className="rounded-lg border border-line bg-surface p-5">
+      <h1 className="font-display text-3xl font-bold tracking-tight">Olá, {primeiroNome}</h1>
+      <div className="rounded-xl border border-line bg-surface p-5">
         <h2 className="mb-1 font-semibold">Próximo passo</h2>
-        {papelAtivo === 'INVESTIDOR' && (
-          <p className="text-muted">
-            Defina sua tese de investimento para receber startups compatíveis.{" "}
-            <Link to="/investidor/onboarding" className="font-semibold text-primary">Definir a tese agora</Link>
-          </p>
-        )}
         {papelAtivo === 'EMPREENDEDOR' && (
           <p className="text-muted">
-            Cadastre sua startup para apresentá-la a investidores. Disponível em breve.{" "}
+            Cadastre sua startup para apresentá-la a investidores.{' '}
             <Link to="/empreendedor" className="font-semibold text-primary">Abrir a área do empreendedor</Link>
           </p>
         )}

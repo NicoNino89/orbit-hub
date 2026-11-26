@@ -16,6 +16,7 @@ import { PainelDeIndicadores } from './PainelDeIndicadores'
 import { PainelDePublicacao } from './PainelDePublicacao'
 import { PainelDeRodada } from './PainelDeRodada'
 import { PainelDeVisibilidade } from './PainelDeVisibilidade'
+import { SecaoVitrine } from '../inicio/Vitrine'
 import { ConexoesDaStartup } from '../conexoes/Conexoes'
 import { ConfidencialDaStartup } from '../dataroom/Nivel2'
 
@@ -175,6 +176,7 @@ export function PaginaStartup() {
 
       {aba === 'rodada' && <PainelDeRodada startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} constituida={startup.constituida} />}
 
+      {aba === 'publicacao' && <SecaoVitrine startupId={id} podeEditar={startup.meuPapel !== 'COLABORADOR'} />}
       {aba === 'publicacao' && progresso && (
         <PainelDePublicacao startupId={id} admin={startup.meuPapel === 'FUNDADOR_ADMINISTRADOR'} progresso={progresso} revisoes={revisoes}
           aoMudar={() => { recarregar(); lerStartup(id).then(setStartup).catch(() => undefined) }} />

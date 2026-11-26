@@ -126,6 +126,8 @@ export interface CartaoDeStartup {
   estagio: string | null
   localizacao: string | null
   temLogotipo: boolean
+  temCapa?: boolean
+  chamada?: string | null
 }
 
 export interface Edicao {

@@ -17,6 +17,7 @@ import { PaginaAjuda, PaginaChamado, PaginaConfirmarChamado, PaginaMeusPedidos }
 import { PaginaAtendimento, PaginaChamadoDaEquipe } from './admin/PaginaAtendimento'
 import { PaginaCasoDeModeracao, PaginaFilaDeModeracao, PaginaRecursos } from './admin/PaginaModeracao'
 import { PaginaPrivacidade, PaginaTimes } from './admin/PaginaOperacao'
+import { PaginaBanners } from './inicio/Vitrine'
 import { PaginaEdicaoDoCatalogo, PaginaEdicoesDoCatalogo, PaginaStartupNoCatalogo } from './catalogo/PaginasDoCatalogo'
 import { PocCatalogo } from './catalogo/PocCatalogo'
 import { PaginaCadastro } from './conta/PaginaCadastro'
@@ -121,6 +122,7 @@ export function Rotas() {
                   <Route path="parametros" element={<PaginaParametros />} />
                   <Route path="listas" element={<PaginaListas />} />
                   <Route path="rotinas" element={<PaginaRotinas />} />
+                  <Route path="banners" element={<PaginaBanners />} />
                 </Route>
                 <Route element={<RotaInterna papeis={['ADMIN', 'ANALISTA_VERIFICACAO']} />}>
                   <Route path="verificacao" element={<PaginaFilaDeVerificacao />} />

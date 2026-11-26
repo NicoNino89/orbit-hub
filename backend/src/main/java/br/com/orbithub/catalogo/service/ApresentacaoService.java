@@ -212,7 +212,7 @@ public class ApresentacaoService {
                 estagio == null ? null : MaturidadeDoNegocio.valueOf(estagio).getRotulo(),
                 VisibilidadeDaStartup.publico(VisibilidadeDaStartup.Extra.LOCALIZACAO.name(), vis)
                         ? listas.rotulo(Lista.LOCALIZACAO, s.cadastro().localizacao()) : null,
-                s.getLogotipoChave() != null);
+                s.getLogotipoChave() != null, s.temCapa(), s.getChamada());
     }
 
     /**
@@ -507,6 +507,7 @@ public class ApresentacaoService {
      * Objetivo: Levar o resumo da startup nas listas do catálogo.
      * Decisões: Localização nula quando confidencial.
      */
-    public record Cartao(UUID id, String nome, String segmento, String estagio, String localizacao, boolean temLogotipo) {
+    public record Cartao(UUID id, String nome, String segmento, String estagio, String localizacao, boolean temLogotipo, boolean temCapa,
+                         String chamada) {
     }
 }
