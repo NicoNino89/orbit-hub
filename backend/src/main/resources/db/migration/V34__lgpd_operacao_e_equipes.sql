@@ -13,7 +13,7 @@
 ALTER TABLE usuario ADD COLUMN excluida_em TIMESTAMPTZ;
 ALTER TABLE usuario ADD COLUMN ultimo_acesso_em TIMESTAMPTZ;
 ALTER TABLE usuario ADD COLUMN aviso_inatividade_em TIMESTAMPTZ;
-UPDATE usuario SET ultimo_acesso_em = criado_em;
+UPDATE usuario SET ultimo_acesso_em = criado_em WHERE ultimo_acesso_em IS NULL;
 
 ALTER TABLE caso_moderacao ADD COLUMN vencido_alertado_em TIMESTAMPTZ;
 ALTER TABLE recurso ADD COLUMN vencido_alertado_em TIMESTAMPTZ;

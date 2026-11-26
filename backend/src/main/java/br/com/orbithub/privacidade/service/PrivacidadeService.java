@@ -235,7 +235,9 @@ public class PrivacidadeService {
     @Transactional
     public Pedido proporExclusao(UUID eu, UUID id, String justificativa) {
         Map<String, Object> p = aberto(id);
-        UUID titular = (UUID) p.get("usuario_id");
+        if (!(p.get("usuario_id") instanceof UUID titular)) {
+            throw new RecursoNaoEncontradoException("Titular não encontrado.");
+        }
         aprovacoes.propor(AcaoGrave.DADOS_PESSOAIS_FORA_DO_FLUXO, PEDIDO, id.toString(), "Excluir a conta de " + contas.nome(titular).orElse("titular"),
                 Map.of("acao", "EXCLUSAO", "usuarioId", titular.toString()), eu, justificativa);
         jdbc.update("UPDATE pedido_titular SET situacao = 'AGUARDANDO_APROVACAO', responsavel_id = COALESCE(responsavel_id, ?) WHERE id = ?", eu, id);
